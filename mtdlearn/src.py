@@ -14,5 +14,5 @@ class MTD:
         if lambdas_init == 'flat':
             self.lambdas_ = np.ones(order) / order
         if tmatrices_init == 'flat':
-            self.tmatrices = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
+            self.tmatrices_ = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
 

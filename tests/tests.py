@@ -12,5 +12,5 @@ def test_create_lambdas():
 
 def test_create_tmatrices():
     mtd = MTD(5, 4, tmatrices_init='flat')
-    assert mtd.tmatrices.shape == (4, 5, 5)
-    assert mtd.tmatrices[0, 0, 0] == 0.2
+    assert mtd.tmatrices_.shape == (4, 5, 5)
+    assert mtd.tmatrices_[0, 0, 0] == 0.2
