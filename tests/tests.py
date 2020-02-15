@@ -14,3 +14,9 @@ def test_create_tmatrices():
     mtd = MTD(5, 4, tmatrices_init='flat')
     assert mtd.tmatrices_.shape == (4, 5, 5)
     assert mtd.tmatrices_[0, 0, 0] == 0.2
+
+
+def test_create_markov():
+    mtd = MTD(5, 4)
+    mtd.create_markov()
+    assert mtd.transition_matrix_.shape == (625, 5)
