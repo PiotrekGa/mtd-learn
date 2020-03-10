@@ -36,3 +36,8 @@ class MTD:
             tmatrix_list.append(np.dot(np.array([self.tmatrices_[i, idx[i], :] for i in range(self.order)]).T,
                                        self.lambdas_))
         self.transition_matrix_ = np.array(tmatrix_list)
+
+
+    def fit(self, x):
+        if len(x) != len(self.indexes):
+            raise ValueError('input data has wrong length')
