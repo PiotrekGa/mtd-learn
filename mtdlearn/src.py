@@ -20,6 +20,13 @@ class MTD:
         if tmatrices_init == 'flat':
             self.tmatrices_ = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
 
+        idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
+
+        self.indexes = []
+        for i in idx_gen:
+            self.indexes.append(i)
+
+
     def create_markov(self):
 
         array_coords = product(range(self.n_dimensions), repeat=self.order)

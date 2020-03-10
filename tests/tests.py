@@ -20,3 +20,8 @@ def test_create_markov():
     mtd = MTD(5, 4)
     mtd.create_markov()
     assert mtd.transition_matrix_.shape == (625, 5)
+
+
+def test_create_indexes():
+    mtd = MTD(4,3)
+    assert len(mtd.indexes) == 256
