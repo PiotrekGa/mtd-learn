@@ -15,6 +15,8 @@ class MTD:
         self.lambdas_init = lambdas_init
         self.tmatrices_init = tmatrices_init
         self.transition_matrix_ = None
+        self.n_ = None
+        self.p_ = None
         if lambdas_init == 'flat':
             self.lambdas_ = np.ones(order) / order
         if tmatrices_init == 'flat':
@@ -39,3 +41,6 @@ class MTD:
     def fit(self, x):
         if len(x) != len(self.indexes):
             raise ValueError('input data has wrong length')
+
+        self.n_ = x
+        self.p_ = x / sum(x)

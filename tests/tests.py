@@ -23,17 +23,25 @@ def test_create_markov():
 
 
 def test_create_indexes():
-    mtd = MTD(4,3)
+    mtd = MTD(4, 3)
     assert len(mtd.indexes) == 256
 
 
 def test_input_len_error():
     
     with pytest.raises(ValueError):
-        mtd = MTD(4,3)
-        mtd.fit([1,2,3])
+        mtd = MTD(4, 3)
+        mtd.fit(np.array([1, 2, 3]))
 
 
 def test_input_len_noerror():
-    mtd = MTD(3,2)
-    mtd.fit([i for i in range(27)])
+    mtd = MTD(3, 2)
+    mtd.fit(np.array([i for i in range(27)]))
+
+
+def test_input_probs():
+    mtd = MTD(2, 2)
+    mtd.fit(np.array([1 for _ in range(8)]))
+    assert mtd.p_[0] == 0.125
+    assert mtd.p_.shape == (8,)
+    assert mtd.n_.shape == (8,)
