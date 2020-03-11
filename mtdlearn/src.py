@@ -26,7 +26,6 @@ class MTD:
         for i in idx_gen:
             self.indexes.append(i)
 
-
     def create_markov(self):
 
         array_coords = product(range(self.n_dimensions), repeat=self.order)
@@ -36,7 +35,6 @@ class MTD:
             tmatrix_list.append(np.dot(np.array([self.tmatrices_[i, idx[i], :] for i in range(self.order)]).T,
                                        self.lambdas_))
         self.transition_matrix_ = np.array(tmatrix_list)
-
 
     def fit(self, x):
         if len(x) != len(self.indexes):
