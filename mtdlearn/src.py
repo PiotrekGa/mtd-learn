@@ -17,6 +17,7 @@ class MTD:
         self.transition_matrix_ = None
         self.n_ = None
         self.p_ = None
+        self.log_likelihood = None
         if lambdas_init == 'flat':
             self.lambdas_ = np.ones(order) / order
         if tmatrices_init == 'flat':
@@ -44,3 +45,7 @@ class MTD:
 
         self.n_ = x
         self.p_ = x / sum(x)
+
+    def calculate_loglikelihood(self):
+
+        self.log_likelihood = 0
