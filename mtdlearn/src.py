@@ -49,7 +49,7 @@ class MTD:
         self.n_ = x
         self.p_ = x / sum(x)
 
-    def calculate_log_likelihood(self):
+    def _calculate_log_likelihood(self):
 
         self.log_likelihood = 0
 
@@ -57,11 +57,11 @@ class MTD:
             mtd_value = sum([lam * self.tmatrices_[i, idx[i], idx[-1]] for i, lam in enumerate(self.lambdas_)])
             self.log_likelihood += self.n_[i] * np.log(mtd_value)
 
-    def calculate_aic(self):
+    def _calculate_aic(self):
 
         self.aic = -2 * self.log_likelihood + 2 * self.n_parameters
 
-    def _expectation(self):
+    def _expectation_step(self):
 
         self.p_expectation_ = np.zeros((self.n_dimensions ** (self.order + 1), self.order))
 
@@ -71,3 +71,4 @@ class MTD:
                                          in enumerate(self.lambdas_)]
 
         self.p_expectation_ = self.p_expectation_ / self.p_expectation_.sum(axis=1).reshape(-1, 1)
+
