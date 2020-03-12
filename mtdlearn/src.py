@@ -12,12 +12,14 @@ class MTD:
 
         self.n_dimensions = n_dimensions
         self.order = order
+        self.n_parameters = self.order * self.n_dimensions * (self.n_dimensions - 1) + self.order - 1
         self.lambdas_init = lambdas_init
         self.tmatrices_init = tmatrices_init
         self.transition_matrix_ = None
         self.n_ = None
         self.p_ = None
         self.log_likelihood = None
+        self.aic = None
         if lambdas_init == 'flat':
             self.lambdas_ = np.ones(order) / order
         if tmatrices_init == 'flat':
@@ -53,3 +55,7 @@ class MTD:
         for i, idx in enumerate(self.indexes):
             mtd_value = sum([lam * self.tmatrices_[i, idx[i], idx[-1]] for i, lam in enumerate(self.lambdas_)])
             self.log_likelihood += self.n_[i] * np.log(mtd_value)
+
+    def calculate_aic(self):
+
+        self.aic = -2 * self.log_likelihood + 2 * self.n_parameters
