@@ -20,6 +20,7 @@ class MTD:
         self.p_ = None
         self.log_likelihood = None
         self.aic = None
+        self.p_expectation_ = None
         if lambdas_init == 'flat':
             self.lambdas_ = np.ones(order) / order
         if tmatrices_init == 'flat':
@@ -59,3 +60,14 @@ class MTD:
     def calculate_aic(self):
 
         self.aic = -2 * self.log_likelihood + 2 * self.n_parameters
+
+    def _expectation(self):
+
+        self.p_expectation_ = np.zeros((self.n_dimensions ** (self.order + 1), self.order))
+
+        for i, idx in enumerate(self.indexes):
+            self.p_expectation_[i, :] = [lam * self.tmatrices_[i, idx[i], idx[-1]]
+                                         for i, lam
+                                         in enumerate(self.lambdas_)]
+
+        self.p_expectation_ = self.p_expectation_ / self.p_expectation_.sum(axis=1).reshape(-1, 1)
