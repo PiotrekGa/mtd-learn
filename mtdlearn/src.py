@@ -46,6 +46,10 @@ class MTD:
         self.n_ = x
         self.p_ = x / sum(x)
 
-    def calculate_loglikelihood(self):
+    def calculate_log_likelihood(self):
 
         self.log_likelihood = 0
+
+        for i, idx in enumerate(self.indexes):
+            mtd_value = sum([lam * self.tmatrices_[i, idx[i], idx[-1]] for i, lam in enumerate(self.lambdas_)])
+            self.log_likelihood += self.n_[i] * np.log(mtd_value)
