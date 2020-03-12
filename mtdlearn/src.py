@@ -72,3 +72,9 @@ class MTD:
 
         self.p_expectation_ = self.p_expectation_ / self.p_expectation_.sum(axis=1).reshape(-1, 1)
 
+    def _maximization_step(self):
+
+        denominator = 1 / (sum(self.n_) - self.order)
+        for i, _ in enumerate(self.lambdas_):
+            sum_part = sum([self.n_[j] * self.p_expectation_[j, i] for j, _ in enumerate(self.p_expectation_)])
+            self.lambdas_ = denominator * sum_part
