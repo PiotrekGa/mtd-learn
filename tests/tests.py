@@ -45,3 +45,4 @@ def test_input_probs():
     assert mtd.p_[0] == 0.125
     assert mtd.p_.shape == (8,)
     assert mtd.n_.shape == (8,)
+    assert mtd.n_direct_[0, 0, 0] ==2

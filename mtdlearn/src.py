@@ -32,6 +32,8 @@ class MTD:
         for i in idx_gen:
             self.indexes.append(i)
 
+        self.n_direct_ = None
+
     def create_markov(self):
 
         array_coords = product(range(self.n_dimensions), repeat=self.order)
@@ -48,6 +50,11 @@ class MTD:
 
         self.n_ = x
         self.p_ = x / sum(x)
+
+        self.n_direct_ = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
+        for i, idx in enumerate(self.indexes):
+            for j, k in enumerate(idx[:-1]):
+                self.n_direct_[j, k, idx[-1]] += self.n_[i]
 
     def _calculate_log_likelihood(self):
 
