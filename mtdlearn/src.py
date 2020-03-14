@@ -21,6 +21,7 @@ class MTD:
         self.log_likelihood = None
         self.aic = None
         self.p_expectation_ = None
+        self.p_expectation_direct_ = None
         if lambdas_init == 'flat':
             self.lambdas_ = np.ones(order) / order
         if tmatrices_init == 'flat':
@@ -78,6 +79,17 @@ class MTD:
                                          in enumerate(self.lambdas_)]
 
         self.p_expectation_ = self.p_expectation_ / self.p_expectation_.sum(axis=1).reshape(-1, 1)
+
+        self.p_expectation_direct_ = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
+
+        for i, idx in enumerate(self.indexes):
+            for j, k in enumerate(idx[:-1]):
+                self.p_expectation_direct_[j, k, idx[-1]] += self.p_expectation_[i, j]
+
+        self.p_expectation_direct_ = self.p_expectation_direct_ / \
+                                     self.p_expectation_direct_.sum(axis=2).reshape(self.order,
+                                                                                    self.n_dimensions,
+                                                                                    1)
 
     def _maximization_step(self):
 
