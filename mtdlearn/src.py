@@ -34,6 +34,7 @@ class MTD:
             self.indexes.append(i)
 
         self.n_direct_ = None
+        self.n_direct_tot_ = None
 
     def create_markov(self):
 
@@ -56,6 +57,8 @@ class MTD:
         for i, idx in enumerate(self.indexes):
             for j, k in enumerate(idx[:-1]):
                 self.n_direct_[j, k, idx[-1]] += self.n_[i]
+
+        self.n_direct_tot_ = self.n_direct_.sum(axis=2)
 
     def _calculate_log_likelihood(self):
 
