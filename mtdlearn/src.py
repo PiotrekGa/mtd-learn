@@ -22,6 +22,8 @@ class MTD:
         self.aic = None
         self.p_expectation_ = None
         self.p_expectation_direct_ = None
+        self.p_expectation_direct_tot_ = None
+
         if lambdas_init == 'flat':
             self.lambdas_ = np.ones(order) / order
         if tmatrices_init == 'flat':
@@ -94,9 +96,11 @@ class MTD:
                                                                                     self.n_dimensions,
                                                                                     1)
 
+        self.p_expectation_direct_tot_ = self.p_expectation_direct_.sum(axis=2)  # fixme
+
     def _maximization_step(self):
 
-        denominator = 1 / (sum(self.n_) - self.order)
+        denominator = 1 / sum(self.n_)
         for i, _ in enumerate(self.lambdas_):
             sum_part = sum([self.n_[j] * self.p_expectation_[j, i] for j, _ in enumerate(self.p_expectation_)])
-            self.lambdas_ = denominator * sum_part
+            self.lambdas_[i] = denominator * sum_part
