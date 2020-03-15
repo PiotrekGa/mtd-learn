@@ -49,18 +49,16 @@ def test_input_probs():
 
 
 def test_ex_max():
-    mtd = MTD(3, 2, verbose=0)
-    mtd.fit(np.array([i for i in range(27)]))
 
-    for i in range(5):
-        mtd._expectation_step()
-        mtd._maximization_step()
-
-    assert mtd.lambdas_.shape == (2, )
-    assert sum(mtd.lambdas_) == 1
-    assert max(mtd.lambdas_) <= 1
-    assert min(mtd.lambdas_) >= 0
-    assert sum(mtd.tmatrices_[0, 0, :]) == 1
-    assert mtd.tmatrices_.shape == (2, 3, 3)
-    assert mtd.tmatrices_.min() >= 0
-    assert mtd.tmatrices_.max() <= 1
+    for seed in range(100):
+        np.random.seed(seed)
+        mtd = MTD(3, 2, verbose=0)
+        mtd.fit(np.random.randint(0, 100, 27, ))
+        assert mtd.lambdas_.shape == (2, )
+        assert np.isclose(sum(mtd.lambdas_), 1.0)
+        assert max(mtd.lambdas_) <= 1
+        assert min(mtd.lambdas_) >= 0
+        assert np.isclose(sum(mtd.tmatrices_[0, 0, :]),  1.0)
+        assert mtd.tmatrices_.shape == (2, 3, 3)
+        assert mtd.tmatrices_.min() >= 0
+        assert mtd.tmatrices_.max() <= 1
