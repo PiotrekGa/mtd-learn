@@ -25,7 +25,7 @@ class MTD:
         self.aic = None
         self.p_expectation_ = None
         self.p_expectation_direct_ = None
-        self.p_expectation_direct_tot_ = None
+        self.n_direct_ = None
         self.max_iter = max_iter
         self.min_gain = min_gain
         self.verbose = verbose
@@ -40,9 +40,6 @@ class MTD:
         self.indexes = []
         for i in idx_gen:
             self.indexes.append(i)
-
-        self.n_direct_ = None
-        self.n_direct_tot_ = None
 
     def create_markov(self):
 
@@ -120,7 +117,7 @@ class MTD:
 
         for i, idx in enumerate(self.indexes):
             for j, k in enumerate(idx[:-1]):
-                numerator = self.n_direct_[j, k, idx[-1]] * self.p_expectation_direct_[j, k, idx[-1]]
-                self.tmatrices_[j, k, idx[-1]] = numerator
+                self.tmatrices_[j, k, idx[-1]] = self.n_direct_[j, k, idx[-1]] * \
+                                                 self.p_expectation_direct_[j, k, idx[-1]]
 
         self.tmatrices_ = self.tmatrices_ / self.tmatrices_.sum(2).reshape(self.order, self.n_dimensions, 1)
