@@ -46,3 +46,18 @@ def test_input_probs():
     assert mtd.p_.shape == (8,)
     assert mtd.n_.shape == (8,)
     assert mtd.n_direct_[0, 0, 0] ==2
+
+
+def test_ex_max():
+    mtd = MTD(3, 2)
+    mtd.fit(np.array([i for i in range(27)]))
+    mtd._expectation_step()
+    mtd._maximization_step()
+    assert mtd.lambdas_.shape == (2, )
+    assert sum(mtd.lambdas_) == 1
+    assert max(mtd.lambdas_) <= 1
+    assert min(mtd.lambdas_) >= 0
+    assert sum(mtd.tmatrices_[0, 0, :]) == 1
+    assert mtd.tmatrices_.shape == (2, 3, 3)
+    assert min(mtd.tmatrices_) >= 0
+    assert max(mtd.tmatrices_) <= 1
