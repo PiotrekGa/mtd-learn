@@ -110,3 +110,9 @@ class MTD:
         for i, _ in enumerate(self.lambdas_):
             sum_part = sum([self.n_[j] * self.p_expectation_[j, i] for j, _ in enumerate(self.p_expectation_)])
             self.lambdas_[i] = denominator * sum_part
+
+        for i, idx in enumerate(self.indexes):
+            for j, k in enumerate(idx[:-1]):
+                numerator = self.n_direct_[j, k, idx[-1]] * self.p_expectation_direct_[j, k, idx[-1]]
+                denominator = self.n_direct_tot_[j, k] * self.p_expectation_direct_tot_[j, k]
+                self.tmatrices_[j, k, idx[-1]] = numerator / denominator
