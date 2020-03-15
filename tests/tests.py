@@ -59,5 +59,5 @@ def test_ex_max():
     assert min(mtd.lambdas_) >= 0
     assert sum(mtd.tmatrices_[0, 0, :]) == 1
     assert mtd.tmatrices_.shape == (2, 3, 3)
-    assert min(mtd.tmatrices_) >= 0
-    assert max(mtd.tmatrices_) <= 1
+    assert mtd.tmatrices_.min() >= 0
+    assert mtd.tmatrices_.max() <= 1
