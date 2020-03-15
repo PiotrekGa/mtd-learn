@@ -66,8 +66,6 @@ class MTD:
             for j, k in enumerate(idx[:-1]):
                 self.n_direct_[j, k, idx[-1]] += self.n_[i]
 
-        self.n_direct_tot_ = self.n_direct_.sum(axis=2)
-
         iteration = 0
         gain = self.min_gain * 2
         self._calculate_log_likelihood()
@@ -113,8 +111,6 @@ class MTD:
         self.p_expectation_direct_ = self.p_expectation_direct_ / \
                                      self.p_expectation_direct_.sum(axis=0)
 
-        self.p_expectation_direct_tot_ = self.p_expectation_direct_.sum(2) / self.p_expectation_direct_.sum(2).sum(0)
-
     def _maximization_step(self):
 
         denominator = 1 / sum(self.n_)
@@ -125,5 +121,6 @@ class MTD:
         for i, idx in enumerate(self.indexes):
             for j, k in enumerate(idx[:-1]):
                 numerator = self.n_direct_[j, k, idx[-1]] * self.p_expectation_direct_[j, k, idx[-1]]
-                denominator = self.n_direct_tot_[j, k] * self.p_expectation_direct_tot_[j, k]
-                self.tmatrices_[j, k, idx[-1]] = numerator / denominator
+                self.tmatrices_[j, k, idx[-1]] = numerator
+
+        self.tmatrices_ = self.tmatrices_ / self.tmatrices_.sum(2).reshape(self.order, self.n_dimensions, 1)
