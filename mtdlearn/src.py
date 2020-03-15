@@ -8,7 +8,9 @@ class MTD:
                  n_dimensions,
                  order,
                  lambdas_init='flat',
-                 tmatrices_init='flat'):
+                 tmatrices_init='flat',
+                 max_iter=100,
+                 min_gain=0.1):
 
         self.n_dimensions = n_dimensions
         self.order = order
@@ -23,6 +25,8 @@ class MTD:
         self.p_expectation_ = None
         self.p_expectation_direct_ = None
         self.p_expectation_direct_tot_ = None
+        self.max_iter = max_iter
+        self.min_gain = min_gain
 
         if lambdas_init == 'flat':
             self.lambdas_ = np.ones(order) / order
@@ -61,6 +65,17 @@ class MTD:
                 self.n_direct_[j, k, idx[-1]] += self.n_[i]
 
         self.n_direct_tot_ = self.n_direct_.sum(axis=2)
+
+        iteration = 0
+        gain = self.min_gain * 2
+        self._calculate_log_likelihood()
+        while iteration < self.max_iter and gain > self.min_gain:
+            old_ll = self.log_likelihood
+            self._expectation_step()
+            self._maximization_step()
+            self._calculate_log_likelihood()
+            gain = self.log_likelihood - old_ll
+            iteration += 1
 
     def _calculate_log_likelihood(self):
 
