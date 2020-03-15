@@ -30,17 +30,17 @@ def test_create_indexes():
 def test_input_len_error():
     
     with pytest.raises(ValueError):
-        mtd = MTD(4, 3)
+        mtd = MTD(4, 3, verbose=0)
         mtd.fit(np.array([1, 2, 3]))
 
 
 def test_input_len_noerror():
-    mtd = MTD(3, 2)
+    mtd = MTD(3, 2, verbose=0)
     mtd.fit(np.array([i for i in range(27)]))
 
 
 def test_input_probs():
-    mtd = MTD(2, 2)
+    mtd = MTD(2, 2, verbose=0)
     mtd.fit(np.array([1 for _ in range(8)]))
     assert mtd.p_[0] == 0.125
     assert mtd.p_.shape == (8,)
@@ -49,10 +49,13 @@ def test_input_probs():
 
 
 def test_ex_max():
-    mtd = MTD(3, 2)
+    mtd = MTD(3, 2, verbose=0)
     mtd.fit(np.array([i for i in range(27)]))
-    mtd._expectation_step()
-    mtd._maximization_step()
+
+    for i in range(5):
+        mtd._expectation_step()
+        mtd._maximization_step()
+
     assert mtd.lambdas_.shape == (2, )
     assert sum(mtd.lambdas_) == 1
     assert max(mtd.lambdas_) <= 1
