@@ -113,13 +113,7 @@ class MTD:
         self.p_expectation_direct_ = self.p_expectation_direct_ / \
                                      self.p_expectation_direct_.sum(axis=0)
 
-        self.p_expectation_direct_tot_ = np.zeros((self.order, self.n_dimensions))
-
-        for i, idx in enumerate(self.indexes):
-            for j, k in enumerate(idx[:-1]):
-                self.p_expectation_direct_tot_[j, k] += self.p_expectation_[i, j]
-
-        self.p_expectation_direct_tot_ = self.p_expectation_direct_tot_ / self.p_expectation_direct_tot_.sum(axis=0)
+        self.p_expectation_direct_tot_ = self.p_expectation_direct_.sum(2) / self.p_expectation_direct_.sum(2).sum(0)
 
     def _maximization_step(self):
 
