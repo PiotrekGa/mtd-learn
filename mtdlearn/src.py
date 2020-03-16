@@ -67,8 +67,6 @@ class MTD:
                                           self.verbose,
                                           self.init_method,
                                           n_direct_))
-            if self.verbose > 0:
-                print('initialization:', c + 1, "value:", candidates[-1][0])
 
         self.log_likelihood = candidates[0][0]
         self.lambdas_ = candidates[0][1]
@@ -131,6 +129,9 @@ class MTD:
 
         if iteration == max_iter:
             print('\nWARNING: The model has not converged. Consider increasing the max_iter parameter.\n')
+
+        if verbose > 0:
+            print("log-likelihood value:", log_likelihood)
 
         return log_likelihood, lambdas_, transition_matrices_
 
