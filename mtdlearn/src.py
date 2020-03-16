@@ -54,19 +54,15 @@ class MTD:
             for j, k in enumerate(idx[:-1]):
                 n_direct_[j, k, idx[-1]] += x[i]
 
-        candidates = []
-
-        for c in range(self.init_num):
-
-            candidates.append(MTD.fit_one(x,
-                                          self.indexes,
-                                          self.order,
-                                          self.n_dimensions,
-                                          self.min_gain,
-                                          self.max_iter,
-                                          self.verbose,
-                                          self.init_method,
-                                          n_direct_))
+        candidates = [MTD.fit_one(x,
+                                  self.indexes,
+                                  self.order,
+                                  self.n_dimensions,
+                                  self.min_gain,
+                                  self.max_iter,
+                                  self.verbose,
+                                  self.init_method,
+                                  n_direct_) for _ in range(self.init_num)]
 
         self.log_likelihood = candidates[0][0]
         self.lambdas_ = candidates[0][1]
