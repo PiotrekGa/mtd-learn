@@ -17,25 +17,13 @@ class MTD:
         self.n_parameters = self.order * self.n_dimensions * (self.n_dimensions - 1) + self.order - 1
         self.init_method = init_method
         self.transition_matrix_ = None
-        self.n_ = None
-        self.p_ = None
         self.log_likelihood = None
         self.aic = None
-        self.p_expectation_ = None
-        self.p_expectation_direct_ = None
-        self.n_direct_ = None
+        self.lambdas_ = None
+        self.tmatrices_ = None
         self.max_iter = max_iter
         self.min_gain = min_gain
         self.verbose = verbose
-
-        if init_method == 'flat':
-            self.lambdas_ = np.ones(order) / order
-            self.tmatrices_ = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
-        elif init_method == 'random':
-            self.lambdas_ = np.random.rand(order)
-            self.lambdas_ = self.lambdas_ / self.lambdas_.sum()
-            self.tmatrices_ = np.random.rand(order, n_dimensions, n_dimensions)
-            self.tmatrices_ = self.tmatrices_ / self.tmatrices_.sum(2).reshape(order, n_dimensions, 1)
 
         idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
 
@@ -61,15 +49,23 @@ class MTD:
                                                                           self.n_dimensions,
                                                                           self.min_gain,
                                                                           self.max_iter,
-                                                                          self.tmatrices_,
-                                                                          self.lambdas_,
-                                                                          self.verbose)
+                                                                          self.verbose,
+                                                                          self.init_method)
 
     @staticmethod
-    def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, tmatrices_, lambdas_, verbose):
+    def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method):
 
         if len(x) != len(indexes):
             raise ValueError('input data has wrong length')
+
+        if init_method == 'flat':
+            lambdas_ = np.ones(order) / order
+            tmatrices_ = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
+        elif init_method == 'random':
+            lambdas_ = np.random.rand(order)
+            lambdas_ = lambdas_ / lambdas_.sum()
+            tmatrices_ = np.random.rand(order, n_dimensions, n_dimensions)
+            tmatrices_ = tmatrices_ / tmatrices_.sum(2).reshape(order, n_dimensions, 1)
 
         n_direct_ = np.zeros((order, n_dimensions, n_dimensions))
         for i, idx in enumerate(indexes):
