@@ -48,15 +48,6 @@ def test_input_len_noerror():
     mtd.fit(np.array([i for i in range(27)]))
 
 
-def test_input_probs():
-    mtd = MTD(2, 2, verbose=0)
-    mtd.fit(np.array([1 for _ in range(8)]))
-    assert mtd.p_[0] == 0.125
-    assert mtd.p_.shape == (8,)
-    assert mtd.n_.shape == (8,)
-    assert mtd.n_direct_[0, 0, 0] ==2
-
-
 def test_ex_max():
 
     for seed in range(100):

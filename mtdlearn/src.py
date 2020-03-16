@@ -54,75 +54,127 @@ class MTD:
         self.transition_matrix_ = np.array(tmatrix_list)
 
     def fit(self, x):
-        if len(x) != len(self.indexes):
+        self.lambdas_, self.tmatrices_, self.log_likelihood = MTD.fit_one(x,
+                                                                           self.indexes,
+                                                                           self.order,
+                                                                           self.n_dimensions,
+                                                                           self.min_gain,
+                                                                           self.max_iter,
+                                                                           self.tmatrices_,
+                                                                           self.lambdas_,
+                                                                           self.verbose)
+
+    @staticmethod
+    def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, tmatrices_, lambdas_, verbose):
+
+        def _calculate_log_likelihood(indexes,
+                                      n_,
+                                      tmatrices_,
+                                      lambdas_):
+
+            log_likelihood = 0
+
+            for i, idx in enumerate(indexes):
+                mtd_value = sum([lam * tmatrices_[i, idx[i], idx[-1]] for i, lam in enumerate(lambdas_)])
+                log_likelihood += n_[i] * np.log(mtd_value)
+
+            return log_likelihood
+
+        def _expectation_step(n_dimensions,
+                              order,
+                              indexes,
+                              tmatrices_,
+                              lambdas_):
+
+            p_expectation_ = np.zeros((n_dimensions ** (order + 1), order))
+
+            for i, idx in enumerate(indexes):
+                p_expectation_[i, :] = [lam * tmatrices_[i, idx[i], idx[-1]]
+                                        for i, lam
+                                        in enumerate(lambdas_)]
+
+            p_expectation_ = p_expectation_ / p_expectation_.sum(axis=1).reshape(-1, 1)
+
+            p_expectation_direct_ = np.zeros((order, n_dimensions, n_dimensions))
+
+            for i, idx in enumerate(indexes):
+                for j, k in enumerate(idx[:-1]):
+                    p_expectation_direct_[j, k, idx[-1]] += p_expectation_[i, j]
+
+            p_expectation_direct_ = p_expectation_direct_ / p_expectation_direct_.sum(axis=0)
+
+            return p_expectation_, p_expectation_direct_
+
+        def _maximization_step(n_dimensions,
+                               order,
+                               indexes,
+                               n_,
+                               n_direct_,
+                               p_expectation_,
+                               p_expectation_direct_,
+                               tmatrices_,
+                               lambdas_):
+
+            denominator = 1 / sum(n_)
+            for i, _ in enumerate(lambdas_):
+                sum_part = sum([n_[j] * p_expectation_[j, i] for j, _ in enumerate(p_expectation_)])
+                lambdas_[i] = denominator * sum_part
+
+            for i, idx in enumerate(indexes):
+                for j, k in enumerate(idx[:-1]):
+                    tmatrices_[j, k, idx[-1]] = n_direct_[j, k, idx[-1]] * p_expectation_direct_[j, k, idx[-1]]
+
+            tmatrices_ = tmatrices_ / tmatrices_.sum(2).reshape(order, n_dimensions, 1)
+
+            return lambdas_, tmatrices_
+
+        if len(x) != len(indexes):
             raise ValueError('input data has wrong length')
 
-        self.n_ = x
-        self.p_ = x / sum(x)
+        n_ = x
+        p_ = x / sum(x)
 
-        self.n_direct_ = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
-        for i, idx in enumerate(self.indexes):
+        n_direct_ = np.zeros((order, n_dimensions, n_dimensions))
+        for i, idx in enumerate(indexes):
             for j, k in enumerate(idx[:-1]):
-                self.n_direct_[j, k, idx[-1]] += self.n_[i]
+                n_direct_[j, k, idx[-1]] += n_[i]
 
         iteration = 0
-        gain = self.min_gain * 2
-        self._calculate_log_likelihood()
-        while iteration < self.max_iter and gain > self.min_gain:
-            old_ll = self.log_likelihood
-            self._expectation_step()
-            self._maximization_step()
-            self._calculate_log_likelihood()
-            gain = self.log_likelihood - old_ll
+        gain = min_gain * 2
+        log_likelihood = _calculate_log_likelihood(indexes,
+                                                   n_,
+                                                   tmatrices_,
+                                                   lambdas_)
+        while iteration < max_iter and gain > min_gain:
+            old_ll = log_likelihood
+            p_expectation_, p_expectation_direct_ = _expectation_step(n_dimensions,
+                                                                      order,
+                                                                      indexes,
+                                                                      tmatrices_,
+                                                                      lambdas_)
+            lambdas_, tmatrices_ = _maximization_step(n_dimensions,
+                                                      order,
+                                                      indexes,
+                                                      n_,
+                                                      n_direct_,
+                                                      p_expectation_,
+                                                      p_expectation_direct_,
+                                                      tmatrices_,
+                                                      lambdas_)
+            log_likelihood = _calculate_log_likelihood(indexes,
+                                                       n_,
+                                                       tmatrices_,
+                                                       lambdas_)
+            gain = log_likelihood - old_ll
             iteration += 1
-            if self.verbose > 0:
-                print('iteration:', iteration, '  gain:', round(gain,5), '  ll_value:', round(self.log_likelihood, 5))
+            if verbose > 0:
+                print('iteration:', iteration, '  gain:', round(gain,5), '  ll_value:', round(log_likelihood, 5))
 
-        if iteration == self.max_iter:
+        if iteration == max_iter:
             print('\nWARNING: The model has not converged. Consider increasing the max_iter parameter. \n')
 
-    def _calculate_log_likelihood(self):
-
-        self.log_likelihood = 0
-
-        for i, idx in enumerate(self.indexes):
-            mtd_value = sum([lam * self.tmatrices_[i, idx[i], idx[-1]] for i, lam in enumerate(self.lambdas_)])
-            self.log_likelihood += self.n_[i] * np.log(mtd_value)
+        return lambdas_, tmatrices_, log_likelihood
 
     def _calculate_aic(self):
 
         self.aic = -2 * self.log_likelihood + 2 * self.n_parameters
-
-    def _expectation_step(self):
-
-        self.p_expectation_ = np.zeros((self.n_dimensions ** (self.order + 1), self.order))
-
-        for i, idx in enumerate(self.indexes):
-            self.p_expectation_[i, :] = [lam * self.tmatrices_[i, idx[i], idx[-1]]
-                                         for i, lam
-                                         in enumerate(self.lambdas_)]
-
-        self.p_expectation_ = self.p_expectation_ / self.p_expectation_.sum(axis=1).reshape(-1, 1)
-
-        self.p_expectation_direct_ = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
-
-        for i, idx in enumerate(self.indexes):
-            for j, k in enumerate(idx[:-1]):
-                self.p_expectation_direct_[j, k, idx[-1]] += self.p_expectation_[i, j]
-
-        self.p_expectation_direct_ = self.p_expectation_direct_ / \
-                                     self.p_expectation_direct_.sum(axis=0)
-
-    def _maximization_step(self):
-
-        denominator = 1 / sum(self.n_)
-        for i, _ in enumerate(self.lambdas_):
-            sum_part = sum([self.n_[j] * self.p_expectation_[j, i] for j, _ in enumerate(self.p_expectation_)])
-            self.lambdas_[i] = denominator * sum_part
-
-        for i, idx in enumerate(self.indexes):
-            for j, k in enumerate(idx[:-1]):
-                self.tmatrices_[j, k, idx[-1]] = self.n_direct_[j, k, idx[-1]] * \
-                                                 self.p_expectation_direct_[j, k, idx[-1]]
-
-        self.tmatrices_ = self.tmatrices_ / self.tmatrices_.sum(2).reshape(self.order, self.n_dimensions, 1)
