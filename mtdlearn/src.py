@@ -131,13 +131,13 @@ class MTD:
     @staticmethod
     def _calculate_log_likelihood(indexes,
                                   n_,
-                                  tmatrices_,
+                                  transition_matrices_,
                                   lambdas_):
 
         log_likelihood = 0
 
         for i, idx in enumerate(indexes):
-            mtd_value = sum([lam * tmatrices_[i, idx[i], idx[-1]] for i, lam in enumerate(lambdas_)])
+            mtd_value = sum([lam * transition_matrices_[i, idx[i], idx[-1]] for i, lam in enumerate(lambdas_)])
             log_likelihood += n_[i] * np.log(mtd_value)
 
         return log_likelihood
@@ -146,13 +146,13 @@ class MTD:
     def _expectation_step(n_dimensions,
                           order,
                           indexes,
-                          tmatrices_,
+                          transition_matrices_,
                           lambdas_):
 
         p_expectation_ = np.zeros((n_dimensions ** (order + 1), order))
 
         for i, idx in enumerate(indexes):
-            p_expectation_[i, :] = [lam * tmatrices_[i, idx[i], idx[-1]]
+            p_expectation_[i, :] = [lam * transition_matrices_[i, idx[i], idx[-1]]
                                     for i, lam
                                     in enumerate(lambdas_)]
 
@@ -176,7 +176,7 @@ class MTD:
                            n_direct_,
                            p_expectation_,
                            p_expectation_direct_,
-                           tmatrices_,
+                           transition_matrices_,
                            lambdas_):
 
         denominator = 1 / sum(n_)
@@ -186,11 +186,11 @@ class MTD:
 
         for i, idx in enumerate(indexes):
             for j, k in enumerate(idx[:-1]):
-                tmatrices_[j, k, idx[-1]] = n_direct_[j, k, idx[-1]] * p_expectation_direct_[j, k, idx[-1]]
+                transition_matrices_[j, k, idx[-1]] = n_direct_[j, k, idx[-1]] * p_expectation_direct_[j, k, idx[-1]]
 
-        tmatrices_ = tmatrices_ / tmatrices_.sum(2).reshape(order, n_dimensions, 1)
+        transition_matrices_ = transition_matrices_ / transition_matrices_.sum(2).reshape(order, n_dimensions, 1)
 
-        return lambdas_, tmatrices_
+        return lambdas_, transition_matrices_
 
     def _calculate_aic(self):
 
