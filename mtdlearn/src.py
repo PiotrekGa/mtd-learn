@@ -58,7 +58,8 @@ class MTD:
                                           self.max_iter,
                                           self.verbose,
                                           self.init_method))
-            print(candidates[-1][0])
+            if self.verbose > 0:
+                print('initialization:', c + 1, "value:", candidates[-1][0])
 
         self.log_likelihood = candidates[0][0]
         self.lambdas_ = candidates[0][1]
@@ -69,6 +70,9 @@ class MTD:
                 self.log_likelihood = c[0]
                 self.lambdas_ = c[1]
                 self.transition_matrices_ = c[2]
+
+        if self.verbose > 0:
+            print('best value:', self.log_likelihood)
 
     @staticmethod
     def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method):
@@ -120,7 +124,8 @@ class MTD:
                                                            lambdas_)
             gain = log_likelihood - old_ll
             iteration += 1
-            if verbose > 0:
+
+            if verbose > 1:
                 print('iteration:', iteration, '  gain:', round(gain, 5), '  ll_value:', round(log_likelihood, 5))
 
         if iteration == max_iter:
