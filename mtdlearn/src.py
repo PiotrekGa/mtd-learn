@@ -7,8 +7,7 @@ class MTD:
     def __init__(self,
                  n_dimensions,
                  order,
-                 lambdas_init='flat',
-                 tmatrices_init='flat',
+                 init_method='flat',
                  max_iter=100,
                  min_gain=0.1,
                  verbose=1):
@@ -16,8 +15,7 @@ class MTD:
         self.n_dimensions = n_dimensions
         self.order = order
         self.n_parameters = self.order * self.n_dimensions * (self.n_dimensions - 1) + self.order - 1
-        self.lambdas_init = lambdas_init
-        self.tmatrices_init = tmatrices_init
+        self.init_method = init_method
         self.transition_matrix_ = None
         self.n_ = None
         self.p_ = None
@@ -30,9 +28,8 @@ class MTD:
         self.min_gain = min_gain
         self.verbose = verbose
 
-        if lambdas_init == 'flat':
+        if init_method == 'flat':
             self.lambdas_ = np.ones(order) / order
-        if tmatrices_init == 'flat':
             self.tmatrices_ = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
 
         idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
