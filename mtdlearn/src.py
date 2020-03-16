@@ -8,6 +8,7 @@ class MTD:
                  n_dimensions,
                  order,
                  init_method='random',
+                 init_num=10,
                  max_iter=100,
                  min_gain=0.1,
                  verbose=1):
@@ -16,6 +17,7 @@ class MTD:
         self.order = order
         self.n_parameters = self.order * self.n_dimensions * (self.n_dimensions - 1) + self.order - 1
         self.init_method = init_method
+        self.init_num = init_num
         self.transition_matrix_ = None
         self.log_likelihood = None
         self.aic = None
@@ -44,14 +46,29 @@ class MTD:
 
     def fit(self, x):
 
-        self.lambdas_, self.transition_matrices_, self.log_likelihood = MTD.fit_one(x,
-                                                                                    self.indexes,
-                                                                                    self.order,
-                                                                                    self.n_dimensions,
-                                                                                    self.min_gain,
-                                                                                    self.max_iter,
-                                                                                    self.verbose,
-                                                                                    self.init_method)
+        candidates = []
+
+        for c in range(self.init_num):
+
+            candidates.append(MTD.fit_one(x,
+                                          self.indexes,
+                                          self.order,
+                                          self.n_dimensions,
+                                          self.min_gain,
+                                          self.max_iter,
+                                          self.verbose,
+                                          self.init_method))
+            print(candidates[-1][0])
+
+        self.log_likelihood = candidates[0][0]
+        self.lambdas_ = candidates[0][1]
+        self.transition_matrices_ = candidates[0][2]
+
+        for c in candidates[1:]:
+            if c[0] > self.log_likelihood:
+                self.log_likelihood = c[0]
+                self.lambdas_ = c[1]
+                self.transition_matrices_ = c[2]
 
     @staticmethod
     def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method):
@@ -109,7 +126,7 @@ class MTD:
         if iteration == max_iter:
             print('\nWARNING: The model has not converged. Consider increasing the max_iter parameter.\n')
 
-        return lambdas_, transition_matrices_, log_likelihood
+        return log_likelihood, lambdas_, transition_matrices_
 
     @staticmethod
     def _calculate_log_likelihood(indexes,
