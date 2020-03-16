@@ -20,7 +20,7 @@ class MTD:
         self.log_likelihood = None
         self.aic = None
         self.lambdas_ = None
-        self.tmatrices_ = None
+        self.transition_matrices_ = None
         self.max_iter = max_iter
         self.min_gain = min_gain
         self.verbose = verbose
@@ -35,22 +35,23 @@ class MTD:
 
         array_coords = product(range(self.n_dimensions), repeat=self.order)
 
-        tmatrix_list = []
+        transition_matrix_list = []
         for idx in array_coords:
-            tmatrix_list.append(np.dot(np.array([self.tmatrices_[i, idx[i], :] for i in range(self.order)]).T,
-                                       self.lambdas_))
-        self.transition_matrix_ = np.array(tmatrix_list)
+            t_matrix_part = np.array([self.transition_matrices_[i, idx[i], :] for i in range(self.order)]).T
+            transition_matrix_list.append(np.dot(t_matrix_part,
+                                                 self.lambdas_))
+        self.transition_matrix_ = np.array(transition_matrix_list)
 
     def fit(self, x):
 
-        self.lambdas_, self.tmatrices_, self.log_likelihood = MTD.fit_one(x,
-                                                                          self.indexes,
-                                                                          self.order,
-                                                                          self.n_dimensions,
-                                                                          self.min_gain,
-                                                                          self.max_iter,
-                                                                          self.verbose,
-                                                                          self.init_method)
+        self.lambdas_, self.transition_matrices_, self.log_likelihood = MTD.fit_one(x,
+                                                                                    self.indexes,
+                                                                                    self.order,
+                                                                                    self.n_dimensions,
+                                                                                    self.min_gain,
+                                                                                    self.max_iter,
+                                                                                    self.verbose,
+                                                                                    self.init_method)
 
     @staticmethod
     def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method):
@@ -60,12 +61,14 @@ class MTD:
 
         if init_method == 'flat':
             lambdas_ = np.ones(order) / order
-            tmatrices_ = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
+            transition_matrices_ = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
         elif init_method == 'random':
             lambdas_ = np.random.rand(order)
             lambdas_ = lambdas_ / lambdas_.sum()
-            tmatrices_ = np.random.rand(order, n_dimensions, n_dimensions)
-            tmatrices_ = tmatrices_ / tmatrices_.sum(2).reshape(order, n_dimensions, 1)
+            transition_matrices_ = np.random.rand(order, n_dimensions, n_dimensions)
+            transition_matrices_ = transition_matrices_ / transition_matrices_.sum(2).reshape(order, n_dimensions, 1)
+        else:
+            raise ValueError('no such initialization method')
 
         n_direct_ = np.zeros((order, n_dimensions, n_dimensions))
         for i, idx in enumerate(indexes):
@@ -76,37 +79,37 @@ class MTD:
         gain = min_gain * 2
         log_likelihood = MTD._calculate_log_likelihood(indexes,
                                                        x,
-                                                       tmatrices_,
+                                                       transition_matrices_,
                                                        lambdas_)
         while iteration < max_iter and gain > min_gain:
             old_ll = log_likelihood
             p_expectation_, p_expectation_direct_ = MTD._expectation_step(n_dimensions,
                                                                           order,
                                                                           indexes,
-                                                                          tmatrices_,
+                                                                          transition_matrices_,
                                                                           lambdas_)
-            lambdas_, tmatrices_ = MTD._maximization_step(n_dimensions,
-                                                          order,
-                                                          indexes,
-                                                          x,
-                                                          n_direct_,
-                                                          p_expectation_,
-                                                          p_expectation_direct_,
-                                                          tmatrices_,
-                                                          lambdas_)
+            lambdas_, transition_matrices_ = MTD._maximization_step(n_dimensions,
+                                                                    order,
+                                                                    indexes,
+                                                                    x,
+                                                                    n_direct_,
+                                                                    p_expectation_,
+                                                                    p_expectation_direct_,
+                                                                    transition_matrices_,
+                                                                    lambdas_)
             log_likelihood = MTD._calculate_log_likelihood(indexes,
                                                            x,
-                                                           tmatrices_,
+                                                           transition_matrices_,
                                                            lambdas_)
             gain = log_likelihood - old_ll
             iteration += 1
             if verbose > 0:
-                print('iteration:', iteration, '  gain:', round(gain,5), '  ll_value:', round(log_likelihood, 5))
+                print('iteration:', iteration, '  gain:', round(gain, 5), '  ll_value:', round(log_likelihood, 5))
 
         if iteration == max_iter:
-            print('\nWARNING: The model has not converged. Consider increasing the max_iter parameter. \n')
+            print('\nWARNING: The model has not converged. Consider increasing the max_iter parameter.\n')
 
-        return lambdas_, tmatrices_, log_likelihood
+        return lambdas_, transition_matrices_, log_likelihood
 
     @staticmethod
     def _calculate_log_likelihood(indexes,
