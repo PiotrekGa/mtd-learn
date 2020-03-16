@@ -78,6 +78,9 @@ class MTD:
             if self.verbose > 0:
                 print('iteration:', iteration, '  gain:', round(gain,5), '  ll_value:', round(self.log_likelihood, 5))
 
+        if iteration == self.max_iter:
+            print('\nWARNING: The model has not converged. Consider increasing the max_iter parameter. \n')
+
     def _calculate_log_likelihood(self):
 
         self.log_likelihood = 0
