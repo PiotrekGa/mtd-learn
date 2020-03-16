@@ -1,5 +1,6 @@
 import numpy as np
 from itertools import product
+from joblib import Parallel, delayed
 
 
 class MTD:
@@ -11,7 +12,8 @@ class MTD:
                  init_num=10,
                  max_iter=100,
                  min_gain=0.1,
-                 verbose=1):
+                 verbose=1,
+                 n_jobs=-1):
 
         self.n_dimensions = n_dimensions
         self.order = order
@@ -26,6 +28,7 @@ class MTD:
         self.max_iter = max_iter
         self.min_gain = min_gain
         self.verbose = verbose
+        self.n_jobs = n_jobs
 
         idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
 
@@ -54,15 +57,15 @@ class MTD:
             for j, k in enumerate(idx[:-1]):
                 n_direct_[j, k, idx[-1]] += x[i]
 
-        candidates = [MTD.fit_one(x,
-                                  self.indexes,
-                                  self.order,
-                                  self.n_dimensions,
-                                  self.min_gain,
-                                  self.max_iter,
-                                  self.verbose,
-                                  self.init_method,
-                                  n_direct_) for _ in range(self.init_num)]
+        candidates = Parallel(n_jobs=self.n_jobs)(delayed(MTD.fit_one)(x,
+                                                                       self.indexes,
+                                                                       self.order,
+                                                                       self.n_dimensions,
+                                                                       self.min_gain,
+                                                                       self.max_iter,
+                                                                       self.verbose,
+                                                                       self.init_method,
+                                                                       n_direct_) for _ in range(self.init_num))
 
         self.log_likelihood = candidates[0][0]
         self.lambdas_ = candidates[0][1]
