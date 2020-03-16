@@ -3,34 +3,6 @@ import pytest
 import numpy as np
 
 
-def test_create_lambdas():
-    mtd = MTD(5, 4, init_method='flat')
-    assert len(mtd.lambdas_) == 4
-    assert max(mtd.lambdas_) == min(mtd.lambdas_)
-    assert mtd.lambdas_[0] == 0.25
-
-    mtd = MTD(5, 4, init_method='random')
-    assert len(mtd.lambdas_) == 4
-    assert max(mtd.lambdas_) <= 1
-    assert min(mtd.lambdas_) >= 0
-
-
-def test_create_tmatrices():
-    mtd = MTD(5, 4, init_method='flat')
-    assert mtd.tmatrices_.shape == (4, 5, 5)
-    assert mtd.tmatrices_[0, 0, 0] == 0.2
-
-    mtd = MTD(5, 4, init_method='random')
-    assert mtd.tmatrices_.max() <= 1
-    assert mtd.tmatrices_.min() >= 0
-
-
-def test_create_markov():
-    mtd = MTD(5, 4)
-    mtd.create_markov()
-    assert mtd.transition_matrix_.shape == (625, 5)
-
-
 def test_create_indexes():
     mtd = MTD(4, 3)
     assert len(mtd.indexes) == 256
@@ -48,26 +20,17 @@ def test_input_len_noerror():
     mtd.fit(np.array([i for i in range(27)]))
 
 
-def test_input_probs():
-    mtd = MTD(2, 2, verbose=0)
-    mtd.fit(np.array([1 for _ in range(8)]))
-    assert mtd.p_[0] == 0.125
-    assert mtd.p_.shape == (8,)
-    assert mtd.n_.shape == (8,)
-    assert mtd.n_direct_[0, 0, 0] ==2
-
-
 def test_ex_max():
 
     for seed in range(100):
         np.random.seed(seed)
-        mtd = MTD(3, 2, verbose=0)
+        mtd = MTD(3, 2, verbose=0, init_num=1)
         mtd.fit(np.random.randint(0, 100, 27, ))
         assert mtd.lambdas_.shape == (2, )
         assert np.isclose(sum(mtd.lambdas_), 1.0)
         assert max(mtd.lambdas_) <= 1
         assert min(mtd.lambdas_) >= 0
-        assert np.isclose(sum(mtd.tmatrices_[0, 0, :]),  1.0)
-        assert mtd.tmatrices_.shape == (2, 3, 3)
-        assert mtd.tmatrices_.min() >= 0
-        assert mtd.tmatrices_.max() <= 1
+        assert np.isclose(sum(mtd.transition_matrices_[0, 0, :]), 1.0)
+        assert mtd.transition_matrices_.shape == (2, 3, 3)
+        assert mtd.transition_matrices_.min() >= 0
+        assert mtd.transition_matrices_.max() <= 1
