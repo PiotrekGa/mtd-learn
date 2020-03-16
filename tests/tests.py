@@ -24,7 +24,7 @@ def test_ex_max():
 
     for seed in range(100):
         np.random.seed(seed)
-        mtd = MTD(3, 2, verbose=0)
+        mtd = MTD(3, 2, verbose=0, init_num=1)
         mtd.fit(np.random.randint(0, 100, 27, ))
         assert mtd.lambdas_.shape == (2, )
         assert np.isclose(sum(mtd.lambdas_), 1.0)

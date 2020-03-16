@@ -46,6 +46,14 @@ class MTD:
 
     def fit(self, x):
 
+        if len(x) != len(self.indexes):
+            raise ValueError('input data has wrong length')
+
+        n_direct_ = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
+        for i, idx in enumerate(self.indexes):
+            for j, k in enumerate(idx[:-1]):
+                n_direct_[j, k, idx[-1]] += x[i]
+
         candidates = []
 
         for c in range(self.init_num):
@@ -57,7 +65,8 @@ class MTD:
                                           self.min_gain,
                                           self.max_iter,
                                           self.verbose,
-                                          self.init_method))
+                                          self.init_method,
+                                          n_direct_))
             if self.verbose > 0:
                 print('initialization:', c + 1, "value:", candidates[-1][0])
 
@@ -75,10 +84,7 @@ class MTD:
             print('best value:', self.log_likelihood)
 
     @staticmethod
-    def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method):
-
-        if len(x) != len(indexes):
-            raise ValueError('input data has wrong length')
+    def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method, n_direct_):
 
         if init_method == 'flat':
             lambdas_ = np.ones(order) / order
@@ -90,11 +96,6 @@ class MTD:
             transition_matrices_ = transition_matrices_ / transition_matrices_.sum(2).reshape(order, n_dimensions, 1)
         else:
             raise ValueError('no such initialization method')
-
-        n_direct_ = np.zeros((order, n_dimensions, n_dimensions))
-        for i, idx in enumerate(indexes):
-            for j, k in enumerate(idx[:-1]):
-                n_direct_[j, k, idx[-1]] += x[i]
 
         iteration = 0
         gain = min_gain * 2
