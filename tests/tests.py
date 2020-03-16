@@ -9,11 +9,20 @@ def test_create_lambdas():
     assert max(mtd.lambdas_) == min(mtd.lambdas_)
     assert mtd.lambdas_[0] == 0.25
 
+    mtd = MTD(5, 4, init_method='random')
+    assert len(mtd.lambdas_) == 4
+    assert max(mtd.lambdas_) <= 1
+    assert min(mtd.lambdas_) >= 0
+
 
 def test_create_tmatrices():
     mtd = MTD(5, 4, init_method='flat')
     assert mtd.tmatrices_.shape == (4, 5, 5)
     assert mtd.tmatrices_[0, 0, 0] == 0.2
+
+    mtd = MTD(5, 4, init_method='random')
+    assert mtd.tmatrices_.max() <= 1
+    assert mtd.tmatrices_.min() >= 0
 
 
 def test_create_markov():

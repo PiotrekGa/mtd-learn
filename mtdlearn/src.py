@@ -7,7 +7,7 @@ class MTD:
     def __init__(self,
                  n_dimensions,
                  order,
-                 init_method='flat',
+                 init_method='random',
                  max_iter=100,
                  min_gain=0.1,
                  verbose=1):
@@ -31,6 +31,11 @@ class MTD:
         if init_method == 'flat':
             self.lambdas_ = np.ones(order) / order
             self.tmatrices_ = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
+        elif init_method == 'random':
+            self.lambdas_ = np.random.rand(order)
+            self.lambdas_ = self.lambdas_ / self.lambdas_.sum()
+            self.tmatrices_ = np.random.rand(order, n_dimensions, n_dimensions)
+            self.tmatrices_ = self.tmatrices_ / self.tmatrices_.sum(2).reshape(order, n_dimensions, 1)
 
         idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
 
