@@ -30,7 +30,7 @@ def test_ex_max():
         assert np.isclose(sum(mtd.lambdas_), 1.0)
         assert max(mtd.lambdas_) <= 1
         assert min(mtd.lambdas_) >= 0
-        assert np.isclose(sum(mtd.tmatrices_[0, 0, :]),  1.0)
-        assert mtd.tmatrices_.shape == (2, 3, 3)
-        assert mtd.tmatrices_.min() >= 0
-        assert mtd.tmatrices_.max() <= 1
+        assert np.isclose(sum(mtd.transition_matrices_[0, 0, :]), 1.0)
+        assert mtd.transition_matrices_.shape == (2, 3, 3)
+        assert mtd.transition_matrices_.min() >= 0
+        assert mtd.transition_matrices_.max() <= 1
