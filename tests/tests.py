@@ -155,3 +155,7 @@ def test_one_fit_flat():
     assert lambdas[0] < lambdas[1]
     assert lambdas[2] < lambdas[1]
 
+
+def test_init_method_error():
+    with pytest.raises(ValueError):
+        mtd = MTD(4, 3, init_method='a')

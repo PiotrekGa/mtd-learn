@@ -36,6 +36,9 @@ class MTD:
         for i in idx_gen:
             self.indexes.append(i)
 
+        if init_method not in ['random', 'flat']:
+            raise ValueError('no such initialization method')
+
     def create_markov(self):
 
         array_coords = product(range(self.n_dimensions), repeat=self.order)
@@ -86,13 +89,11 @@ class MTD:
         if init_method == 'flat':
             lambdas_ = np.ones(order) / order
             transition_matrices_ = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
-        elif init_method == 'random':
+        else:
             lambdas_ = np.random.rand(order)
             lambdas_ = lambdas_ / lambdas_.sum()
             transition_matrices_ = np.random.rand(order, n_dimensions, n_dimensions)
             transition_matrices_ = transition_matrices_ / transition_matrices_.sum(2).reshape(order, n_dimensions, 1)
-        else:
-            raise ValueError('no such initialization method')
 
         iteration = 0
         gain = min_gain * 2
