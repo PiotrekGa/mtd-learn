@@ -15,7 +15,7 @@ def test_input_len_error():
         mtd.fit(np.array([1, 2, 3]))
 
 
-def test_input_len_noerror():
+def test_input_len_no_error():
     mtd = MTD(3, 2, verbose=0)
     mtd.fit(np.array([i for i in range(27)]))
 
@@ -44,3 +44,13 @@ def test_create_markov():
     assert mtd.transition_matrix_.min() >= 0.0
     assert np.isclose(mtd.transition_matrix_.sum(1).max(), 1.0)
     assert mtd.transition_matrix_.shape == (9, 3)
+
+
+def test_aic():
+    mtd1 = MTD(3, 2, verbose=0)
+    mtd1.fit(np.array([i for i in range(27)]))
+    mtd1._calculate_aic()
+    mtd2 = MTD(3, 3, verbose=0)
+    mtd2.fit(np.array([i for i in range(81)]))
+    mtd2._calculate_aic()
+    assert mtd1.aic < mtd2.aic
