@@ -170,19 +170,19 @@ def test_final_estimates():
 
     mtd = MTD(n_dimensions, order, n_jobs=1, max_iter=1000, verbose=0)
 
-    x = np.array([[100, 900],
-                  [100, 900],
+    x = np.array([[200, 800],
+                  [200, 800],
                   [900, 100],
                   [900, 100],
-                  [100, 900],
-                  [100, 900],
+                  [200, 800],
+                  [200, 800],
                   [900, 100],
                   [900, 100]]).reshape(-1, 1).ravel() * 100
 
     mtd.fit(x)
 
     assert np.isclose(mtd.lambdas_[1], 1., atol=0.01)
-    assert np.isclose(mtd.transition_matrices_[1][0, 0], 0.1, atol=0.01)
+    assert np.isclose(mtd.transition_matrices_[1][0, 0], 0.2, atol=0.01)
     assert np.isclose(mtd.transition_matrices_[1][1, 1], 0.1, atol=0.01)
     assert np.isclose(mtd.transition_matrices_[1][1, 0], 0.9, atol=0.01)
-    assert np.isclose(mtd.transition_matrices_[1][0, 1], 0.9, atol=0.01)
+    assert np.isclose(mtd.transition_matrices_[1][0, 1], 0.8, atol=0.01)
