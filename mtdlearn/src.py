@@ -9,7 +9,7 @@ class MTD:
                  n_dimensions,
                  order,
                  init_method='random',
-                 init_num=10,
+                 number_of_initiations=10,
                  max_iter=100,
                  min_gain=0.1,
                  verbose=1,
@@ -17,14 +17,14 @@ class MTD:
 
         self.n_dimensions = n_dimensions
         self.order = order
-        self.n_parameters = self.order * self.n_dimensions * (self.n_dimensions - 1) + self.order - 1
+        self.n_parameters_ = self.order * self.n_dimensions * (self.n_dimensions - 1) + self.order - 1
         self.init_method = init_method
-        self.init_num = init_num
-        self.transition_matrix_ = None
+        self.number_of_initiations = number_of_initiations
+        self.transition_matrix = None
         self.log_likelihood = None
         self.aic = None
-        self.lambdas_ = None
-        self.transition_matrices_ = None
+        self.lambdas = None
+        self.transition_matrices = None
         self.max_iter = max_iter
         self.min_gain = min_gain
         self.verbose = verbose
@@ -32,9 +32,9 @@ class MTD:
 
         idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
 
-        self.indexes = []
+        self.indexes_ = []
         for i in idx_gen:
-            self.indexes.append(i)
+            self.indexes_.append(i)
 
         if init_method not in ['random', 'flat']:
             raise ValueError('no such initialization method')
@@ -45,82 +45,83 @@ class MTD:
 
         transition_matrix_list = []
         for idx in array_coords:
-            t_matrix_part = np.array([self.transition_matrices_[i, idx[i], :] for i in range(self.order)]).T
+            t_matrix_part = np.array([self.transition_matrices[i, idx[i], :] for i in range(self.order)]).T
             transition_matrix_list.append(np.dot(t_matrix_part,
-                                                 self.lambdas_))
-        self.transition_matrix_ = np.array(transition_matrix_list)
+                                                 self.lambdas))
+        self.transition_matrix = np.array(transition_matrix_list)
 
     def fit(self, x):
 
-        if len(x) != len(self.indexes):
+        if len(x) != len(self.indexes_):
             raise ValueError('input data has wrong length')
 
-        n_direct_ = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
-        for i, idx in enumerate(self.indexes):
+        n_direct = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
+        for i, idx in enumerate(self.indexes_):
             for j, k in enumerate(idx[:-1]):
-                n_direct_[j, k, idx[-1]] += x[i]
+                n_direct[j, k, idx[-1]] += x[i]
 
         candidates = Parallel(n_jobs=self.n_jobs)(delayed(MTD.fit_one)(x,
-                                                                       self.indexes,
+                                                                       self.indexes_,
                                                                        self.order,
                                                                        self.n_dimensions,
                                                                        self.min_gain,
                                                                        self.max_iter,
                                                                        self.verbose,
                                                                        self.init_method,
-                                                                       n_direct_) for _ in range(self.init_num))
+                                                                       n_direct)
+                                                  for _ in range(self.number_of_initiations))
 
         self.log_likelihood = candidates[0][0]
-        self.lambdas_ = candidates[0][1]
-        self.transition_matrices_ = candidates[0][2]
+        self.lambdas = candidates[0][1]
+        self.transition_matrices = candidates[0][2]
 
         for c in candidates[1:]:
             if c[0] > self.log_likelihood:
                 self.log_likelihood = c[0]
-                self.lambdas_ = c[1]
-                self.transition_matrices_ = c[2]
+                self.lambdas = c[1]
+                self.transition_matrices = c[2]
 
         if self.verbose > 0:
             print('best value:', self.log_likelihood)
 
     @staticmethod
-    def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method, n_direct_):
+    def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method, n_direct):
 
         if init_method == 'flat':
-            lambdas_ = np.ones(order) / order
-            transition_matrices_ = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
+            lambdas = np.ones(order) / order
+            transition_matrices = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
         else:
-            lambdas_ = np.random.rand(order)
-            lambdas_ = lambdas_ / lambdas_.sum()
-            transition_matrices_ = np.random.rand(order, n_dimensions, n_dimensions)
-            transition_matrices_ = transition_matrices_ / transition_matrices_.sum(2).reshape(order, n_dimensions, 1)
+            lambdas = np.random.rand(order)
+            lambdas = lambdas / lambdas.sum()
+            transition_matrices = np.random.rand(order, n_dimensions, n_dimensions)
+            transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(order, n_dimensions, 1)
 
         iteration = 0
         gain = min_gain * 2
         log_likelihood = MTD._calculate_log_likelihood(indexes,
                                                        x,
-                                                       transition_matrices_,
-                                                       lambdas_)
+                                                       transition_matrices,
+                                                       lambdas)
         while iteration < max_iter and gain > min_gain:
             old_ll = log_likelihood
-            p_expectation_, p_expectation_direct_ = MTD._expectation_step(n_dimensions,
-                                                                          order,
-                                                                          indexes,
-                                                                          transition_matrices_,
-                                                                          lambdas_)
-            lambdas_, transition_matrices_ = MTD._maximization_step(n_dimensions,
-                                                                    order,
-                                                                    indexes,
-                                                                    x,
-                                                                    n_direct_,
-                                                                    p_expectation_,
-                                                                    p_expectation_direct_,
-                                                                    transition_matrices_,
-                                                                    lambdas_)
+            p_expectation, p_expectation_direct = MTD._expectation_step(n_dimensions,
+                                                                        order,
+                                                                        indexes,
+                                                                        transition_matrices,
+                                                                        lambdas)
+            lambdas, transition_matrices = MTD._maximization_step(n_dimensions,
+                                                                  order,
+                                                                  indexes,
+                                                                  x,
+                                                                  n_direct,
+                                                                  p_expectation,
+                                                                  p_expectation_direct,
+                                                                  transition_matrices,
+                                                                  lambdas)
             log_likelihood = MTD._calculate_log_likelihood(indexes,
                                                            x,
-                                                           transition_matrices_,
-                                                           lambdas_)
+                                                           transition_matrices,
+                                                           lambdas)
             gain = log_likelihood - old_ll
             iteration += 1
 
@@ -133,19 +134,19 @@ class MTD:
         if verbose > 0:
             print("log-likelihood value:", log_likelihood)
 
-        return log_likelihood, lambdas_, transition_matrices_
+        return log_likelihood, lambdas, transition_matrices
 
     @staticmethod
     def _calculate_log_likelihood(indexes,
-                                  n_,
-                                  transition_matrices_,
-                                  lambdas_):
+                                  n_occurrence,
+                                  transition_matrices,
+                                  lambdas):
 
         log_likelihood = 0
 
         for i, idx in enumerate(indexes):
-            mtd_value = sum([lam * transition_matrices_[i, idx[i], idx[-1]] for i, lam in enumerate(lambdas_)])
-            log_likelihood += n_[i] * np.log(mtd_value)
+            mtd_value = sum([lam * transition_matrices[i, idx[i], idx[-1]] for i, lam in enumerate(lambdas)])
+            log_likelihood += n_occurrence[i] * np.log(mtd_value)
 
         return log_likelihood
 
@@ -153,52 +154,52 @@ class MTD:
     def _expectation_step(n_dimensions,
                           order,
                           indexes,
-                          transition_matrices_,
-                          lambdas_):
+                          transition_matrices,
+                          lambdas):
 
-        p_expectation_ = np.zeros((n_dimensions ** (order + 1), order))
+        p_expectation = np.zeros((n_dimensions ** (order + 1), order))
 
         for i, idx in enumerate(indexes):
-            p_expectation_[i, :] = [lam * transition_matrices_[i, idx[i], idx[-1]]
-                                    for i, lam
-                                    in enumerate(lambdas_)]
+            p_expectation[i, :] = [lam * transition_matrices[i, idx[i], idx[-1]]
+                                   for i, lam
+                                   in enumerate(lambdas)]
 
-        p_expectation_ = p_expectation_ / p_expectation_.sum(axis=1).reshape(-1, 1)
+        p_expectation = p_expectation / p_expectation.sum(axis=1).reshape(-1, 1)
 
-        p_expectation_direct_ = np.zeros((order, n_dimensions, n_dimensions))
+        p_expectation_direct = np.zeros((order, n_dimensions, n_dimensions))
 
         for i, idx in enumerate(indexes):
             for j, k in enumerate(idx[:-1]):
-                p_expectation_direct_[j, k, idx[-1]] += p_expectation_[i, j]
+                p_expectation_direct[j, k, idx[-1]] += p_expectation[i, j]
 
-        p_expectation_direct_ = p_expectation_direct_ / p_expectation_direct_.sum(axis=0)
+        p_expectation_direct = p_expectation_direct / p_expectation_direct.sum(axis=0)
 
-        return p_expectation_, p_expectation_direct_
+        return p_expectation, p_expectation_direct
 
     @staticmethod
     def _maximization_step(n_dimensions,
                            order,
                            indexes,
-                           n_,
-                           n_direct_,
-                           p_expectation_,
-                           p_expectation_direct_,
-                           transition_matrices_,
-                           lambdas_):
+                           n_occurrence,
+                           n_direct,
+                           p_expectation,
+                           p_expectation_direct,
+                           transition_matrices,
+                           lambdas):
 
-        denominator = 1 / sum(n_)
-        for i, _ in enumerate(lambdas_):
-            sum_part = sum([n_[j] * p_expectation_[j, i] for j, _ in enumerate(p_expectation_)])
-            lambdas_[i] = denominator * sum_part
+        denominator = 1 / sum(n_occurrence)
+        for i, _ in enumerate(lambdas):
+            sum_part = sum([n_occurrence[j] * p_expectation[j, i] for j, _ in enumerate(p_expectation)])
+            lambdas[i] = denominator * sum_part
 
         for i, idx in enumerate(indexes):
             for j, k in enumerate(idx[:-1]):
-                transition_matrices_[j, k, idx[-1]] = n_direct_[j, k, idx[-1]] * p_expectation_direct_[j, k, idx[-1]]
+                transition_matrices[j, k, idx[-1]] = n_direct[j, k, idx[-1]] * p_expectation_direct[j, k, idx[-1]]
 
-        transition_matrices_ = transition_matrices_ / transition_matrices_.sum(2).reshape(order, n_dimensions, 1)
+        transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(order, n_dimensions, 1)
 
-        return lambdas_, transition_matrices_
+        return lambdas, transition_matrices
 
     def _calculate_aic(self):
 
-        self.aic = -2 * self.log_likelihood + 2 * self.n_parameters
+        self.aic = -2 * self.log_likelihood + 2 * self.n_parameters_

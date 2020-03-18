@@ -5,7 +5,7 @@ import numpy as np
 
 def test_create_indexes():
     mtd = MTD(4, 3)
-    assert len(mtd.indexes) == 256
+    assert len(mtd.indexes_) == 256
 
 
 def test_input_len_error():
@@ -24,26 +24,26 @@ def test_ex_max():
 
     for seed in range(100):
         np.random.seed(seed)
-        mtd = MTD(3, 2, verbose=0, init_num=1)
+        mtd = MTD(3, 2, verbose=0, number_of_initiations=1)
         mtd.fit(np.random.randint(0, 100, 27, ))
-        assert mtd.lambdas_.shape == (2, )
-        assert np.isclose(sum(mtd.lambdas_), 1.0)
-        assert max(mtd.lambdas_) <= 1
-        assert min(mtd.lambdas_) >= 0
-        assert np.isclose(sum(mtd.transition_matrices_[0, 0, :]), 1.0)
-        assert mtd.transition_matrices_.shape == (2, 3, 3)
-        assert mtd.transition_matrices_.min() >= 0
-        assert mtd.transition_matrices_.max() <= 1
+        assert mtd.lambdas.shape == (2,)
+        assert np.isclose(sum(mtd.lambdas), 1.0)
+        assert max(mtd.lambdas) <= 1
+        assert min(mtd.lambdas) >= 0
+        assert np.isclose(sum(mtd.transition_matrices[0, 0, :]), 1.0)
+        assert mtd.transition_matrices.shape == (2, 3, 3)
+        assert mtd.transition_matrices.min() >= 0
+        assert mtd.transition_matrices.max() <= 1
 
 
 def test_create_markov():
     mtd = MTD(3, 2, verbose=0)
     mtd.fit(np.array([i for i in range(27)]))
     mtd.create_markov()
-    assert mtd.transition_matrix_.max() <= 1.0
-    assert mtd.transition_matrix_.min() >= 0.0
-    assert np.isclose(mtd.transition_matrix_.sum(1).max(), 1.0)
-    assert mtd.transition_matrix_.shape == (9, 3)
+    assert mtd.transition_matrix.max() <= 1.0
+    assert mtd.transition_matrix.min() >= 0.0
+    assert np.isclose(mtd.transition_matrix.sum(1).max(), 1.0)
+    assert mtd.transition_matrix.shape == (9, 3)
 
 
 def test_aic():
@@ -108,7 +108,7 @@ def test_one_fit_random():
                           [2000., 2000.]]])
 
     log_likelihood, lambdas, transition_matrices = mtd.fit_one(x,
-                                                               mtd.indexes,
+                                                               mtd.indexes_,
                                                                order,
                                                                n_dimensions,
                                                                0.1,
@@ -143,7 +143,7 @@ def test_one_fit_flat():
                           [2000., 2000.]]])
 
     log_likelihood, lambdas, transition_matrices = mtd.fit_one(x,
-                                                               mtd.indexes,
+                                                               mtd.indexes_,
                                                                order,
                                                                n_dimensions,
                                                                0.1,
@@ -181,8 +181,8 @@ def test_final_estimates():
 
     mtd.fit(x)
 
-    assert np.isclose(mtd.lambdas_[1], 1., atol=0.01)
-    assert np.isclose(mtd.transition_matrices_[1][0, 0], 0.2, atol=0.01)
-    assert np.isclose(mtd.transition_matrices_[1][1, 1], 0.1, atol=0.01)
-    assert np.isclose(mtd.transition_matrices_[1][1, 0], 0.9, atol=0.01)
-    assert np.isclose(mtd.transition_matrices_[1][0, 1], 0.8, atol=0.01)
+    assert np.isclose(mtd.lambdas[1], 1., atol=0.01)
+    assert np.isclose(mtd.transition_matrices[1][0, 0], 0.2, atol=0.01)
+    assert np.isclose(mtd.transition_matrices[1][1, 1], 0.1, atol=0.01)
+    assert np.isclose(mtd.transition_matrices[1][1, 0], 0.9, atol=0.01)
+    assert np.isclose(mtd.transition_matrices[1][0, 1], 0.8, atol=0.01)
