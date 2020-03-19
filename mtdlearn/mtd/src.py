@@ -70,8 +70,9 @@ class MTD:
 
     def predict_proba(self, x):
 
-        x = ''.join(x.astype(str))
-        idx = int(x, 2)
+        idx = 0
+        for i, n in enumerate(x[::-1]):
+            idx += n * self.n_dimensions ** i
 
         return self.transition_matrix[idx, :]
 
