@@ -49,15 +49,15 @@ class MTD:
             for j, k in enumerate(idx[:-1]):
                 n_direct[j, k, idx[-1]] += x[i]
 
-        candidates = Parallel(n_jobs=self.n_jobs)(delayed(MTD.fit_one)(x,
-                                                                       self.indexes_,
-                                                                       self.order,
-                                                                       self.n_dimensions,
-                                                                       self.min_gain,
-                                                                       self.max_iter,
-                                                                       self.verbose,
-                                                                       self.init_method,
-                                                                       n_direct)
+        candidates = Parallel(n_jobs=self.n_jobs)(delayed(MTD._fit_one)(x,
+                                                                        self.indexes_,
+                                                                        self.order,
+                                                                        self.n_dimensions,
+                                                                        self.min_gain,
+                                                                        self.max_iter,
+                                                                        self.verbose,
+                                                                        self.init_method,
+                                                                        n_direct)
                                                   for _ in range(self.number_of_initiations))
 
         self.log_likelihood, self.lambdas, self.transition_matrices = self._select_the_best_candidate(candidates)
@@ -83,7 +83,7 @@ class MTD:
         return prob.argmax()
 
     @staticmethod
-    def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method, n_direct):
+    def _fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method, n_direct):
 
         if init_method == 'flat':
             lambdas = np.ones(order) / order

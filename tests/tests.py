@@ -107,15 +107,15 @@ def test_one_fit_random():
                           [[2000., 2000.],
                           [2000., 2000.]]])
 
-    log_likelihood, lambdas, transition_matrices = mtd.fit_one(x,
-                                                               mtd.indexes_,
-                                                               order,
-                                                               n_dimensions,
-                                                               0.1,
-                                                               100,
-                                                               0,
+    log_likelihood, lambdas, transition_matrices = mtd._fit_one(x,
+                                                                mtd.indexes_,
+                                                                order,
+                                                                n_dimensions,
+                                                                0.1,
+                                                                100,
+                                                                0,
                                                                'random',
-                                                               n_direct)
+                                                                n_direct)
 
     assert lambdas[0] < lambdas[1]
     assert lambdas[2] < lambdas[1]
@@ -142,15 +142,15 @@ def test_one_fit_flat():
                           [[2000., 2000.],
                           [2000., 2000.]]])
 
-    log_likelihood, lambdas, transition_matrices = mtd.fit_one(x,
-                                                               mtd.indexes_,
-                                                               order,
-                                                               n_dimensions,
-                                                               0.1,
-                                                               100,
-                                                               0,
+    log_likelihood, lambdas, transition_matrices = mtd._fit_one(x,
+                                                                mtd.indexes_,
+                                                                order,
+                                                                n_dimensions,
+                                                                0.1,
+                                                                100,
+                                                                0,
                                                                'flat',
-                                                               n_direct)
+                                                                n_direct)
 
     assert lambdas[0] < lambdas[1]
     assert lambdas[2] < lambdas[1]
