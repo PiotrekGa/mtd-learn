@@ -1,6 +1,9 @@
 import numpy as np
 from itertools import product
 from joblib import Parallel, delayed
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class MTD:

@@ -2,6 +2,9 @@ from mtdlearn.mtd import MTD
 from mtdlearn.preprocessing import parse_markov_matrix
 import pytest
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def test_create_indexes():
