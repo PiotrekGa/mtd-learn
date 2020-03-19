@@ -39,17 +39,6 @@ class MTD:
         if init_method not in ['random', 'flat']:
             raise ValueError('no such initialization method')
 
-    def create_markov(self):
-
-        array_coords = product(range(self.n_dimensions), repeat=self.order)
-
-        transition_matrix_list = []
-        for idx in array_coords:
-            t_matrix_part = np.array([self.transition_matrices[i, idx[i], :] for i in range(self.order)]).T
-            transition_matrix_list.append(np.dot(t_matrix_part,
-                                                 self.lambdas))
-        self.transition_matrix = np.array(transition_matrix_list)
-
     def fit(self, x):
 
         if len(x) != len(self.indexes_):
@@ -199,6 +188,17 @@ class MTD:
         transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(order, n_dimensions, 1)
 
         return lambdas, transition_matrices
+
+    def create_markov(self):
+
+        array_coords = product(range(self.n_dimensions), repeat=self.order)
+
+        transition_matrix_list = []
+        for idx in array_coords:
+            t_matrix_part = np.array([self.transition_matrices[i, idx[i], :] for i in range(self.order)]).T
+            transition_matrix_list.append(np.dot(t_matrix_part,
+                                                 self.lambdas))
+        self.transition_matrix = np.array(transition_matrix_list)
 
     def _calculate_aic(self):
 
