@@ -1,4 +1,5 @@
 from mtdlearn.mtd import MTD
+from mtdlearn.preprocessing import parse_markov_matrix
 import pytest
 import numpy as np
 
@@ -186,3 +187,23 @@ def test_final_estimates():
     assert np.isclose(mtd.transition_matrices[1][1, 1], 0.1, atol=0.01)
     assert np.isclose(mtd.transition_matrices[1][1, 0], 0.9, atol=0.01)
     assert np.isclose(mtd.transition_matrices[1][0, 1], 0.8, atol=0.01)
+
+
+def test_parsing_input_type():
+    with pytest.raises(TypeError):
+        parse_markov_matrix([1, 2, 3])
+
+
+def test_parsing_output_type():
+
+    x = np.array([[100, 900],
+                  [100, 900],
+                  [900, 100],
+                  [900, 100],
+                  [100, 900],
+                  [100, 900],
+                  [900, 100],
+                  [900, 100]])
+
+    out = parse_markov_matrix(x)
+    assert out.shape == (16,)
