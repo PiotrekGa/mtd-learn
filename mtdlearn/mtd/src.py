@@ -75,6 +75,12 @@ class MTD:
 
         return self.transition_matrix[idx, :]
 
+    def predict(self, x):
+
+        prob = self.predict_proba(x)
+
+        return prob.argmax()
+
     @staticmethod
     def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method, n_direct):
 
