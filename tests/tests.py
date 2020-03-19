@@ -10,7 +10,7 @@ def test_create_indexes():
 
 
 def test_input_len_error():
-    
+
     with pytest.raises(ValueError):
         mtd = MTD(4, 3, verbose=0)
         mtd.fit(np.array([1, 2, 3]))

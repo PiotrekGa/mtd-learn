@@ -227,4 +227,3 @@ class MTD:
                 transition_matrices = c[2]
 
         return log_likelihood, lambdas, transition_matrices
-
