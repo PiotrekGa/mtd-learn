@@ -40,7 +40,7 @@ class MTD:
             self.indexes_.append(i)
 
         if init_method not in ['random', 'flat']:
-            raise ValueError('no such initialization method')
+            raise ValueError(f'no such initialization method: {self.init_method}')
 
     def fit(self, x):
 
