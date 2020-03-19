@@ -40,7 +40,6 @@ def test_ex_max():
 def test_create_markov():
     mtd = MTD(3, 2, verbose=0)
     mtd.fit(np.array([i for i in range(27)]))
-    mtd.create_markov()
     assert mtd.transition_matrix.max() <= 1.0
     assert mtd.transition_matrix.min() >= 0.0
     assert np.isclose(mtd.transition_matrix.sum(1).max(), 1.0)

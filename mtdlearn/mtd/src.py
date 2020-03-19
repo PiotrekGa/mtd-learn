@@ -73,7 +73,7 @@ class MTD:
         if self.verbose > 0:
             print('best value:', self.log_likelihood)
 
-        self.create_markov()
+        self._create_markov()
         self._calculate_aic()
 
     @staticmethod
@@ -192,7 +192,7 @@ class MTD:
 
         return lambdas, transition_matrices
 
-    def create_markov(self):
+    def _create_markov(self):
 
         array_coords = product(range(self.n_dimensions), repeat=self.order)
 
