@@ -68,6 +68,13 @@ class MTD:
         self._create_markov()
         self._calculate_aic()
 
+    def predict_proba(self, x):
+
+        x = ''.join(x.astype(str))
+        idx = int(x, 2)
+
+        return self.transition_matrix[idx, :]
+
     @staticmethod
     def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method, n_direct):
 
