@@ -73,6 +73,9 @@ class MTD:
         if self.verbose > 0:
             print('best value:', self.log_likelihood)
 
+        self.create_markov()
+        self._calculate_aic()
+
     @staticmethod
     def fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method, n_direct):
 
