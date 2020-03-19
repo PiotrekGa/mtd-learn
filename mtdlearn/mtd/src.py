@@ -60,15 +60,7 @@ class MTD:
                                                                        n_direct)
                                                   for _ in range(self.number_of_initiations))
 
-        self.log_likelihood = candidates[0][0]
-        self.lambdas = candidates[0][1]
-        self.transition_matrices = candidates[0][2]
-
-        for c in candidates[1:]:
-            if c[0] > self.log_likelihood:
-                self.log_likelihood = c[0]
-                self.lambdas = c[1]
-                self.transition_matrices = c[2]
+        self.log_likelihood, self.lambdas, self.transition_matrices = self._select_the_best_candidate(candidates)
 
         if self.verbose > 0:
             print('best value:', self.log_likelihood)
@@ -206,3 +198,19 @@ class MTD:
     def _calculate_aic(self):
 
         self.aic = -2 * self.log_likelihood + 2 * self.n_parameters_
+
+    @staticmethod
+    def _select_the_best_candidate(candidates):
+
+        log_likelihood = candidates[0][0]
+        lambdas = candidates[0][1]
+        transition_matrices = candidates[0][2]
+
+        for c in candidates[1:]:
+            if c[0] > log_likelihood:
+                log_likelihood = c[0]
+                lambdas = c[1]
+                transition_matrices = c[2]
+
+        return log_likelihood, lambdas, transition_matrices
+
