@@ -1,4 +1,4 @@
-from mtdlearn import MTD
+from mtdlearn.mtd import MTD
 import pytest
 import numpy as np
 
