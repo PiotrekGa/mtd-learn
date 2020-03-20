@@ -73,17 +73,19 @@ class MTD:
 
     def predict_proba(self, x):
 
-        idx = 0
-        for i, n in enumerate(x[::-1]):
-            idx += n * self.n_dimensions ** i
+        idx = []
+        for i in range(x.shape[1]):
+            idx.append(self.n_dimensions ** i)
+        idx = np.array(idx[::-1])
+        indexes = np.dot(x, idx)
 
-        return self.transition_matrix[idx, :]
+        return self.transition_matrix[indexes, :]
 
     def predict(self, x):
 
         prob = self.predict_proba(x)
 
-        return prob.argmax()
+        return prob.argmax(axis=1)
 
     @staticmethod
     def _fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method, n_direct):
