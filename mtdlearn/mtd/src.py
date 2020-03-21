@@ -1,12 +1,19 @@
 import numpy as np
 from itertools import product
 from joblib import Parallel, delayed
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 class MTD:
+
+    """
+
+    Args:
+        n_dimensions:
+            Number of states of the process
+        order:
+            Number of lags of
+
+    """
 
     def __init__(self,
                  n_dimensions,
@@ -66,7 +73,7 @@ class MTD:
         self.log_likelihood, self.lambdas, self.transition_matrices = self._select_the_best_candidate(candidates)
 
         if self.verbose > 0:
-            print('best value:', self.log_likelihood)
+            print(f'best value: {self.log_likelihood}')
 
         self._create_markov()
         self._calculate_aic()
