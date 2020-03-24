@@ -7,11 +7,70 @@ class MTD:
 
     """
 
-    Args:
-        n_dimensions:
-            Number of states of the process
-        order:
-            Number of lags of
+    Parameters
+    ----------
+    n_dimensions: int
+        Number of states of the process.
+
+    order: int
+        Number of lags of the model.
+
+    init_method: string, optional (default='random')
+        The method to initialize MTD lambdas and transition matrices. Also 'flat' is available.
+
+    number_of_initiations: int, optional (default=10)
+        Number of parameters sets to be initiated. 1 is minimum.
+
+    max_iter: int, optional (default=100)
+        Maximum number of iterations for the EM algorithm.
+
+    min_gain: float, optional (default=0.1)
+        Minimum change of the log-likelihood function value for a step in the EM optimization algorithm.
+
+    verbose: int, optional (default=1)
+        Controls the verbosity when fitting and predicting.
+
+    n_jobs: int, optional (default=-1)
+        Number of threads to be used for estimation. Every initiation set can be estimated on one thread only.
+
+    Example
+    ----------
+    >>> import numpy as np
+    >>> from mtdlearn.mtd import MTD
+    >>> from mtdlearn.preprocessing import parse_markov_matrix
+
+    >>> np.random.seed(42)
+
+    >>> n_dimensions = 3
+    >>> order = 2
+
+    >>> m = MTD(n_dimensions, order, n_jobs=-1)
+
+    >>> x = np.array([[800, 800, 100],
+    ...               [100, 100, 100],
+    ...               [900, 1000, 100],
+    ...               [900, 1000, 100],
+    ...               [100, 100, 100],
+    ...               [100, 100, 100],
+    ...               [100, 1000, 100],
+    ...               [100, 100, 100],
+    ...               [100, 100, 100]])
+
+    >>> x = parse_markov_matrix(x)
+
+    >>> m.fit(x)
+
+    >>> x = np.array([[0,0],
+    ...           [1,1],
+    ...           [2,2]])
+
+    >>> m.predict_proba(x)
+
+    >>> m.predict(x)
+
+    References
+    ----------
+    -- [1] S. Lèbre, P Bourguinon "An EM algorithm for estimation in the Mixture Transition Distribution model", 2008
 
     """
 
