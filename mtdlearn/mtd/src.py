@@ -6,6 +6,8 @@ from joblib import Parallel, delayed
 class MTD:
 
     """
+    Mixture Transition Distribution (MTD) model with separate transition matrices for each lag.
+
 
     Parameters
     ----------
@@ -32,6 +34,27 @@ class MTD:
 
     n_jobs: int, optional (default=-1)
         Number of threads to be used for estimation. Every initiation set can be estimated on one thread only.
+
+
+    Attributes
+    ----------
+    n_parameters_: int
+        Number of independent parameters of the model
+
+    lambdas: NumPy array
+        Weights vector
+
+    transition_matrices: NumPy array
+        Transition matrices of the model
+
+    transition_matrix: NumPy array
+        Reconstructed Markov Chain transition matrix
+
+    log_likelihood: float
+        Log-likelihood the the MTD model
+
+    aic: float
+        Value of the Akaike's Information Criterion (AIC)
 
     Example
     ----------
