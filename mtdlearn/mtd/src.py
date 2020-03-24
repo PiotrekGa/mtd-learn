@@ -136,13 +136,13 @@ class MTD:
             iteration += 1
 
             if verbose > 1:
-                print('iteration:', iteration, '  gain:', round(gain, 5), '  ll_value:', round(log_likelihood, 5))
+                print(f'iteration: {iteration}  gain: {round(gain, 5)} ll_value: {round(log_likelihood, 5)}')
 
         if iteration == max_iter:
-            print('\nWARNING: The model has not converged. Consider increasing the max_iter parameter.\n')
+            print('WARNING: The model has not converged. Consider increasing the max_iter parameter.')
 
         if verbose > 0:
-            print("log-likelihood value:", log_likelihood)
+            print(f"log-likelihood value: {log_likelihood}")
 
         return log_likelihood, lambdas, transition_matrices
 
