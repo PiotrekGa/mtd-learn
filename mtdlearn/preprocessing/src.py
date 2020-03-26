@@ -15,16 +15,17 @@ def parse_markov_matrix(matrix):
 
 class PathEncoder(TransformerMixin, BaseEstimator):
 
-    def __init__(self, order, r_just_string='Q', sep='>'):
+    def __init__(self, order, sep='>', r_just_string='null'):
         self.order = order
-        self.r_just_string = r_just_string
         self.sep = sep
+        self.r_just_string = r_just_string
         self.label_dict = None
 
     def fit(self, x):
-        x = self._r_just_with_sep(x)
 
-    def _r_just_with_sep(self, x):
-        x = np.char.rjust(x, (2 * self.order - 1), self.r_just_string)
-        x = np.char.replace(x, self.r_just_string + self.r_just_string, self.r_just_string + self.sep)
+        x = np.char.split(x, self.sep)
+        unique_keys = set(sum(x[:, 0], []))
+        self.label_dict = {k: i for i, k in enumerate(unique_keys)}
+        self.label_dict[self.r_just_string] = max(self.label_dict.values()) + 1
+
         return x
