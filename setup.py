@@ -12,7 +12,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         'joblib>=0.14.1',
-        'numpy>=1.18.1'],
+        'numpy>=1.18.1',
+        'scikit-learn>=0.22.1'],
     extras_require={
         'dev': [
             'pytest>=5.3.5'
