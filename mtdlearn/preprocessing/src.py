@@ -40,7 +40,15 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
     def transform(self, x, y=None):
 
+        x_new = []
+
+        for i in x[:, 0]:
+            values_list = list(map(self.label_dict.get, i.split(self.sep)))
+            while len(values_list) < self.order:
+                values_list = [self.label_dict[self.r_just_string]] + values_list
+            x_new.append(values_list)
+
         if y is None:
-            return x
+            return np.array(x_new)
         else:
-            return x, np.vectorize(self.label_dict.get)(y)
+            return np.array(x_new), np.vectorize(self.label_dict.get)(y)
