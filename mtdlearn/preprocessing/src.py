@@ -49,4 +49,4 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         if y is None:
             return x
         else:
-            return x, y
+            return x, np.vectorize(self.label_dict.get)(y)
