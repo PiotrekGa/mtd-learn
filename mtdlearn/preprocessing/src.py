@@ -21,7 +21,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         self.r_just_string = r_just_string
         self.label_dict = None
 
-    def fit(self, x):
+    def fit(self, x, y=None):
 
         x = np.char.split(x, self.sep)
 
@@ -36,5 +36,10 @@ class PathEncoder(TransformerMixin, BaseEstimator):
             unique_keys.append(temp)
 
         unique_keys = list(set(sum(unique_keys, [])))
+        if y is not None:
+            y = np.unique(y).tolist()
+            unique_keys.extend(y)
+            unique_keys = list(set(unique_keys))
+
         unique_keys.sort()
         self.label_dict = {k: i for i, k in enumerate(unique_keys)}
