@@ -25,15 +25,9 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
         x = np.char.split(x, self.sep)
 
-        unique_keys = []
+        unique_keys = [[self.r_just_string]]
         for i in x:
-            sequence = i[0]
-            if len(sequence) < self.order:
-                temp = [self.r_just_string for i in range(self.order - len(i[0]))]
-                temp.extend(i[0])
-            else:
-                temp = sequence
-            unique_keys.append(temp)
+            unique_keys.append(i[0])
 
         unique_keys = list(set(sum(unique_keys, [])))
         if y is not None:
