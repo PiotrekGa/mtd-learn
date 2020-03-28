@@ -25,7 +25,6 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
         x = np.char.split(x, self.sep)
 
-        result = []
         unique_keys = []
         for i in x:
             sequence = i[0]
@@ -34,12 +33,8 @@ class PathEncoder(TransformerMixin, BaseEstimator):
                 temp.extend(i[0])
             else:
                 temp = sequence
-            result.append(self.sep.join(temp))
             unique_keys.append(temp)
 
-        result.sort()
-
-        unique_keys = set(sum(unique_keys, []))
+        unique_keys = list(set(sum(unique_keys, [])))
+        unique_keys.sort()
         self.label_dict = {k: i for i, k in enumerate(unique_keys)}
-
-        return result
