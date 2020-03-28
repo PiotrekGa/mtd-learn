@@ -37,13 +37,13 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
         unique_keys.sort()
         self.label_dict = {k: i for i, k in enumerate(unique_keys)}
+        self.label_dict_inversed = {i: k for i, k in enumerate(unique_keys)}
 
         return self
 
     def transform(self, x, y=None):
 
         x_new = []
-
         for i in x[:, 0]:
             values_list = list(map(self.label_dict.get, i.split(self.sep)))
             while len(values_list) < self.order:
@@ -54,3 +54,15 @@ class PathEncoder(TransformerMixin, BaseEstimator):
             return np.array(x_new)
         else:
             return np.array(x_new), np.vectorize(self.label_dict.get)(y)
+
+    def inverse_transform(self, x, y=None):
+
+        x_rev = []
+        for i in x.tolist():
+            seq_mapped = self.sep.join(list(map(self.label_dict_inversed.get, i)))
+            x_rev.append(seq_mapped)
+
+        if y is None:
+            return np.array(x_rev).reshape(-1, 1)
+        else:
+            return np.array(x_rev).reshape(-1, 1), np.vectorize(self.label_dict_inversed.get)(y)
