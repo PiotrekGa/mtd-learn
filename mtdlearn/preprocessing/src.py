@@ -38,6 +38,8 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         unique_keys.sort()
         self.label_dict = {k: i for i, k in enumerate(unique_keys)}
 
+        return self
+
     def transform(self, x, y=None):
 
         x_new = []
