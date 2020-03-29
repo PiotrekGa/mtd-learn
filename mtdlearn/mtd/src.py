@@ -25,7 +25,7 @@ class ChainAggregator:
         for n, index in enumerate(indexes):
             values_dict[index] = sample_weight[n]
 
-        return values_dict
+        return np.array(list(values_dict.values()))
 
 
 class MTD(ChainAggregator):
