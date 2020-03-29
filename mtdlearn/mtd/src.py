@@ -3,6 +3,13 @@ from itertools import product
 from joblib import Parallel, delayed
 
 
+class ChainAggregator:
+
+    @staticmethod
+    def aggregate_chain(self, x, y):
+        nunique = len(np.unique(np.hstack([x, y.reshape(-1, 1)])))
+
+
 class MTD:
 
     """
