@@ -28,7 +28,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
         unique_keys = [[self.r_just_string]]
         for i in x:
-            unique_keys.append(i[0])
+            unique_keys.append(i[0][-self.order:])
 
         unique_keys = list(set(sum(unique_keys, [])))
         if y is not None:
@@ -46,7 +46,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
         x_new = []
         for i in x[:, 0]:
-            values_list = list(map(self.label_dict.get, i.split(self.sep)))
+            values_list = list(map(self.label_dict.get, i.split(self.sep)[-self.order:]))
             while len(values_list) < self.order:
                 values_list = [self.label_dict[self.r_just_string]] + values_list
             x_new.append(values_list)
