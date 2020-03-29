@@ -1,6 +1,7 @@
 import numpy as np
 from itertools import product
 from joblib import Parallel, delayed
+from sklearn.base import BaseEstimator
 
 
 class ChainAggregator:
@@ -28,7 +29,7 @@ class ChainAggregator:
         return np.array(list(values_dict.values()))
 
 
-class MTD(ChainAggregator):
+class MTD(ChainAggregator, BaseEstimator):
 
     """
     Mixture Transition Distribution (MTD) model with separate transition matrices for each lag.
@@ -156,10 +157,9 @@ class MTD(ChainAggregator):
         if init_method not in ['random', 'flat']:
             raise ValueError(f'no such initialization method: {self.init_method}')
 
-    def fit(self, x):
+    def fit(self, x, y, sample_weight=None):
 
-        if len(x) != len(self.indexes_):
-            raise ValueError('input data has wrong length')
+        x = self.aggregate_chain(x, y, sample_weight)
 
         n_direct = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
         for i, idx in enumerate(self.indexes_):
