@@ -7,15 +7,25 @@ class ChainAggregator:
 
     @staticmethod
     def aggregate_chain(x, y, sample_weight=None):
+
+        if sample_weight is None:
+            sample_weight = np.ones(y.shape[0], dtype=np.int)
+
         matrix = np.hstack([x, y.reshape(-1, 1)])
         n_unique = len(np.unique(matrix))
+        n_columns = matrix.shape[1]
+        values_dict = {i: 0 for i in range(n_unique ** (x.shape[1] + 1))}
 
         idx = []
-        for i in range(x.shape[1] + 1):
+        for i in range(n_columns):
             idx.append(n_unique ** i)
         idx = np.array(idx[::-1])
         indexes = np.dot(matrix, idx)
-        return indexes
+
+        for n, index in enumerate(indexes):
+            values_dict[index] = sample_weight[n]
+
+        return values_dict
 
 
 class MTD(ChainAggregator):
