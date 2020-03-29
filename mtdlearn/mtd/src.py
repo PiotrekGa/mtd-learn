@@ -6,11 +6,19 @@ from joblib import Parallel, delayed
 class ChainAggregator:
 
     @staticmethod
-    def aggregate_chain(self, x, y):
-        nunique = len(np.unique(np.hstack([x, y.reshape(-1, 1)])))
+    def aggregate_chain(x, y, sample_weight=None):
+        matrix = np.hstack([x, y.reshape(-1, 1)])
+        n_unique = len(np.unique(matrix))
+
+        idx = []
+        for i in range(x.shape[1] + 1):
+            idx.append(n_unique ** i)
+        idx = np.array(idx[::-1])
+        indexes = np.dot(matrix, idx)
+        return indexes
 
 
-class MTD:
+class MTD(ChainAggregator):
 
     """
     Mixture Transition Distribution (MTD) model with separate transition matrices for each lag.
