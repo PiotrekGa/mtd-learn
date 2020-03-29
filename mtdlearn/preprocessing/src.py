@@ -20,6 +20,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         self.sep = sep
         self.r_just_string = r_just_string
         self.label_dict = None
+        self.label_dict_inverse = None
 
     def fit(self, x, y=None):
 
@@ -37,7 +38,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
         unique_keys.sort()
         self.label_dict = {k: i for i, k in enumerate(unique_keys)}
-        self.label_dict_inversed = {i: k for i, k in enumerate(unique_keys)}
+        self.label_dict_inverse = {i: k for i, k in enumerate(unique_keys)}
 
         return self
 
@@ -59,10 +60,10 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
         x_rev = []
         for i in x.tolist():
-            seq_mapped = self.sep.join(list(map(self.label_dict_inversed.get, i)))
+            seq_mapped = self.sep.join(list(map(self.label_dict_inverse.get, i)))
             x_rev.append(seq_mapped)
 
         if y is None:
             return np.array(x_rev).reshape(-1, 1)
         else:
-            return np.array(x_rev).reshape(-1, 1), np.vectorize(self.label_dict_inversed.get)(y)
+            return np.array(x_rev).reshape(-1, 1), np.vectorize(self.label_dict_inverse.get)(y)
