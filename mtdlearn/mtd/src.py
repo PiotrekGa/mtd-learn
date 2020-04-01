@@ -106,7 +106,7 @@ class MTD(ChainAggregator, BaseEstimator):
     ...               [1, 0]])
     >>> y = np.array([0, 0, 2, 1, 1, 2, 0, 1, 2, 1])
 
-    >>> m.fit(x)
+    >>> m.fit(x, y)
 
     >>> x = np.array([[0, 0],
     ...               [1, 1],
