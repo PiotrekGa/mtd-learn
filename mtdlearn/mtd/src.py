@@ -264,7 +264,6 @@ class MTD(ChainAggregator, BaseEstimator):
             if n_occurrence[i] > 0:
                 mtd_value = sum([lam * transition_matrices[i, idx[i], idx[-1]] for i, lam in enumerate(lambdas)])
                 log_likelihood += n_occurrence[i] * np.log(mtd_value)
-                print(log_likelihood, np.log(mtd_value), n_occurrence[i], transition_matrices)
 
         return log_likelihood
 
@@ -283,6 +282,7 @@ class MTD(ChainAggregator, BaseEstimator):
                                    in enumerate(lambdas)]
 
         p_expectation = p_expectation / p_expectation.sum(axis=1).reshape(-1, 1)
+        p_expectation = np.nan_to_num(p_expectation, nan=1./order)
 
         p_expectation_direct = np.zeros((order, n_dimensions, n_dimensions))
 
@@ -291,7 +291,6 @@ class MTD(ChainAggregator, BaseEstimator):
                 p_expectation_direct[j, k, idx[-1]] += p_expectation[i, j]
 
         p_expectation_direct = p_expectation_direct / p_expectation_direct.sum(axis=0)
-
         return p_expectation, p_expectation_direct
 
     @staticmethod
