@@ -86,7 +86,6 @@ class MTD(ChainAggregator, BaseEstimator):
     ----------
     >>> import numpy as np
     >>> from mtdlearn.mtd import MTD
-    >>> from mtdlearn.preprocessing import parse_markov_matrix
 
     >>> np.random.seed(42)
 
@@ -95,23 +94,23 @@ class MTD(ChainAggregator, BaseEstimator):
 
     >>> m = MTD(n_dimensions, order, n_jobs=-1)
 
-    >>> x = np.array([[800, 800, 100],
-    ...               [100, 100, 100],
-    ...               [900, 1000, 100],
-    ...               [900, 1000, 100],
-    ...               [100, 100, 100],
-    ...               [100, 100, 100],
-    ...               [100, 1000, 100],
-    ...               [100, 100, 100],
-    ...               [100, 100, 100]])
-
-    >>> x = parse_markov_matrix(x)
+    >>> x = np.array([[0, 0],
+    ...               [1, 1],
+    ...               [2, 2],
+    ...               [0, 1],
+    ...               [2, 1],
+    ...               [2, 0],
+    ...               [0, 1],
+    ...               [2, 1],
+    ...               [1, 1],
+    ...               [1, 0]])
+    >>> y = np.array([0, 0, 2, 1, 1, 2, 0, 1, 2, 1])
 
     >>> m.fit(x)
 
-    >>> x = np.array([[0,0],
-    ...           [1,1],
-    ...           [2,2]])
+    >>> x = np.array([[0, 0],
+    ...               [1, 1],
+    ...               [2, 2]])
 
     >>> m.predict_proba(x)
 
@@ -262,8 +261,10 @@ class MTD(ChainAggregator, BaseEstimator):
         log_likelihood = 0
 
         for i, idx in enumerate(indexes):
-            mtd_value = sum([lam * transition_matrices[i, idx[i], idx[-1]] for i, lam in enumerate(lambdas)])
-            log_likelihood += n_occurrence[i] * np.log(mtd_value)
+            if n_occurrence[i] > 0:
+                mtd_value = sum([lam * transition_matrices[i, idx[i], idx[-1]] for i, lam in enumerate(lambdas)])
+                log_likelihood += n_occurrence[i] * np.log(mtd_value)
+                print(log_likelihood, np.log(mtd_value), n_occurrence[i], transition_matrices)
 
         return log_likelihood
 
