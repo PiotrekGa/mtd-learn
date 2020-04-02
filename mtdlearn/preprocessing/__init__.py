@@ -1,1 +1,1 @@
-from .src import parse_markov_matrix, PathEncoder
+from .src import parse_markov_matrix, PathEncoder, ChainAggregator
