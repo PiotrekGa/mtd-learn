@@ -3,6 +3,7 @@ from itertools import product
 from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
 from mtdlearn.preprocessing import ChainAggregator
+np.seterr(divide='ignore', invalid='ignore')
 
 
 class MTD(ChainAggregator, BaseEstimator):
