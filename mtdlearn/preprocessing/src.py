@@ -25,7 +25,7 @@ class ChainAggregator:
         indexes = np.dot(matrix, idx)
 
         for n, index in enumerate(indexes):
-            values_dict[index] = sample_weight[n]
+            values_dict[index] += sample_weight[n]
 
         return np.array(list(values_dict.values()))
 
