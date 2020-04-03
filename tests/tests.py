@@ -12,6 +12,11 @@ y = second_order['y']
 sample_weight = second_order['sample_weight']
 
 
+def test_dataset():
+    assert x.shape[0] == y.shape[0]
+    assert x.shape[0] == sample_weight.shape[0]
+
+
 def test_create_indexes():
     mtd = MTD(4, 3)
     assert len(mtd.indexes_) == 256
@@ -19,7 +24,7 @@ def test_create_indexes():
 
 def test_ex_max():
 
-    for seed in range(100):
+    for seed in range(20):
         np.random.seed(seed)
         pe = PathEncoder(2)
         pe.fit(x, y)
