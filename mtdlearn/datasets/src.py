@@ -1,5 +1,26 @@
 import numpy as np
 
+
+def generate_data(values, sep, min_len, max_len, order, samples, prob):
+    x = []
+    y = []
+    cnt = 0
+    while cnt < samples:
+        cnt += 1
+        seq_len = np.random.randint(min_len, max_len + 1)
+        seq_list = np.random.choice(values, seq_len)
+        if seq_len >= order and np.random.rand() < prob:
+            y.append(seq_list[-order])
+        else:
+            y.append(np.random.choice(values))
+        x.append(sep.join(seq_list))
+
+    x = np.array(x).reshape(-1, 1)
+    y = np.array(y)
+
+    return x, y
+
+
 data_values3_order2_full = dict()
 data_values3_order2_full['x'] = np.array([['A>A>A'],
                                           ['A>A>B'],
