@@ -1,15 +1,15 @@
 from mtdlearn.mtd import MTD
 from mtdlearn.preprocessing import PathEncoder
-from mtdlearn.datasets import data_values3_order2
+from mtdlearn.datasets import data_values3_order2_full
 import pytest
 import numpy as np
 import logging
 
 logger = logging.getLogger(__name__)
 
-x = data_values3_order2['x']
-y = data_values3_order2['y']
-sample_weight = data_values3_order2['sample_weight']
+x = data_values3_order2_full['x']
+y = data_values3_order2_full['y']
+sample_weight = data_values3_order2_full['sample_weight']
 
 
 def test_dataset():
