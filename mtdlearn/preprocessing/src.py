@@ -30,14 +30,6 @@ class ChainAggregator:
         return np.array(list(values_dict.values()))
 
 
-def parse_markov_matrix(matrix):
-
-    if not isinstance(matrix, np.ndarray):
-        raise TypeError('The matrix should be a numpy array')
-
-    return matrix.reshape(-1, 1).ravel()
-
-
 class PathEncoder(TransformerMixin, BaseEstimator):
 
     def __init__(self, order, sep='>', r_just_string='null'):

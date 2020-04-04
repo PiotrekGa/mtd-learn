@@ -1,5 +1,5 @@
 from mtdlearn.mtd import MTD
-from mtdlearn.preprocessing import parse_markov_matrix, PathEncoder
+from mtdlearn.preprocessing import PathEncoder
 from mtdlearn.datasets import second_order
 import pytest
 import numpy as np
@@ -57,15 +57,3 @@ def test_init_method_error():
 
     with pytest.raises(ValueError):
         mtd = MTD(4, 3, init_method='a')
-
-
-def test_parsing_input_type():
-    with pytest.raises(TypeError):
-        parse_markov_matrix([1, 2, 3])
-
-
-def test_parsing_output_type():
-
-    x_ones = np.ones((81, 3))
-    out = parse_markov_matrix(x_ones)
-    assert out.shape == (243,)
