@@ -117,6 +117,8 @@ class MTD(ChainAggregator, BaseEstimator):
         self.transition_matrix = None
         self.log_likelihood = None
         self.aic = None
+        self.bic = None
+        self.samples = None
         self.lambdas = None
         self.transition_matrices = None
         self.max_iter = max_iter
@@ -134,6 +136,11 @@ class MTD(ChainAggregator, BaseEstimator):
             raise ValueError(f'no such initialization method: {self.init_method}')
 
     def fit(self, x, y, sample_weight=None):
+
+        if sample_weight is not None:
+            self.samples = sample_weight.sum()
+        else:
+            self.samples = y.shape[0]
 
         x = self.aggregate_chain(x, y, sample_weight)
 
@@ -160,6 +167,7 @@ class MTD(ChainAggregator, BaseEstimator):
 
         self._create_markov()
         self._calculate_aic()
+        self._calculate_bic()
 
     def predict_proba(self, x):
 
@@ -308,6 +316,10 @@ class MTD(ChainAggregator, BaseEstimator):
     def _calculate_aic(self):
 
         self.aic = -2 * self.log_likelihood + 2 * self.n_parameters_
+
+    def _calculate_bic(self):
+
+        self.bic = -2 * self.log_likelihood + np.log(self.samples) * self.n_parameters_
 
     @staticmethod
     def _select_the_best_candidate(candidates):
