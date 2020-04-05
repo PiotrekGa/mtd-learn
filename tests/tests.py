@@ -58,6 +58,28 @@ def test_path_encoder1():
     assert len(list(set(x_gen_rep[0][0].split('*')) & {'A', 'B', 'C', 'X'})) > 0
 
 
+def test_path_encoder2():
+    x_gen, y_gen = generate_data(('A', 'B', 'C', 'D'), '>', 1, 10, 3, 300, 0.95)
+    pe = PathEncoder(5, '>', 'X')
+    pe.fit(x_gen, y_gen)
+    x_tr, y_tr = pe.transform(x_gen, y_gen)
+    x_gen_rep, y_gen_rep = pe.inverse_transform(x_tr, y_tr)
+
+    assert list(pe.label_dict.keys()) == ['A', 'B', 'C', 'D', 'X']
+    assert list(pe.label_dict.values()) == [0, 1, 2, 3, 4]
+    assert list(pe.label_dict_inverse.values()) == ['A', 'B', 'C', 'D', 'X']
+    assert list(pe.label_dict_inverse.keys()) == [0, 1, 2, 3, 4]
+    assert x_tr.shape[0] == x_gen.shape[0]
+    assert y_tr.shape[0] == y_gen.shape[0]
+    assert x_tr.shape[1] == 5
+    assert list(np.unique(x_tr)) == [0, 1, 2, 3, 4]
+    assert list(np.unique(y_tr)) == [0, 1, 2, 3]
+    assert x_gen.shape == x_gen_rep.shape
+    assert y_gen.shape == y_gen_rep.shape
+    assert list(np.unique(y_gen_rep)) == ['A', 'B', 'C', 'D']
+    assert len(list(set(x_gen_rep[0][0].split('>')) & {'A', 'B', 'C', 'D', 'X'})) > 0
+
+
 def test_create_indexes():
     mtd = MTD(4, 3)
     assert len(mtd.indexes_) == 256
