@@ -27,13 +27,35 @@ def test_generate_data1():
 
 
 def test_generate_data2():
-    x_gen, y_gen = generate_data(('A', 'B', 'C', 'D'), '>', 5, 5, 5, 100, 1.0)
+    x_gen, y_gen = generate_data(('A', 'B', 'C', 'D'), '*', 5, 5, 5, 100, 1.0)
     assert x_gen.shape[0] == y_gen.shape[0]
     assert y_gen.shape[0] == 100
-    assert max([len(i[0].split('>')) for i in x_gen]) == 5
-    assert min([len(i[0].split('>')) for i in x_gen]) == 5
+    assert max([len(i[0].split('*')) for i in x_gen]) == 5
+    assert min([len(i[0].split('*')) for i in x_gen]) == 5
     for i, row in enumerate(x_gen):
-        assert row[0].split('>')[0] == y_gen[i]
+        assert row[0].split('*')[0] == y_gen[i]
+
+
+def test_path_encoder1():
+    x_gen, y_gen = generate_data(('A', 'B', 'C'), '*', 1, 3, 3, 100, 0.95)
+    pe = PathEncoder(3, '*', 'X')
+    pe.fit(x_gen, y_gen)
+    x_tr, y_tr = pe.transform(x_gen, y_gen)
+    x_gen_rep, y_gen_rep = pe.inverse_transform(x_tr, y_tr)
+
+    assert list(pe.label_dict.keys()) == ['A', 'B', 'C', 'X']
+    assert list(pe.label_dict.values()) == [0, 1, 2, 3]
+    assert list(pe.label_dict_inverse.values()) == ['A', 'B', 'C', 'X']
+    assert list(pe.label_dict_inverse.keys()) == [0, 1, 2, 3]
+    assert x_tr.shape[0] == x_gen.shape[0]
+    assert y_tr.shape[0] == y_gen.shape[0]
+    assert x_tr.shape[1] == 3
+    assert list(np.unique(x_tr)) == [0, 1, 2, 3]
+    assert list(np.unique(y_tr)) == [0, 1, 2]
+    assert x_gen.shape == x_gen_rep.shape
+    assert y_gen.shape == y_gen_rep.shape
+    assert list(np.unique(y_gen_rep)) == ['A', 'B', 'C']
+    assert len(list(set(x_gen_rep[0][0].split('*')) & {'A', 'B', 'C', 'X'})) > 0
 
 
 def test_create_indexes():
