@@ -18,12 +18,18 @@ def test_dataset():
     assert x.shape[0] == sample_weight.shape[0]
 
 
-def test_generate_data():
+def test_generate_data1():
     x_gen, y_gen = generate_data(('A', 'B', 'C'), '>', 1, 10, 3, 1000, 0.95)
     assert x_gen.shape[0] == y_gen.shape[0]
     assert y_gen.shape[0] == 1000
     assert max([len(i[0].split('>')) for i in x_gen]) <= 10
     assert min([len(i[0].split('>')) for i in x_gen]) >= 1
+
+
+def test_generate_data2():
+    x_gen, y_gen = generate_data(('A', 'B', 'C'), '>', 5, 5, 3, 1000, 0.95)
+    assert max([len(i[0].split('>')) for i in x_gen]) == 5
+    assert min([len(i[0].split('>')) for i in x_gen]) == 5
 
 
 def test_create_indexes():
