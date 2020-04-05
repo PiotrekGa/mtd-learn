@@ -1,5 +1,5 @@
 from mtdlearn.mtd import MTD
-from mtdlearn.preprocessing import PathEncoder
+from mtdlearn.preprocessing import PathEncoder, ChainAggregator
 from mtdlearn.datasets import data_values3_order2_full as data
 from mtdlearn.datasets import generate_data
 import pytest
@@ -78,6 +78,26 @@ def test_path_encoder2():
     assert y_gen.shape == y_gen_rep.shape
     assert list(np.unique(y_gen_rep)) == ['A', 'B', 'C', 'D']
     assert len(list(set(x_gen_rep[0][0].split('>')) & {'A', 'B', 'C', 'D', 'X'})) > 0
+
+
+def test_chain_aggregator1():
+    x_gen = np.array([[0, 0], [0, 1]])
+    y_gen = np.array([0, 1])
+    ca = ChainAggregator()
+    result = ca.aggregate_chain(x_gen, y_gen)
+    assert np.array_equal(result, np.array([1, 0, 0, 1, 0, 0, 0, 0]))
+
+
+def test_chain_aggregator2():
+    x_gen = np.array([[1, 0, 0], [2, 2, 2]])
+    y_gen = np.array([1, 2])
+    sample_weight_gen = np.array([100, 99])
+    ca = ChainAggregator()
+    result = ca.aggregate_chain(x_gen, y_gen, sample_weight_gen)
+    assert result[28] == 100
+    assert result[80] == 99
+    assert result.shape == (81,)
+    assert result.sum() == 199
 
 
 def test_create_indexes():
