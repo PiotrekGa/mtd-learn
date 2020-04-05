@@ -27,9 +27,13 @@ def test_generate_data1():
 
 
 def test_generate_data2():
-    x_gen, y_gen = generate_data(('A', 'B', 'C'), '>', 5, 5, 3, 1000, 0.95)
+    x_gen, y_gen = generate_data(('A', 'B', 'C', 'D'), '>', 5, 5, 5, 100, 1.0)
+    assert x_gen.shape[0] == y_gen.shape[0]
+    assert y_gen.shape[0] == 100
     assert max([len(i[0].split('>')) for i in x_gen]) == 5
     assert min([len(i[0].split('>')) for i in x_gen]) == 5
+    for i, row in enumerate(x_gen):
+        assert row[0].split('>')[0] == y_gen[i]
 
 
 def test_create_indexes():
