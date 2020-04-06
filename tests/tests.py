@@ -107,13 +107,13 @@ def test_create_indexes():
 
 
 def test_manual_exp_max():
-
     indexes = data_for_tests['indexes']
     transition_matrices = data_for_tests['transition_matrices']
     lambdas = data_for_tests['lambdas']
     expected_p_array = data_for_tests['expected_p_array']
     expected_p_direct_array = data_for_tests['expected_p_direct_array']
     n_passes = data_for_tests['n_passes']
+    n_passes_direct = data_for_tests['n_passes_direct']
 
     mtd = MTD(2, 2)
 
@@ -122,9 +122,17 @@ def test_manual_exp_max():
     assert np.isclose((expectation_matrix - expected_p_array), np.zeros((8, 2))).min()
     assert np.isclose((expectation_matrix_direct - expected_p_direct_array), np.zeros((2, 2, 2))).min()
 
+    lambdas, transition_matrices = mtd._maximization_step(2, 2,
+                                                          indexes,
+                                                          n_passes,
+                                                          n_passes_direct,
+                                                          expectation_matrix,
+                                                          expectation_matrix_direct,
+                                                          transition_matrices,
+                                                          lambdas)
+
 
 def test_ex_max():
-
     for seed in range(20):
         np.random.seed(seed)
         pe = PathEncoder(2)
@@ -155,6 +163,5 @@ def test_create_markov():
 
 
 def test_init_method_error():
-
     with pytest.raises(ValueError):
         mtd = MTD(4, 3, init_method='a')
