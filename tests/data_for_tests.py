@@ -26,3 +26,5 @@ data_for_tests['expected_p_array'] = np.array([[8 / 11, 3 / 11],
                                                [2 / 11, 9 / 11],
                                                [14 / 29, 15 / 29],
                                                [2 / 7, 5 / 7]])
+
+data_for_tests['n_passes'] = np.array([100, 100, 400, 400, 100, 100, 400, 400, ])
