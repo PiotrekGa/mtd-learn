@@ -45,3 +45,14 @@ data_for_tests['n_passes_direct'] = np.array([[[500, 500],
                                                [500, 500]],
                                               [[200, 200],
                                                [800, 800]]])
+
+denominator = 1 / (data_for_tests['n_passes'].sum() - 2)
+lambda1 = denominator * np.dot(data_for_tests['expected_p_array'][:, 0], data_for_tests['n_passes'])
+lambda2 = denominator * np.dot(data_for_tests['expected_p_array'][:, 1], data_for_tests['n_passes'])
+
+lambda_sum = lambda1 + lambda2
+
+lambda1 = lambda1 / lambda_sum
+lambda2 = lambda2 / lambda_sum
+
+data_for_tests['expected_lambdas'] = np.array([lambda1, lambda2])
