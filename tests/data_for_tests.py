@@ -39,6 +39,9 @@ expected_p_direct_array = np.array(
      ])
 data_for_tests['expected_p_direct_array'] = expected_p_direct_array / expected_p_direct_array.sum(0)
 
+expected_p_direct_array2 = expected_p_direct_array.sum(2)
+data_for_tests['expected_p_direct_array2'] = expected_p_direct_array2 / expected_p_direct_array2.sum(1).reshape(-1,1)
+
 data_for_tests['n_passes'] = np.array([100, 100, 400, 400, 100, 100, 400, 400])
 
 data_for_tests['n_passes_direct'] = np.array([[[500, 500],
