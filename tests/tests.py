@@ -2,6 +2,7 @@ from mtdlearn.mtd import MTD
 from mtdlearn.preprocessing import PathEncoder, ChainAggregator
 from mtdlearn.datasets import data_values3_order2_full as data
 from mtdlearn.datasets import generate_data
+from .data_for_tests import data_for_tests
 import pytest
 import numpy as np
 import logging
@@ -106,36 +107,17 @@ def test_create_indexes():
 
 
 def test_manual_exp_max():
-    transition_matrices = np.array([[[0.4, 0.6],
-                                     [0.7, 0.3]],
-                                    [[0.1, 0.9],
-                                     [0.5, 0.5]]])
 
-    lambdas = np.array([0.4, 0.6])
-
-    indexes = [(0, 0, 0),
-               (0, 0, 1),
-               (0, 1, 0),
-               (0, 1, 1),
-               (1, 0, 0),
-               (1, 0, 1),
-               (1, 1, 0),
-               (1, 1, 1)]
-
-    expected_array = np.array([[8 / 11, 3 / 11],
-                               [12 / 39, 27 / 39],
-                               [8 / 23, 15 / 23],
-                               [12 / 27, 15 / 27],
-                               [14 / 17, 3 / 17],
-                               [2 / 11, 9 / 11],
-                               [14 / 29, 15 / 29],
-                               [2 / 7, 5 / 7]])
+    indexes = data_for_tests['indexes']
+    transition_matrices = data_for_tests['transition_matrices']
+    lambdas = data_for_tests['lambdas']
+    expected_p_array = data_for_tests['expected_p_array']
 
     mtd = MTD(2, 2)
 
     expectation_matrix = mtd._expectation_step(2, 2, indexes, transition_matrices, lambdas)[0]
 
-    assert np.isclose((expectation_matrix - expected_array), np.zeros((8, 2))).min()
+    assert np.isclose((expectation_matrix - expected_p_array), np.zeros((8, 2))).min()
 
 
 def test_ex_max():
