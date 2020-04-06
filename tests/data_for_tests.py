@@ -27,4 +27,16 @@ data_for_tests['expected_p_array'] = np.array([[8 / 11, 3 / 11],
                                                [14 / 29, 15 / 29],
                                                [2 / 7, 5 / 7]])
 
+expected_p_direct_array = np.array(
+    [[[data_for_tests['expected_p_array'][0, 0] + data_for_tests['expected_p_array'][2, 0],
+       data_for_tests['expected_p_array'][1, 0] + data_for_tests['expected_p_array'][3, 0]],
+      [data_for_tests['expected_p_array'][4, 0] + data_for_tests['expected_p_array'][6, 0],
+       data_for_tests['expected_p_array'][5, 0] + data_for_tests['expected_p_array'][7, 0]]],
+     [[data_for_tests['expected_p_array'][0, 1] + data_for_tests['expected_p_array'][4, 1],
+       data_for_tests['expected_p_array'][1, 1] + data_for_tests['expected_p_array'][5, 1]],
+      [data_for_tests['expected_p_array'][2, 1] + data_for_tests['expected_p_array'][6, 1],
+       data_for_tests['expected_p_array'][3, 1] + data_for_tests['expected_p_array'][7, 1]]]
+     ])
+data_for_tests['expected_p_direct_array'] = expected_p_direct_array / expected_p_direct_array.sum(0)
+
 data_for_tests['n_passes'] = np.array([100, 100, 400, 400, 100, 100, 400, 400, ])
