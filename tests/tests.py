@@ -112,7 +112,6 @@ def test_manual_exp_max():
     lambdas = data_for_tests['lambdas']
     expected_p_array = data_for_tests['expected_p_array']
     expected_p_direct_array = data_for_tests['expected_p_direct_array']
-    expected_p_direct_array2 = data_for_tests['expected_p_direct_array2']
     n_passes = data_for_tests['n_passes']
     n_passes_direct = data_for_tests['n_passes_direct']
     expected_lambdas = data_for_tests['expected_lambdas']
@@ -183,4 +182,3 @@ def test_n_parameters():
     assert mtd.n_parameters_ == 39
     mtd = MTD(4, 5)
     assert mtd.n_parameters_ == 48
-
