@@ -59,3 +59,9 @@ lambda1 = lambda1 / lambda_sum
 lambda2 = lambda2 / lambda_sum
 
 data_for_tests['expected_lambdas'] = np.array([lambda1, lambda2])
+
+expected_transition_matrices = np.zeros((2, 2, 2))
+expected_transition_matrices = data_for_tests['n_passes_direct'] * data_for_tests['expected_p_direct_array']
+expected_transition_matrices = expected_transition_matrices / expected_transition_matrices.sum(2).reshape(2, -1, 1)
+
+data_for_tests['expected_transition_matrices'] = expected_transition_matrices

@@ -116,6 +116,7 @@ def test_manual_exp_max():
     n_passes = data_for_tests['n_passes']
     n_passes_direct = data_for_tests['n_passes_direct']
     expected_lambdas = data_for_tests['expected_lambdas']
+    expected_transition_matrices = data_for_tests['expected_transition_matrices']
 
     mtd = MTD(2, 2)
 
@@ -133,6 +134,7 @@ def test_manual_exp_max():
     assert np.isclose((expectation_matrix - expected_p_array), np.zeros((8, 2))).min()
     assert np.isclose((expectation_matrix_direct - expected_p_direct_array), np.zeros((2, 2, 2))).min()
     assert np.isclose((expected_lambdas - lambdas), np.zeros((2,))).min()
+    assert np.isclose((expected_transition_matrices - transition_matrices), np.zeros((2, 2, 2))).min()
 
 
 def test_ex_max():
