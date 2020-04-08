@@ -42,7 +42,7 @@ class MTD(ChainAggregator, BaseEstimator):
     Attributes
     ----------
     n_parameters_: int
-        Number of independent parameters of the model
+        Number of independent parameters of the model following [1] section 2
 
     lambdas: NumPy array
         Weights vector
@@ -111,7 +111,7 @@ class MTD(ChainAggregator, BaseEstimator):
 
         self.n_dimensions = n_dimensions
         self.order = order
-        self.n_parameters_ = self.order * self.n_dimensions * (self.n_dimensions - 1) + self.order - 1
+        self.n_parameters_ = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
         self.init_method = init_method
         self.number_of_initiations = number_of_initiations
         self.transition_matrix = None

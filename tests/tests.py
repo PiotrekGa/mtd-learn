@@ -168,3 +168,17 @@ def test_create_markov():
 def test_init_method_error():
     with pytest.raises(ValueError):
         mtd = MTD(4, 3, init_method='a')
+
+
+def test_n_parameters():
+    mtd = MTD(4, 1)
+    assert mtd.n_parameters_ == 12
+    mtd = MTD(4, 2)
+    assert mtd.n_parameters_ == 21
+    mtd = MTD(4, 3)
+    assert mtd.n_parameters_ == 30
+    mtd = MTD(4, 4)
+    assert mtd.n_parameters_ == 39
+    mtd = MTD(4, 5)
+    assert mtd.n_parameters_ == 48
+
