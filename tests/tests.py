@@ -116,8 +116,12 @@ def test_manual_exp_max():
     n_passes_direct = data_for_tests['n_passes_direct']
     expected_lambdas = data_for_tests['expected_lambdas']
     expected_transition_matrices = data_for_tests['expected_transition_matrices']
+    log_likelihood1 = data_for_tests['log_likelihood1']
+    log_likelihood2 = data_for_tests['log_likelihood2']
 
     mtd = MTD(2, 2)
+
+    log_likelihood_start = mtd._calculate_log_likelihood(indexes, n_passes, transition_matrices, lambdas)
 
     expectation_matrix, expectation_matrix_direct = mtd._expectation_step(2, 2, indexes, transition_matrices, lambdas)
 
@@ -130,6 +134,10 @@ def test_manual_exp_max():
                                                           transition_matrices,
                                                           lambdas)
 
+    log_likelihood_end = mtd._calculate_log_likelihood(indexes, n_passes, transition_matrices, lambdas)
+
+    assert np.isclose((log_likelihood1 - log_likelihood_start), 0)
+    assert np.isclose((log_likelihood2 - log_likelihood_end), 0)
     assert np.isclose((expectation_matrix - expected_p_array), np.zeros((8, 2))).min()
     assert np.isclose((expectation_matrix_direct - expected_p_direct_array), np.zeros((2, 2, 2))).min()
     assert np.isclose((expected_lambdas - lambdas), np.zeros((2,))).min()

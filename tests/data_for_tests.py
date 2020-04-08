@@ -64,3 +64,75 @@ expected_transition_matrices = data_for_tests['n_passes_direct'] * data_for_test
 expected_transition_matrices = expected_transition_matrices / expected_transition_matrices.sum(2).reshape(2, -1, 1)
 
 data_for_tests['expected_transition_matrices'] = expected_transition_matrices
+
+log_likelihood1 = 0
+
+log_likelihood1 = log_likelihood1 + data_for_tests['n_passes'][0] * np.log(
+    data_for_tests['lambdas'][0] * data_for_tests['transition_matrices'][0, 0, 0] +
+    data_for_tests['lambdas'][1] * data_for_tests['transition_matrices'][1, 0, 0])
+
+log_likelihood1 = log_likelihood1 + data_for_tests['n_passes'][1] * np.log(
+    data_for_tests['lambdas'][0] * data_for_tests['transition_matrices'][0, 0, 1] +
+    data_for_tests['lambdas'][1] * data_for_tests['transition_matrices'][1, 0, 1])
+
+log_likelihood1 = log_likelihood1 + data_for_tests['n_passes'][2] * np.log(
+    data_for_tests['lambdas'][0] * data_for_tests['transition_matrices'][0, 0, 0] +
+    data_for_tests['lambdas'][1] * data_for_tests['transition_matrices'][1, 1, 0])
+
+log_likelihood1 = log_likelihood1 + data_for_tests['n_passes'][3] * np.log(
+    data_for_tests['lambdas'][0] * data_for_tests['transition_matrices'][0, 0, 1] +
+    data_for_tests['lambdas'][1] * data_for_tests['transition_matrices'][1, 1, 1])
+
+log_likelihood1 = log_likelihood1 + data_for_tests['n_passes'][4] * np.log(
+    data_for_tests['lambdas'][0] * data_for_tests['transition_matrices'][0, 1, 0] +
+    data_for_tests['lambdas'][1] * data_for_tests['transition_matrices'][1, 0, 0])
+
+log_likelihood1 = log_likelihood1 + data_for_tests['n_passes'][5] * np.log(
+    data_for_tests['lambdas'][0] * data_for_tests['transition_matrices'][0, 1, 1] +
+    data_for_tests['lambdas'][1] * data_for_tests['transition_matrices'][1, 0, 1])
+
+log_likelihood1 = log_likelihood1 + data_for_tests['n_passes'][6] * np.log(
+    data_for_tests['lambdas'][0] * data_for_tests['transition_matrices'][0, 1, 0] +
+    data_for_tests['lambdas'][1] * data_for_tests['transition_matrices'][1, 1, 0])
+
+log_likelihood1 = log_likelihood1 + data_for_tests['n_passes'][7] * np.log(
+    data_for_tests['lambdas'][0] * data_for_tests['transition_matrices'][0, 1, 1] +
+    data_for_tests['lambdas'][1] * data_for_tests['transition_matrices'][1, 1, 1])
+
+data_for_tests['log_likelihood1'] = log_likelihood1
+
+log_likelihood2 = 0
+
+log_likelihood2 = log_likelihood2 + data_for_tests['n_passes'][0] * np.log(
+    data_for_tests['expected_lambdas'][0] * data_for_tests['expected_transition_matrices'][0, 0, 0] +
+    data_for_tests['expected_lambdas'][1] * data_for_tests['expected_transition_matrices'][1, 0, 0])
+
+log_likelihood2 = log_likelihood2 + data_for_tests['n_passes'][1] * np.log(
+    data_for_tests['expected_lambdas'][0] * data_for_tests['expected_transition_matrices'][0, 0, 1] +
+    data_for_tests['expected_lambdas'][1] * data_for_tests['expected_transition_matrices'][1, 0, 1])
+
+log_likelihood2 = log_likelihood2 + data_for_tests['n_passes'][2] * np.log(
+    data_for_tests['expected_lambdas'][0] * data_for_tests['expected_transition_matrices'][0, 0, 0] +
+    data_for_tests['expected_lambdas'][1] * data_for_tests['expected_transition_matrices'][1, 1, 0])
+
+log_likelihood2 = log_likelihood2 + data_for_tests['n_passes'][3] * np.log(
+    data_for_tests['expected_lambdas'][0] * data_for_tests['expected_transition_matrices'][0, 0, 1] +
+    data_for_tests['expected_lambdas'][1] * data_for_tests['expected_transition_matrices'][1, 1, 1])
+
+log_likelihood2 = log_likelihood2 + data_for_tests['n_passes'][4] * np.log(
+    data_for_tests['expected_lambdas'][0] * data_for_tests['expected_transition_matrices'][0, 1, 0] +
+    data_for_tests['expected_lambdas'][1] * data_for_tests['expected_transition_matrices'][1, 0, 0])
+
+log_likelihood2 = log_likelihood2 + data_for_tests['n_passes'][5] * np.log(
+    data_for_tests['expected_lambdas'][0] * data_for_tests['expected_transition_matrices'][0, 1, 1] +
+    data_for_tests['expected_lambdas'][1] * data_for_tests['expected_transition_matrices'][1, 0, 1])
+
+log_likelihood2 = log_likelihood2 + data_for_tests['n_passes'][6] * np.log(
+    data_for_tests['expected_lambdas'][0] * data_for_tests['expected_transition_matrices'][0, 1, 0] +
+    data_for_tests['expected_lambdas'][1] * data_for_tests['expected_transition_matrices'][1, 1, 0])
+
+log_likelihood2 = log_likelihood2 + data_for_tests['n_passes'][7] * np.log(
+    data_for_tests['expected_lambdas'][0] * data_for_tests['expected_transition_matrices'][0, 1, 1] +
+    data_for_tests['expected_lambdas'][1] * data_for_tests['expected_transition_matrices'][1, 1, 1])
+
+data_for_tests['log_likelihood2'] = log_likelihood2
