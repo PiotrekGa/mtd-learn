@@ -174,11 +174,6 @@ def test_create_markov():
     assert mtd.transition_matrix.shape == (9, 3)
 
 
-def test_init_method_error():
-    with pytest.raises(ValueError):
-        mtd = MTD(4, 3, init_method='a')
-
-
 def test_n_parameters():
     mtd = MTD(4, 1)
     assert mtd.n_parameters_ == 12

@@ -20,9 +20,6 @@ class MTD(ChainAggregator, BaseEstimator):
     order: int
         Number of lags of the model.
 
-    init_method: string, optional (default='random')
-        The method to initialize MTD lambdas and transition matrices. Also 'flat' is available.
-
     number_of_initiations: int, optional (default=10)
         Number of parameters sets to be initiated. 1 is minimum.
 
@@ -102,7 +99,6 @@ class MTD(ChainAggregator, BaseEstimator):
     def __init__(self,
                  n_dimensions,
                  order,
-                 init_method='random',
                  number_of_initiations=10,
                  max_iter=100,
                  min_gain=0.1,
@@ -112,7 +108,6 @@ class MTD(ChainAggregator, BaseEstimator):
         self.n_dimensions = n_dimensions
         self.order = order
         self.n_parameters_ = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
-        self.init_method = init_method
         self.number_of_initiations = number_of_initiations
         self.transition_matrix = None
         self.log_likelihood = None
@@ -131,9 +126,6 @@ class MTD(ChainAggregator, BaseEstimator):
         self.indexes_ = []
         for i in idx_gen:
             self.indexes_.append(i)
-
-        if init_method not in ['random', 'flat']:
-            raise ValueError(f'no such initialization method: {self.init_method}')
 
     def fit(self, x, y, sample_weight=None):
 
@@ -156,7 +148,6 @@ class MTD(ChainAggregator, BaseEstimator):
                                                                         self.min_gain,
                                                                         self.max_iter,
                                                                         self.verbose,
-                                                                        self.init_method,
                                                                         n_direct)
                                                   for _ in range(self.number_of_initiations))
 
@@ -186,16 +177,12 @@ class MTD(ChainAggregator, BaseEstimator):
         return prob.argmax(axis=1)
 
     @staticmethod
-    def _fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, init_method, n_direct):
+    def _fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, n_direct):
 
-        if init_method == 'flat':
-            lambdas = np.ones(order) / order
-            transition_matrices = np.ones((order, n_dimensions, n_dimensions)) / n_dimensions
-        else:
-            lambdas = np.random.rand(order)
-            lambdas = lambdas / lambdas.sum()
-            transition_matrices = np.random.rand(order, n_dimensions, n_dimensions)
-            transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(order, n_dimensions, 1)
+        lambdas = np.random.rand(order)
+        lambdas = lambdas / lambdas.sum()
+        transition_matrices = np.random.rand(order, n_dimensions, n_dimensions)
+        transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(order, n_dimensions, 1)
 
         iteration = 0
         gain = min_gain * 2
