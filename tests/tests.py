@@ -108,8 +108,8 @@ def test_create_indexes():
 
 def test_manual_exp_max():
     indexes = data_for_tests['indexes']
-    transition_matrices = data_for_tests['transition_matrices']
-    lambdas = data_for_tests['lambdas']
+    transition_matrices = data_for_tests['transition_matrices'].copy()
+    lambdas = data_for_tests['lambdas'].copy()
     expected_p_array = data_for_tests['expected_p_array']
     expected_p_direct_array = data_for_tests['expected_p_direct_array']
     n_passes = data_for_tests['n_passes']
@@ -125,23 +125,62 @@ def test_manual_exp_max():
 
     expectation_matrix, expectation_matrix_direct = mtd._expectation_step(2, 2, indexes, transition_matrices, lambdas)
 
-    lambdas, transition_matrices = mtd._maximization_step(2, 2,
-                                                          indexes,
-                                                          n_passes,
-                                                          n_passes_direct,
-                                                          expectation_matrix,
-                                                          expectation_matrix_direct,
-                                                          transition_matrices,
-                                                          lambdas)
+    lambdas_out, transition_matrices_out = mtd._maximization_step(2, 2,
+                                                                  indexes,
+                                                                  n_passes,
+                                                                  n_passes_direct,
+                                                                  expectation_matrix,
+                                                                  expectation_matrix_direct,
+                                                                  transition_matrices,
+                                                                  lambdas)
 
-    log_likelihood_end = mtd._calculate_log_likelihood(indexes, n_passes, transition_matrices, lambdas)
+    log_likelihood_end = mtd._calculate_log_likelihood(indexes, n_passes, transition_matrices_out, lambdas_out)
 
     assert np.isclose((log_likelihood1 - log_likelihood_start), 0)
     assert np.isclose((log_likelihood2 - log_likelihood_end), 0)
     assert np.isclose((expectation_matrix - expected_p_array), np.zeros((8, 2))).min()
     assert np.isclose((expectation_matrix_direct - expected_p_direct_array), np.zeros((2, 2, 2))).min()
-    assert np.isclose((expected_lambdas - lambdas), np.zeros((2,))).min()
-    assert np.isclose((expected_transition_matrices - transition_matrices), np.zeros((2, 2, 2))).min()
+    assert np.isclose((expected_lambdas - lambdas_out), np.zeros((2,))).min()
+    assert np.isclose((expected_transition_matrices - transition_matrices_out), np.zeros((2, 2, 2))).min()
+
+
+def test_one_fit():
+    indexes = data_for_tests['indexes']
+    transition_matrices = data_for_tests['transition_matrices'].copy()
+    lambdas = data_for_tests['lambdas'].copy()
+    n_passes = data_for_tests['n_passes']
+    n_passes_direct = data_for_tests['n_passes_direct']
+    expected_lambdas = data_for_tests['expected_lambdas']
+    expected_transition_matrices = data_for_tests['expected_transition_matrices']
+    expected_log_likelihood = data_for_tests['log_likelihood2']
+
+    mtd = MTD(2, 2)
+    log_likelihood, lambdas_out, transition_matrices_out = mtd._fit_one(x=n_passes,
+                                                                        indexes=indexes,
+                                                                        order=2,
+                                                                        n_dimensions=2,
+                                                                        min_gain=1.0,
+                                                                        max_iter=1,
+                                                                        verbose=0,
+                                                                        n_direct=n_passes_direct,
+                                                                        lambdas=lambdas,
+                                                                        transition_matrices=transition_matrices)
+
+    assert np.isclose(log_likelihood - expected_log_likelihood, 0.0)
+    assert np.isclose(lambdas_out - expected_lambdas, np.zeros(2)).min()
+    assert np.isclose(expected_transition_matrices - transition_matrices_out, np.zeros((2, 2))).min()
+
+
+def test_fit_with_init():
+    transition_matrices = data_for_tests['transition_matrices'].copy()
+    lambdas = data_for_tests['lambdas'].copy()
+    pe = PathEncoder(2)
+    pe.fit(x, y)
+    x_tr, y_tr = pe.transform(x, y)
+    mtd = MTD(2, 2, max_iter=0, verbose=0, lambdas_init=lambdas, transition_matrices_init=transition_matrices)
+    mtd.fit(x_tr, y_tr)
+    assert np.isclose(mtd.transition_matrices - transition_matrices, np.zeros((2, 2))).min()
+    assert np.isclose(mtd.lambdas - lambdas, np.zeros(2)).min()
 
 
 def test_ex_max():

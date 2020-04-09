@@ -3,11 +3,11 @@ from itertools import product
 from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
 from mtdlearn.preprocessing import ChainAggregator
+
 np.seterr(divide='ignore', invalid='ignore')
 
 
 class MTD(ChainAggregator, BaseEstimator):
-
     """
     Mixture Transition Distribution (MTD) model with separate transition matrices for each lag.
 
@@ -102,6 +102,8 @@ class MTD(ChainAggregator, BaseEstimator):
                  number_of_initiations=10,
                  max_iter=100,
                  min_gain=0.1,
+                 lambdas_init=None,
+                 transition_matrices_init=None,
                  verbose=1,
                  n_jobs=-1):
 
@@ -116,6 +118,8 @@ class MTD(ChainAggregator, BaseEstimator):
         self.samples = None
         self.lambdas = None
         self.transition_matrices = None
+        self.lambdas_init = lambdas_init
+        self.transition_matrices_init = transition_matrices_init
         self.max_iter = max_iter
         self.min_gain = min_gain
         self.verbose = verbose
@@ -148,7 +152,9 @@ class MTD(ChainAggregator, BaseEstimator):
                                                                         self.min_gain,
                                                                         self.max_iter,
                                                                         self.verbose,
-                                                                        n_direct)
+                                                                        n_direct,
+                                                                        self.lambdas_init,
+                                                                        self.transition_matrices_init)
                                                   for _ in range(self.number_of_initiations))
 
         self.log_likelihood, self.lambdas, self.transition_matrices = self._select_the_best_candidate(candidates)
@@ -177,12 +183,15 @@ class MTD(ChainAggregator, BaseEstimator):
         return prob.argmax(axis=1)
 
     @staticmethod
-    def _fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, n_direct):
+    def _fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, n_direct, lambdas=None,
+                 transition_matrices=None):
 
-        lambdas = np.random.rand(order)
-        lambdas = lambdas / lambdas.sum()
-        transition_matrices = np.random.rand(order, n_dimensions, n_dimensions)
-        transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(order, n_dimensions, 1)
+        if lambdas is None:
+            lambdas = np.random.rand(order)
+            lambdas = lambdas / lambdas.sum()
+        if transition_matrices is None:
+            transition_matrices = np.random.rand(order, n_dimensions, n_dimensions)
+            transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(order, n_dimensions, 1)
 
         iteration = 0
         gain = min_gain * 2
@@ -254,7 +263,7 @@ class MTD(ChainAggregator, BaseEstimator):
                                    in enumerate(lambdas)]
 
         p_expectation = p_expectation / p_expectation.sum(axis=1).reshape(-1, 1)
-        p_expectation = np.nan_to_num(p_expectation, nan=1./order)
+        p_expectation = np.nan_to_num(p_expectation, nan=1. / order)
 
         p_expectation_direct = np.zeros((order, n_dimensions, n_dimensions))
 
