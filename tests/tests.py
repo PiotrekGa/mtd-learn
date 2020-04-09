@@ -224,3 +224,38 @@ def test_n_parameters():
     assert mtd.n_parameters_ == 39
     mtd = MTD(4, 5)
     assert mtd.n_parameters_ == 48
+
+
+def test_predict():
+    transition_matrices = data_for_tests['transition_matrices'].copy()
+    lambdas = data_for_tests['lambdas'].copy()
+    pe = PathEncoder(2)
+    pe.fit(x, y)
+    x_tr, y_tr = pe.transform(x, y)
+    mtd = MTD(2, 2,
+              max_iter=0,
+              verbose=0,
+              number_of_initiations=1,
+              lambdas_init=lambdas,
+              transition_matrices_init=transition_matrices)
+    mtd.fit(x_tr, y_tr)
+    assert np.array_equal(mtd.predict(np.array([[0, 0], [0, 1], [1, 0], [1, 1]])), np.array([1, 1, 1, 0]))
+
+
+def test_predict_proba():
+    transition_matrices = data_for_tests['transition_matrices'].copy()
+    lambdas = data_for_tests['lambdas'].copy()
+    pe = PathEncoder(2)
+    pe.fit(x, y)
+    x_tr, y_tr = pe.transform(x, y)
+    mtd = MTD(2, 2,
+              max_iter=0,
+              verbose=0,
+              number_of_initiations=1,
+              lambdas_init=lambdas,
+              transition_matrices_init=transition_matrices)
+    mtd.fit(x_tr, y_tr)
+    assert np.isclose(mtd.predict_proba(np.array([[0, 0], [0, 1], [1, 0], [1, 1]])), np.array([[0.22, 0.78],
+                                                                                               [0.46, 0.54],
+                                                                                               [0.34, 0.66],
+                                                                                               [0.58, 0.42]])).min()
