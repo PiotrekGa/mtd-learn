@@ -124,37 +124,37 @@ class MTD(_ChainBaseEstimator):
 
     Example
     ----------
-    >>> import numpy as np
-    >>> from mtdlearn.mtd import MTD
+    import numpy as np
+    from mtdlearn.mtd import MTD
 
-    >>> np.random.seed(42)
+    np.random.seed(42)
 
-    >>> n_dimensions = 3
-    >>> order = 2
+    n_dimensions = 3
+    order = 2
 
-    >>> m = MTD(n_dimensions, order, n_jobs=-1)
+    m = MTD(n_dimensions, order, n_jobs=-1)
 
-    >>> x = np.array([[0, 0],
-    ...               [1, 1],
-    ...               [2, 2],
-    ...               [0, 1],
-    ...               [2, 1],
-    ...               [2, 0],
-    ...               [0, 1],
-    ...               [2, 1],
-    ...               [1, 1],
-    ...               [1, 0]])
-    >>> y = np.array([0, 0, 2, 1, 1, 2, 0, 1, 2, 1])
+    x = np.array([[0, 0],
+                  [1, 1],
+                  [2, 2],
+                  [0, 1],
+                  [2, 1],
+                  [2, 0],
+                  [0, 1],
+                  [2, 1],
+                  [1, 1],
+                  [1, 0]])
+    y = np.array([0, 0, 2, 1, 1, 2, 0, 1, 2, 1])
 
-    >>> m.fit(x, y)
+    m.fit(x, y)
 
-    >>> x = np.array([[0, 0],
-    ...               [1, 1],
-    ...               [2, 2]])
+    x = np.array([[0, 0],
+                  [1, 1],
+                  [2, 2]])
 
-    >>> m.predict_proba(x)
+    m.predict_proba(x)
 
-    >>> m.predict(x)
+    m.predict(x)
 
     References
     ----------
