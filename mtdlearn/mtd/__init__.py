@@ -1,1 +1,1 @@
-from .src import MTD, ChainBaseEstimator
+from .src import MTD, _ChainBaseEstimator
