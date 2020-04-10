@@ -3,11 +3,7 @@ from mtdlearn.preprocessing import PathEncoder, ChainAggregator
 from mtdlearn.datasets import data_values3_order2_full as data
 from mtdlearn.datasets import generate_data
 from .data_for_tests import data_for_tests
-import pytest
 import numpy as np
-import logging
-
-logger = logging.getLogger(__name__)
 
 x = data['x']
 y = data['y']
