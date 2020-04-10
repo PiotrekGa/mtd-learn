@@ -48,6 +48,14 @@ class _ChainBaseEstimator(BaseEstimator):
         self.bic = -2 * self.log_likelihood + np.log(self.samples) * self.n_parameters_
 
     def predict_proba(self, x):
+        """
+        Probability estimates.
+
+        The returned estimates for all states are ordered by the
+        label of state.
+        :param x: NumPy array of shape (n_samples, order)
+        :return:  NumPy array of shape (n_samples, n_dimensions)
+        """
 
         idx = []
         for i in range(x.shape[1]):
@@ -58,6 +66,12 @@ class _ChainBaseEstimator(BaseEstimator):
         return self.transition_matrix[indexes, :]
 
     def predict(self, x):
+        """
+        Predict state.
+
+        :param x: NumPy array of shape (n_samples, order)
+        :return:  NumPy array of shape (n_samples,)
+        """
 
         prob = self.predict_proba(x)
 
