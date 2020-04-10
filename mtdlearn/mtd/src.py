@@ -6,7 +6,7 @@ from sklearn.base import BaseEstimator
 np.seterr(divide='ignore', invalid='ignore')
 
 
-class ChainAggregator:
+class ChainBaseEstimator:
 
     @staticmethod
     def aggregate_chain(x, y, sample_weight=None):
@@ -31,7 +31,7 @@ class ChainAggregator:
         return np.array(list(values_dict.values()))
 
 
-class MTD(ChainAggregator, BaseEstimator):
+class MTD(ChainBaseEstimator, BaseEstimator):
     """
     Mixture Transition Distribution (MTD) model with separate transition matrices for each lag.
 
