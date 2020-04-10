@@ -8,12 +8,14 @@ np.seterr(divide='ignore', invalid='ignore')
 
 class ChainBaseEstimator(BaseEstimator):
 
-    def __init__(self):
+    def __init__(self, n_dimensions=None):
         self.log_likelihood = None
         self.aic = None
         self.bic = None
         self.n_parameters_ = None
         self.samples = None
+        self.n_dimensions = n_dimensions
+        self.transition_matrix = None
 
     @staticmethod
     def aggregate_chain(x, y, sample_weight=None):
@@ -44,6 +46,22 @@ class ChainBaseEstimator(BaseEstimator):
     def _calculate_bic(self):
 
         self.bic = -2 * self.log_likelihood + np.log(self.samples) * self.n_parameters_
+
+    def predict_proba(self, x):
+
+        idx = []
+        for i in range(x.shape[1]):
+            idx.append(self.n_dimensions ** i)
+        idx = np.array(idx[::-1])
+        indexes = np.dot(x, idx)
+
+        return self.transition_matrix[indexes, :]
+
+    def predict(self, x):
+
+        prob = self.predict_proba(x)
+
+        return prob.argmax(axis=1)
 
 
 class MTD(ChainBaseEstimator):
@@ -138,12 +156,10 @@ class MTD(ChainBaseEstimator):
     def __init__(self, n_dimensions, order, number_of_initiations=10, max_iter=100, min_gain=0.1, lambdas_init=None,
                  transition_matrices_init=None, verbose=1, n_jobs=-1):
 
-        super().__init__()
-        self.n_dimensions = n_dimensions
+        super().__init__(n_dimensions)
         self.order = order
         self.n_parameters_ = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
         self.number_of_initiations = number_of_initiations
-        self.transition_matrix = None
         self.lambdas = None
         self.transition_matrices = None
         self.lambdas_init = lambdas_init
@@ -193,22 +209,6 @@ class MTD(ChainBaseEstimator):
         self._create_markov()
         self._calculate_aic()
         self._calculate_bic()
-
-    def predict_proba(self, x):
-
-        idx = []
-        for i in range(x.shape[1]):
-            idx.append(self.n_dimensions ** i)
-        idx = np.array(idx[::-1])
-        indexes = np.dot(x, idx)
-
-        return self.transition_matrix[indexes, :]
-
-    def predict(self, x):
-
-        prob = self.predict_proba(x)
-
-        return prob.argmax(axis=1)
 
     @staticmethod
     def _fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, n_direct, lambdas=None,
