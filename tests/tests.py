@@ -1,5 +1,5 @@
-from mtdlearn.mtd import MTD
-from mtdlearn.preprocessing import PathEncoder, ChainAggregator
+from mtdlearn.mtd import MTD, ChainAggregator
+from mtdlearn.preprocessing import PathEncoder
 from mtdlearn.datasets import data_values3_order2_full as data
 from mtdlearn.datasets import generate_data
 from .data_for_tests import data_for_tests

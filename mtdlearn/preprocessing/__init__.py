@@ -1,1 +1,1 @@
-from .src import PathEncoder, ChainAggregator
+from .src import PathEncoder
