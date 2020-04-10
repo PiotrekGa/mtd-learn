@@ -1,8 +1,5 @@
 import numpy as np
 from sklearn.base import TransformerMixin, BaseEstimator
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 class ChainAggregator:
