@@ -8,6 +8,13 @@ np.seterr(divide='ignore', invalid='ignore')
 
 class ChainBaseEstimator(BaseEstimator):
 
+    def __init__(self):
+        self.log_likelihood = None
+        self.aic = None
+        self.bic = None
+        self.n_parameters_ = None
+        self.samples = None
+
     @staticmethod
     def aggregate_chain(x, y, sample_weight=None):
 
@@ -29,6 +36,14 @@ class ChainBaseEstimator(BaseEstimator):
             values_dict[index] += sample_weight[n]
 
         return np.array(list(values_dict.values()))
+
+    def _calculate_aic(self):
+
+        self.aic = -2 * self.log_likelihood + 2 * self.n_parameters_
+
+    def _calculate_bic(self):
+
+        self.bic = -2 * self.log_likelihood + np.log(self.samples) * self.n_parameters_
 
 
 class MTD(ChainBaseEstimator):
@@ -120,26 +135,15 @@ class MTD(ChainBaseEstimator):
 
     """
 
-    def __init__(self,
-                 n_dimensions,
-                 order,
-                 number_of_initiations=10,
-                 max_iter=100,
-                 min_gain=0.1,
-                 lambdas_init=None,
-                 transition_matrices_init=None,
-                 verbose=1,
-                 n_jobs=-1):
+    def __init__(self, n_dimensions, order, number_of_initiations=10, max_iter=100, min_gain=0.1, lambdas_init=None,
+                 transition_matrices_init=None, verbose=1, n_jobs=-1):
 
+        super().__init__()
         self.n_dimensions = n_dimensions
         self.order = order
         self.n_parameters_ = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
         self.number_of_initiations = number_of_initiations
         self.transition_matrix = None
-        self.log_likelihood = None
-        self.aic = None
-        self.bic = None
-        self.samples = None
         self.lambdas = None
         self.transition_matrices = None
         self.lambdas_init = lambdas_init
@@ -332,14 +336,6 @@ class MTD(ChainBaseEstimator):
             transition_matrix_list.append(np.dot(t_matrix_part,
                                                  self.lambdas))
         self.transition_matrix = np.array(transition_matrix_list)
-
-    def _calculate_aic(self):
-
-        self.aic = -2 * self.log_likelihood + 2 * self.n_parameters_
-
-    def _calculate_bic(self):
-
-        self.bic = -2 * self.log_likelihood + np.log(self.samples) * self.n_parameters_
 
     @staticmethod
     def _select_the_best_candidate(candidates):
