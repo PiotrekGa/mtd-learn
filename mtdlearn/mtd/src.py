@@ -185,6 +185,17 @@ class MTD(_ChainBaseEstimator):
             self.indexes_.append(i)
 
     def fit(self, x, y, sample_weight=None):
+        """
+        Fit MTD model.
+
+        :param x: NumPy array of shape (n_samples, order)
+                  Training data
+        :param y: NumPy array of shape (n_samples,)
+                  Target values
+        :param sample_weight: NumPy array of shape (n_samples,), default=None
+                              Individual weights for each sample
+        :return: self
+        """
 
         if sample_weight is not None:
             self.samples = sample_weight.sum()
