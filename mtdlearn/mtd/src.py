@@ -86,6 +86,12 @@ class MTD(_ChainBaseEstimator):
     min_gain: float, optional (default=0.1)
         Minimum change of the log-likelihood function value for a step in the EM optimization algorithm.
 
+    lambdas_init: NumPy array, optional (default=None)
+        Starting value for lambdas.
+
+    transition_matrices_init: NumPy array, optional (default=None)
+        Starting value for transition_matrices.
+
     verbose: int, optional (default=1)
         Controls the verbosity when fitting and predicting.
 
@@ -112,6 +118,9 @@ class MTD(_ChainBaseEstimator):
 
     aic: float
         Value of the Akaike's Information Criterion (AIC)
+
+    bic: float
+        Value of the Bayesian Information Criterion (BIC)
 
     Example
     ----------
