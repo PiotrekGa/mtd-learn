@@ -69,7 +69,7 @@ model.lambdas.round(3)
 
 model.transition_matrices.round(3)
 
-sns.barplot(x=[i for i in range(model.order)], y=model.lambdas, palette='Reds');
+sns.barplot(x=[f'{abs(i-3)} lag' for i in range(model.order)], y=model.lambdas, palette='Reds');
 
 # +
 fig, axn = plt.subplots(1, 3, sharex=True, sharey=True, figsize=(12, 4))
