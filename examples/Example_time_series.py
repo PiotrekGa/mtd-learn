@@ -16,6 +16,7 @@
 # +
 import pandas as pd
 import numpy as np
+import seaborn as sns
 
 from mtdlearn.mtd import MTD
 from mtdlearn.preprocessing import PathEncoder
@@ -45,11 +46,14 @@ y = df.Change_enc
 
 x = x.values.astype(str).reshape(-1, 1)
 y = y.values.astype(str)
-# -
 
 df.Change_enc.value_counts().sort_index()
+# -
 
-# ## Encode paths
+# ## Fit models
+
+aics = []
+bics = []
 
 # +
 order = 1
@@ -60,6 +64,8 @@ x_tr, y_tr = pe.transform(x, y)
 
 model = MTD(n_dimensions=4, order=order, n_jobs=-1, number_of_initiations=100)
 model.fit(x_tr, y_tr)
+aics.append(model.aic)
+bics.append(model.bic)
 
 print(model.aic.round(1), model.bic.round(1))
 
@@ -72,6 +78,8 @@ x_tr, y_tr = pe.transform(x, y)
 
 model = MTD(n_dimensions=4, order=order, n_jobs=-1, number_of_initiations=100)
 model.fit(x_tr, y_tr)
+aics.append(model.aic)
+bics.append(model.bic)
 
 print(model.aic.round(1), model.bic.round(1))
 
@@ -84,6 +92,8 @@ x_tr, y_tr = pe.transform(x, y)
 
 model = MTD(n_dimensions=4, order=order, n_jobs=-1, number_of_initiations=100)
 model.fit(x_tr, y_tr)
+aics.append(model.aic)
+bics.append(model.bic)
 
 print(model.aic.round(1), model.bic.round(1))
 
@@ -96,5 +106,13 @@ x_tr, y_tr = pe.transform(x, y)
 
 model = MTD(n_dimensions=4, order=order, n_jobs=-1, number_of_initiations=100)
 model.fit(x_tr, y_tr)
+aics.append(model.aic)
+bics.append(model.bic)
 
 print(model.aic.round(1), model.bic.round(1))
+# -
+
+# ## Choose model
+
+sns.lineplot(x=[1, 2, 3, 4], y=aics)
+sns.lineplot(x=[1, 2, 3, 4], y=bics);
