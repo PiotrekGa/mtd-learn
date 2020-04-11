@@ -32,6 +32,8 @@ x = data_values3_order2_full['x']
 y = data_values3_order2_full['y']
 sample_weight = data_values3_order2_full['sample_weight']
 
+x
+
 x[:5]
 
 y[:5]
