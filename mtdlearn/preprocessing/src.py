@@ -46,7 +46,15 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         self.label_dict_inverse = None
 
     def fit(self, x, y=None):
+        """
+        Fit encoder.
 
+        :param x: NumPy array of shape (n_samples, 1)
+                  Array with string paths
+        :param y: NumPy array of shape (n_samples,), default=None
+                  Target values
+        :return: self
+        """
         x = np.char.split(x, self.sep)
 
         unique_keys = [[self.r_just_string]]
@@ -66,6 +74,16 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         return self
 
     def transform(self, x, y=None):
+        """
+        Transform inputs from string paths into integer array.
+
+        :param x: NumPy array of shape (n_samples, 1)
+                  Array with string paths
+        :param y: NumPy array of shape (n_samples,), default=None
+                  Target values
+        :return: NumPy array of shape (n_samples, order)
+        :return: NumPy array of shape (n_samples,), if y is not None
+        """
 
         x_new = []
         for i in x[:, 0]:
@@ -80,7 +98,16 @@ class PathEncoder(TransformerMixin, BaseEstimator):
             return np.array(x_new), np.vectorize(self.label_dict.get)(y)
 
     def inverse_transform(self, x, y=None):
+        """
+        Transform inputs from integer array into string paths.
 
+        :param x: NumPy array of shape (n_samples, order)
+                  Array with integer encoded paths
+        :param y: NumPy array of shape (n_samples,), default=None
+                  Encoded target values
+        :return: NumPy array of shape (n_samples, 1)
+        :return: NumPy array of shape (n_samples,), if y is not None
+        """
         x_rev = []
         for i in x.tolist():
             seq_mapped = self.sep.join(list(map(self.label_dict_inverse.get, i)))
