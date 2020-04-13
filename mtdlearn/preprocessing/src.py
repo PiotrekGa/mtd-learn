@@ -4,6 +4,40 @@ from sklearn.base import TransformerMixin, BaseEstimator
 
 class PathEncoder(TransformerMixin, BaseEstimator):
 
+    """
+    Encoding of string paths into NumPy array
+
+    Parameters
+    ----------
+    order: int
+        Number of states to be encoded
+    sep: str, optional (default='>')
+        Separator between states
+    r_just_string: instr, optional (default='>')t
+        String to be placed where path is too short
+
+    Attributes
+    ----------
+    label_dict: dict
+        Dictionary mapping original values to encoded integers
+
+    label_dict_inverse: dict
+        Dictionary mapping encoded integers to original values
+
+    Example
+    ----------
+    import numpy as np
+    from mtdlearn.preprocessing import PathEncoder
+
+    x = np.array([['A>B'], ['B>A'], ['C']])
+    y = np.array(['A', 'B', 'D'])
+
+    pe = PathEncoder(2)
+    pe.fit(x, y)
+    x_tr, y_tr = pe.transform(x, y)
+
+    """
+
     def __init__(self, order, sep='>', r_just_string='null'):
         self.order = order
         self.sep = sep
