@@ -108,10 +108,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         :return: NumPy array of shape (n_samples, 1)
         :return: NumPy array of shape (n_samples,), if y is not None
         """
-        x_rev = []
-        for i in x.tolist():
-            seq_mapped = self.sep.join(list(map(self.label_dict_inverse.get, i)))
-            x_rev.append(seq_mapped)
+        x_rev = [self.sep.join(list(map(self.label_dict_inverse.get, i))) for i in x.tolist()]
 
         if y is None:
             return np.array(x_rev).reshape(-1, 1)
