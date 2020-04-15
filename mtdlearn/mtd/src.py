@@ -15,7 +15,15 @@ class _ChainBaseEstimator(BaseEstimator):
         self.n_parameters_ = None
         self.samples = None
         self.n_dimensions = n_dimensions
-        self.transition_matrix = None
+        self._transition_matrix = None
+
+    @property
+    def transition_matrix(self):
+        return self._transition_matrix
+
+    @transition_matrix.setter
+    def transition_matrix(self, new_transition_matrix):
+        self._transition_matrix = new_transition_matrix
 
     @staticmethod
     def aggregate_chain(x, y, sample_weight=None):
