@@ -211,15 +211,15 @@ def test_create_markov():
 
 def test_n_parameters():
     mtd = MTD(4, 1)
-    assert mtd.n_parameters_ == 12
+    assert mtd._n_parameters == 12
     mtd = MTD(4, 2)
-    assert mtd.n_parameters_ == 21
+    assert mtd._n_parameters == 21
     mtd = MTD(4, 3)
-    assert mtd.n_parameters_ == 30
+    assert mtd._n_parameters == 30
     mtd = MTD(4, 4)
-    assert mtd.n_parameters_ == 39
+    assert mtd._n_parameters == 39
     mtd = MTD(4, 5)
-    assert mtd.n_parameters_ == 48
+    assert mtd._n_parameters == 48
 
 
 def test_predict():

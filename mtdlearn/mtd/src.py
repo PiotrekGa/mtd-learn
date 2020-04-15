@@ -12,7 +12,7 @@ class _ChainBaseEstimator(BaseEstimator):
         self.log_likelihood = None
         self.aic = None
         self.bic = None
-        self.n_parameters_ = None
+        self._n_parameters = None
         self.samples = None
         self.n_dimensions = n_dimensions
         self._transition_matrix = None
@@ -49,11 +49,11 @@ class _ChainBaseEstimator(BaseEstimator):
 
     def _calculate_aic(self):
 
-        self.aic = -2 * self.log_likelihood + 2 * self.n_parameters_
+        self.aic = -2 * self.log_likelihood + 2 * self._n_parameters
 
     def _calculate_bic(self):
 
-        self.bic = -2 * self.log_likelihood + np.log(self.samples) * self.n_parameters_
+        self.bic = -2 * self.log_likelihood + np.log(self.samples) * self._n_parameters
 
     def predict_proba(self, x):
         """
@@ -123,7 +123,7 @@ class MTD(_ChainBaseEstimator):
 
     Attributes
     ----------
-    n_parameters_: int
+    _n_parameters: int
         Number of independent parameters of the model following [1] section 2
 
     lambdas: NumPy array
@@ -189,7 +189,7 @@ class MTD(_ChainBaseEstimator):
 
         super().__init__(n_dimensions)
         self.order = order
-        self.n_parameters_ = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
+        self._n_parameters = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
         self.number_of_initiations = number_of_initiations
         self.lambdas = None
         self.transition_matrices = None
