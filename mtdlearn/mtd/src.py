@@ -202,9 +202,9 @@ class MTD(_ChainBaseEstimator):
 
         idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
 
-        self.indexes_ = []
+        self._indexes = []
         for i in idx_gen:
-            self.indexes_.append(i)
+            self._indexes.append(i)
 
     def fit(self, x, y, sample_weight=None):
         """
@@ -227,12 +227,12 @@ class MTD(_ChainBaseEstimator):
         x = self.aggregate_chain(x, y, sample_weight)
 
         n_direct = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
-        for i, idx in enumerate(self.indexes_):
+        for i, idx in enumerate(self._indexes):
             for j, k in enumerate(idx[:-1]):
                 n_direct[j, k, idx[-1]] += x[i]
 
         candidates = Parallel(n_jobs=self.n_jobs)(delayed(MTD._fit_one)(x,
-                                                                        self.indexes_,
+                                                                        self._indexes,
                                                                         self.order,
                                                                         self.n_dimensions,
                                                                         self.min_gain,

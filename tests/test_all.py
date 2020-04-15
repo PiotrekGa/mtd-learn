@@ -99,7 +99,7 @@ def test_chain_aggregator2():
 
 def test_create_indexes():
     mtd = MTD(4, 3)
-    assert len(mtd.indexes_) == 256
+    assert len(mtd._indexes) == 256
 
 
 def test_manual_exp_max():
