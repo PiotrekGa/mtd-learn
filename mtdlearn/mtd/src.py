@@ -403,8 +403,16 @@ class MarkovChain(_ChainBaseEstimator):
         self._n_parameters = (self.n_dimensions ** self.order) * (self.n_dimensions - 1)
         self.verbose = verbose
 
-    def fit(self):
-        raise NotImplementedError
+    def fit(self, x, y, sample_weight=None):
+
+        if sample_weight is not None:
+            self.samples = sample_weight.sum()
+        else:
+            self.samples = y.shape[0]
+
+        transition_matrix = self.aggregate_chain(x, y, sample_weight)
+        transition_matrix = transition_matrix.reshape(-1, self.n_dimensions)
+        self.transition_matrix = transition_matrix / transition_matrix.sum(1).reshape(-1, 1)
 
     def _calculate_log_likelihood(self):
         raise NotImplementedError

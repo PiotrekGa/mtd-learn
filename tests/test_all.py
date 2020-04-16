@@ -274,3 +274,17 @@ def test_markovchain_init():
     assert m._n_parameters == 500
     m = MarkovChain(5, 4)
     assert m._n_parameters == 2500
+
+
+def test_mc_fit():
+    x = np.array([[0, 0], [0, 0], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1], [1, 1]])
+    y = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+    sw = np.array([50, 50, 10, 90, 80, 20, 49, 51])
+    target_matrix = np.array([[0.5, 0.5],
+                              [0.1, 0.9],
+                              [0.8, 0.2],
+                              [0.49, 0.51]])
+
+    m = MarkovChain(2, 2)
+    m.fit(x, y, sw)
+    assert np.array_equal(m.transition_matrix, target_matrix)
