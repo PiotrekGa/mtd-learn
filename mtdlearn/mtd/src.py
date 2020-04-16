@@ -245,7 +245,7 @@ class MTD(_ChainBaseEstimator):
         self.log_likelihood, self.lambdas, self.transition_matrices = self._select_the_best_candidate(candidates)
 
         if self.verbose > 0:
-            print(f'best value: {self.log_likelihood}')
+            print(f'log-likelihood value: {self.log_likelihood}')
 
         self._create_markov()
         self._calculate_aic()
@@ -417,6 +417,9 @@ class MarkovChain(_ChainBaseEstimator):
         self._calculate_log_likelihood(transition_matrix_num)
         self._calculate_aic()
         self._calculate_bic()
+
+        if self.verbose > 0:
+            print(f'log-likelihood value: {self.log_likelihood}')
 
     def _calculate_log_likelihood(self, transition_matrix_num):
         logs = np.nan_to_num(np.log(self.transition_matrix), nan=0.0)
