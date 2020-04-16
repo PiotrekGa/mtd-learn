@@ -18,7 +18,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 
-from mtdlearn.mtd import MTD
+from mtdlearn.mtd import MTD, RandomWalk
 from mtdlearn.preprocessing import PathEncoder
 
 # +
@@ -54,6 +54,20 @@ df.Change_enc.value_counts().sort_index()
 
 aics = []
 bics = []
+
+# +
+order = 0
+pe = PathEncoder(order)
+pe.fit(x, y)
+
+x_tr, y_tr = pe.transform(x, y)
+
+model = RandomWalk(n_dimensions=4)
+model.fit(y_tr)
+aics.append(model.aic)
+bics.append(model.bic)
+
+print(model.aic.round(1), model.bic.round(1))
 
 # +
 order = 1
@@ -114,5 +128,5 @@ print(model.aic.round(1), model.bic.round(1))
 
 # ## Choose model
 
-sns.lineplot(x=[1, 2, 3, 4], y=aics)
-sns.lineplot(x=[1, 2, 3, 4], y=bics);
+sns.lineplot(x=[0, 1, 2, 3, 4], y=aics)
+sns.lineplot(x=[0, 1, 2, 3, 4], y=bics);
