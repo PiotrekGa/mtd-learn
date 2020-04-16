@@ -429,7 +429,7 @@ class RandomWalk(_ChainBaseEstimator):
 
     def __init__(self, n_dimensions, verbose=1):
 
-        super().__init__(n_dimensions)
+        super().__init__(n_dimensions, 0)
         self._n_parameters = self.n_dimensions - 1
         self.verbose = verbose
 
