@@ -117,7 +117,7 @@ def test_manual_exp_max():
 
     mtd = MTD(2, 2)
 
-    log_likelihood_start = mtd._calculate_log_likelihood(indexes, n_passes, transition_matrices, lambdas)
+    log_likelihood_start = mtd._calculate_log_likelihood_mtd(indexes, n_passes, transition_matrices, lambdas)
 
     expectation_matrix, expectation_matrix_direct = mtd._expectation_step(2, 2, indexes, transition_matrices, lambdas)
 
@@ -130,7 +130,7 @@ def test_manual_exp_max():
                                                                   transition_matrices,
                                                                   lambdas)
 
-    log_likelihood_end = mtd._calculate_log_likelihood(indexes, n_passes, transition_matrices_out, lambdas_out)
+    log_likelihood_end = mtd._calculate_log_likelihood_mtd(indexes, n_passes, transition_matrices_out, lambdas_out)
 
     assert np.isclose((log_likelihood1 - log_likelihood_start), 0)
     assert np.isclose((log_likelihood2 - log_likelihood_end), 0)

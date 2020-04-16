@@ -277,10 +277,10 @@ class MTD(_ChainBaseEstimator):
 
         iteration = 0
         gain = min_gain * 2
-        log_likelihood = MTD._calculate_log_likelihood(indexes,
-                                                       x,
-                                                       transition_matrices,
-                                                       lambdas)
+        log_likelihood = MTD._calculate_log_likelihood_mtd(indexes,
+                                                           x,
+                                                           transition_matrices,
+                                                           lambdas)
         while iteration < max_iter and gain > min_gain:
             old_ll = log_likelihood
             p_expectation, p_expectation_direct = MTD._expectation_step(n_dimensions,
@@ -297,10 +297,10 @@ class MTD(_ChainBaseEstimator):
                                                                   p_expectation_direct,
                                                                   transition_matrices,
                                                                   lambdas)
-            log_likelihood = MTD._calculate_log_likelihood(indexes,
-                                                           x,
-                                                           transition_matrices,
-                                                           lambdas)
+            log_likelihood = MTD._calculate_log_likelihood_mtd(indexes,
+                                                               x,
+                                                               transition_matrices,
+                                                               lambdas)
             gain = log_likelihood - old_ll
             iteration += 1
 
@@ -316,10 +316,10 @@ class MTD(_ChainBaseEstimator):
         return log_likelihood, lambdas, transition_matrices
 
     @staticmethod
-    def _calculate_log_likelihood(indexes,
-                                  n_occurrence,
-                                  transition_matrices,
-                                  lambdas):
+    def _calculate_log_likelihood_mtd(indexes,
+                                      n_occurrence,
+                                      transition_matrices,
+                                      lambdas):
 
         log_likelihood = 0
 
@@ -446,7 +446,7 @@ class RandomWalk(_ChainBaseEstimator):
         else:
             self.samples = y.shape[0]
 
-        x = np.array([[] for i in range(len(y))])
+        x = np.array([[] for _ in range(len(y))])
 
         transition_matrix_num = self._create_transition_matrix(x, y, sample_weight)
 
