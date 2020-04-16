@@ -503,7 +503,7 @@ class RandomWalk(_ChainBaseEstimator):
         self._n_parameters = self.n_dimensions - 1
         self.verbose = verbose
 
-    def fit(self, y, sample_weight):
+    def fit(self, y, sample_weight=None):
         if sample_weight is not None:
             self.samples = sample_weight.sum()
         else:
