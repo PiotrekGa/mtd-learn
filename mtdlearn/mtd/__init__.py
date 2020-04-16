@@ -1,1 +1,1 @@
-from .src import MTD, MarkovChain, _ChainBaseEstimator
+from .src import MTD, MarkovChain, RandomWalk, _ChainBaseEstimator

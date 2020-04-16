@@ -423,3 +423,18 @@ class MarkovChain(_ChainBaseEstimator):
     def _calculate_log_likelihood(self, transition_matrix_num):
         logs = np.nan_to_num(np.log(self.transition_matrix), nan=0.0)
         self.log_likelihood = (transition_matrix_num * logs).sum()
+
+
+class RandomWalk(_ChainBaseEstimator):
+
+    def __init__(self, n_dimensions, verbose=1):
+
+        super().__init__(n_dimensions)
+        self._n_parameters = self.n_dimensions - 1
+        self.verbose = verbose
+
+    def fit(self):
+        raise NotImplementedError
+
+    def _calculate_log_likelihood(self):
+        raise NotImplementedError
