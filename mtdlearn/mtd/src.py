@@ -98,6 +98,12 @@ class _ChainBaseEstimator(BaseEstimator):
         logs = np.nan_to_num(np.log(self.transition_matrix), nan=0.0)
         self.log_likelihood = (transition_matrix_num * logs).sum()
 
+    def _create_transition_matrix(self, x, y, sample_weight):
+        transition_matrix = self.aggregate_chain(x, y, sample_weight)
+        transition_matrix_num = transition_matrix.reshape(-1, self.n_dimensions)
+        self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
+        return transition_matrix_num
+
 
 class MTD(_ChainBaseEstimator):
     """
@@ -416,9 +422,7 @@ class MarkovChain(_ChainBaseEstimator):
         else:
             self.samples = y.shape[0]
 
-        transition_matrix = self.aggregate_chain(x, y, sample_weight)
-        transition_matrix_num = transition_matrix.reshape(-1, self.n_dimensions)
-        self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
+        transition_matrix_num = self._create_transition_matrix(x, y, sample_weight)
 
         self._calculate_log_likelihood(transition_matrix_num)
         self._calculate_aic()
@@ -444,9 +448,7 @@ class RandomWalk(_ChainBaseEstimator):
 
         x = np.array([[] for i in range(len(y))])
 
-        transition_matrix = self.aggregate_chain(x, y, sample_weight)
-        transition_matrix_num = transition_matrix.reshape(-1, self.n_dimensions)
-        self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
+        transition_matrix_num = self._create_transition_matrix(x, y, sample_weight)
 
         self._calculate_log_likelihood(transition_matrix_num)
         self._calculate_aic()
