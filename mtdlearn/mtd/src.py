@@ -399,7 +399,6 @@ class MarkovChain(_ChainBaseEstimator):
     def __init__(self, n_dimensions, order, verbose=1):
 
         super().__init__(n_dimensions, order)
-        self.order = order
         self._n_parameters = (self.n_dimensions ** self.order) * (self.n_dimensions - 1)
         self.verbose = verbose
 
