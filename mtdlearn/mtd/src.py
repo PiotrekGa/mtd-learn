@@ -393,3 +393,25 @@ class MTD(_ChainBaseEstimator):
                 transition_matrices = c[2]
 
         return log_likelihood, lambdas, transition_matrices
+
+
+class MarkovChain(_ChainBaseEstimator):
+
+    def __init__(self, n_dimensions, order, verbose=1):
+
+        super().__init__(n_dimensions)
+        self.order = order
+        self._n_parameters = (self.n_dimensions ** self.order) * (self.n_dimensions - 1)
+        self.verbose = verbose
+
+        idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
+
+        self._indexes = []
+        for i in idx_gen:
+            self._indexes.append(i)
+
+    def fit(self):
+        raise NotImplementedError
+
+    def _calculate_log_likelihood(self):
+        raise NotImplementedError

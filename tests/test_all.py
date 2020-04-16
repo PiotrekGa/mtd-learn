@@ -1,4 +1,4 @@
-from mtdlearn.mtd import MTD, _ChainBaseEstimator
+from mtdlearn.mtd import MTD, MarkovChain, _ChainBaseEstimator
 from mtdlearn.preprocessing import PathEncoder
 from mtdlearn.datasets import data_values3_order2_full as data
 from mtdlearn.datasets import generate_data
@@ -255,3 +255,22 @@ def test_predict_proba():
                                                                                                [0.46, 0.54],
                                                                                                [0.34, 0.66],
                                                                                                [0.58, 0.42]])).min()
+
+
+def test_markovchain_init():
+    m = MarkovChain(2, 1)
+    assert m._n_parameters == 2
+    m = MarkovChain(2, 2)
+    assert m._n_parameters == 4
+    m = MarkovChain(2, 3)
+    assert m._n_parameters == 8
+    m = MarkovChain(2, 4)
+    assert m._n_parameters == 16
+    m = MarkovChain(5, 1)
+    assert m._n_parameters == 20
+    m = MarkovChain(5, 2)
+    assert m._n_parameters == 100
+    m = MarkovChain(5, 3)
+    assert m._n_parameters == 500
+    m = MarkovChain(5, 4)
+    assert m._n_parameters == 2500
