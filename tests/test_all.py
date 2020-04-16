@@ -1,4 +1,4 @@
-from mtdlearn.mtd import MTD, MarkovChain, _ChainBaseEstimator
+from mtdlearn.mtd import MTD, MarkovChain, RandomWalk, _ChainBaseEstimator
 from mtdlearn.preprocessing import PathEncoder
 from mtdlearn.datasets import data_values3_order2_full as data
 from mtdlearn.datasets import generate_data
@@ -288,3 +288,12 @@ def test_mc_fit():
     m = MarkovChain(2, 2)
     m.fit(x, y, sw)
     assert np.array_equal(m.transition_matrix, target_matrix)
+
+
+def test_random_walk():
+    rw = RandomWalk(3)
+    y = np.array([0, 1, 2, 2])
+    sw = np.array([10, 10, 10, 10])
+    target_matrix = np.array([[0.25, 0.25, 0.5 ]])
+    rw.fit(y, sw)
+    assert np.array_equal(rw.transition_matrix, target_matrix)

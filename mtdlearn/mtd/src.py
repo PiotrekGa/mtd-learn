@@ -433,8 +433,16 @@ class RandomWalk(_ChainBaseEstimator):
         self._n_parameters = self.n_dimensions - 1
         self.verbose = verbose
 
-    def fit(self):
-        raise NotImplementedError
+    def fit(self, y, sample_weight):
+        if sample_weight is not None:
+            self.samples = sample_weight.sum()
+        else:
+            self.samples = y.shape[0]
+
+        x = np.array([[] for i in range(len(y))])
+        transition_matrix = self.aggregate_chain(x, y, sample_weight)
+        transition_matrix_num = transition_matrix.reshape(-1, self.n_dimensions)
+        self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
 
     def _calculate_log_likelihood(self):
         raise NotImplementedError
