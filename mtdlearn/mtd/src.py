@@ -8,14 +8,20 @@ np.seterr(divide='ignore', invalid='ignore')
 
 class _ChainBaseEstimator(BaseEstimator):
 
-    def __init__(self, n_dimensions=None):
+    def __init__(self, n_dimensions=None, order=None):
         self.log_likelihood = None
         self.aic = None
         self.bic = None
         self._n_parameters = None
         self.samples = None
         self.n_dimensions = n_dimensions
+        self.order = order
         self._transition_matrix = None
+
+        idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
+        self._indexes = []
+        for i in idx_gen:
+            self._indexes.append(i)
 
     @property
     def transition_matrix(self):
@@ -187,8 +193,7 @@ class MTD(_ChainBaseEstimator):
     def __init__(self, n_dimensions, order, number_of_initiations=10, max_iter=100, min_gain=0.1, lambdas_init=None,
                  transition_matrices_init=None, verbose=1, n_jobs=-1):
 
-        super().__init__(n_dimensions)
-        self.order = order
+        super().__init__(n_dimensions, order)
         self._n_parameters = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
         self.number_of_initiations = number_of_initiations
         self.lambdas = None
@@ -199,12 +204,6 @@ class MTD(_ChainBaseEstimator):
         self.min_gain = min_gain
         self.verbose = verbose
         self.n_jobs = n_jobs
-
-        idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
-
-        self._indexes = []
-        for i in idx_gen:
-            self._indexes.append(i)
 
     def fit(self, x, y, sample_weight=None):
         """
@@ -399,16 +398,10 @@ class MarkovChain(_ChainBaseEstimator):
 
     def __init__(self, n_dimensions, order, verbose=1):
 
-        super().__init__(n_dimensions)
+        super().__init__(n_dimensions, order)
         self.order = order
         self._n_parameters = (self.n_dimensions ** self.order) * (self.n_dimensions - 1)
         self.verbose = verbose
-
-        idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
-
-        self._indexes = []
-        for i in idx_gen:
-            self._indexes.append(i)
 
     def fit(self):
         raise NotImplementedError
