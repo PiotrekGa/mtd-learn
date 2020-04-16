@@ -71,6 +71,9 @@ class _ChainBaseEstimator(BaseEstimator):
         :return:  NumPy array of shape (n_samples, n_dimensions)
         """
 
+        if self.order == 0:
+            x = np.zeros(x.shape, dtype=int)
+
         idx = []
         for i in range(x.shape[1]):
             idx.append(self.n_dimensions ** i)
