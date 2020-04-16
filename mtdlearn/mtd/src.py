@@ -94,6 +94,10 @@ class _ChainBaseEstimator(BaseEstimator):
 
         return prob.argmax(axis=1)
 
+    def _calculate_log_likelihood(self, transition_matrix_num):
+        logs = np.nan_to_num(np.log(self.transition_matrix), nan=0.0)
+        self.log_likelihood = (transition_matrix_num * logs).sum()
+
 
 class MTD(_ChainBaseEstimator):
     """
@@ -423,10 +427,6 @@ class MarkovChain(_ChainBaseEstimator):
         if self.verbose > 0:
             print(f'log-likelihood value: {self.log_likelihood}')
 
-    def _calculate_log_likelihood(self, transition_matrix_num):
-        logs = np.nan_to_num(np.log(self.transition_matrix), nan=0.0)
-        self.log_likelihood = (transition_matrix_num * logs).sum()
-
 
 class RandomWalk(_ChainBaseEstimator):
 
@@ -454,7 +454,3 @@ class RandomWalk(_ChainBaseEstimator):
 
         if self.verbose > 0:
             print(f'log-likelihood value: {self.log_likelihood}')
-
-    def _calculate_log_likelihood(self, transition_matrix_num):
-        logs = np.nan_to_num(np.log(self.transition_matrix), nan=0.0)
-        self.log_likelihood = (transition_matrix_num * logs).sum()
