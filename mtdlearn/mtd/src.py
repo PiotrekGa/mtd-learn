@@ -443,9 +443,18 @@ class RandomWalk(_ChainBaseEstimator):
             self.samples = y.shape[0]
 
         x = np.array([[] for i in range(len(y))])
+
         transition_matrix = self.aggregate_chain(x, y, sample_weight)
         transition_matrix_num = transition_matrix.reshape(-1, self.n_dimensions)
         self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
 
-    def _calculate_log_likelihood(self):
-        raise NotImplementedError
+        self._calculate_log_likelihood(transition_matrix_num)
+        self._calculate_aic()
+        self._calculate_bic()
+
+        if self.verbose > 0:
+            print(f'log-likelihood value: {self.log_likelihood}')
+
+    def _calculate_log_likelihood(self, transition_matrix_num):
+        logs = np.nan_to_num(np.log(self.transition_matrix), nan=0.0)
+        self.log_likelihood = (transition_matrix_num * logs).sum()
