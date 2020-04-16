@@ -408,6 +408,39 @@ class MTD(_ChainBaseEstimator):
 
 
 class MarkovChain(_ChainBaseEstimator):
+    """
+    Markov Chain model.
+
+
+    Parameters
+    ----------
+    n_dimensions: int
+        Number of states of the process.
+
+    order: int
+        Number of lags of the model.
+
+    verbose: int, optional (default=1)
+        Controls the verbosity when fitting and predicting.
+
+
+    Attributes
+    ----------
+    _n_parameters: int
+        Number of independent parameters of the model
+
+    transition_matrix: NumPy array
+        Markov Chain transition matrix
+
+    log_likelihood: float
+        Log-likelihood the the Markov Chain model
+
+    aic: float
+        Value of the Akaike's Information Criterion (AIC)
+
+    bic: float
+        Value of the Bayesian Information Criterion (BIC)
+    """
 
     def __init__(self, n_dimensions, order, verbose=1):
 
@@ -433,6 +466,36 @@ class MarkovChain(_ChainBaseEstimator):
 
 
 class RandomWalk(_ChainBaseEstimator):
+    """
+    Random Walk model.
+
+
+    Parameters
+    ----------
+    n_dimensions: int
+        Number of states of the process.
+
+    verbose: int, optional (default=1)
+        Controls the verbosity when fitting and predicting.
+
+
+    Attributes
+    ----------
+    _n_parameters: int
+        Number of independent parameters of the model
+
+    transition_matrix: NumPy array
+        Random Walk probability matrix
+
+    log_likelihood: float
+        Log-likelihood the the Random Walk model
+
+    aic: float
+        Value of the Akaike's Information Criterion (AIC)
+
+    bic: float
+        Value of the Bayesian Information Criterion (BIC)
+    """
 
     def __init__(self, n_dimensions, verbose=1):
 
