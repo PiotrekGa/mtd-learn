@@ -295,23 +295,26 @@ def test_random_walk():
     rw = RandomWalk(3)
     y = np.array([0, 1, 2, 2])
     sw = np.array([10, 10, 10, 10])
-    target_matrix = np.array([[0.25, 0.25, 0.5 ]])
+    x_to_predict = np.array([[1], [], [10, 10]])
+    target_matrix = np.array([[0.25, 0.25, 0.5]])
     rw.fit(y, sw)
     assert np.array_equal(rw.transition_matrix, target_matrix)
+    assert np.array_equal(rw.predict(x_to_predict), np.array([2, 2, 2]))
 
 
 def test_trim_input():
     x = np.array([[1, 0, 0],
-        	  [1, 0, 0],
-		  [0, 0, 1],
-		  [0, 0, 1],
-		  [1, 1, 0],
-		  [0, 1, 0],
-		  [1, 1, 1],
-		  [0, 1, 1]])
+                  [1, 0, 0],
+                  [0, 0, 1],
+                  [0, 0, 1],
+                  [1, 1, 0],
+                  [0, 1, 0],
+                  [1, 1, 1],
+                  [0, 1, 1]])
     y = np.array([0, 1, 0, 1, 0, 1, 0, 1])
     sw = np.array([50, 50, 10, 90, 80, 20, 49, 51])
-    target_matrix = np.array([[0.5, 0.5],                                                                                       [0.1, 0.9],
+    target_matrix = np.array([[0.5, 0.5],
+                              [0.1, 0.9],
                               [0.8, 0.2],
                               [0.49, 0.51]])
 

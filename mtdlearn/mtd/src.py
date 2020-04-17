@@ -72,7 +72,7 @@ class _ChainBaseEstimator(BaseEstimator):
         """
 
         if self.order == 0:
-            x = np.zeros(x.shape, dtype=int)
+            x = np.zeros((x.shape[0], 1), dtype=int)
 
         idx = []
         for i in range(x.shape[1]):
