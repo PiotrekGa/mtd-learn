@@ -4,6 +4,7 @@ from mtdlearn.datasets import data_values3_order2_full as data
 from mtdlearn.datasets import generate_data
 from .data_for_tests import data_for_tests
 import numpy as np
+import pytest
 
 x = data['x']
 y = data['y']
@@ -317,3 +318,18 @@ def test_trim_input():
     m = MarkovChain(2, 2)
     m.fit(x, y, sw)
     assert np.array_equal(m.transition_matrix, target_matrix)
+
+
+def test_input_exception():
+    x = np.array([[0, 0],
+                  [0, 0],
+                  [0, 1],
+                  [0, 1],
+                  [1, 0],
+                  [1, 0],
+                  [1, 1]])
+    y = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+    m = MarkovChain(2, 3)
+
+    with pytest.raises(ValueError):
+        m.fit(x, y)
