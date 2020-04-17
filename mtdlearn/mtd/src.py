@@ -104,6 +104,16 @@ class _ChainBaseEstimator(BaseEstimator):
         self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
         return transition_matrix_num
 
+    def _check_input_shape(self, x):
+        if x.shape[1] > self.order:
+            x = x[:, -self.order:]
+            print(f'WARNING: The input has too many columns. Expected: {self.order}, got: {x.shape[1]}. '
+                  f'The columns were trimmed.')
+        if x.shape[1] < self.order:
+            raise ValueError(f'WARNING: The input has less columns than order. Expected: {self.order}, '
+                             f'got: {x.shape[1]}.')
+        return x
+
 
 class MTD(_ChainBaseEstimator):
     """
@@ -236,6 +246,7 @@ class MTD(_ChainBaseEstimator):
         else:
             self.samples = y.shape[0]
 
+        x = self._check_input_shape(x)
         x = self.aggregate_chain(x, y, sample_weight)
 
         n_direct = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
