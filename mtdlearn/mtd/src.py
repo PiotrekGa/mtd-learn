@@ -32,7 +32,7 @@ class _ChainBaseEstimator(BaseEstimator):
         self._transition_matrix = new_transition_matrix
 
     @staticmethod
-    def aggregate_chain(x, y, sample_weight=None):
+    def _aggregate_chain(x, y, sample_weight=None):
 
         if sample_weight is None:
             sample_weight = np.ones(y.shape[0], dtype=np.int)
@@ -99,7 +99,7 @@ class _ChainBaseEstimator(BaseEstimator):
         self.log_likelihood = (transition_matrix_num * logs).sum()
 
     def _create_transition_matrix(self, x, y, sample_weight):
-        transition_matrix = self.aggregate_chain(x, y, sample_weight)
+        transition_matrix = self._aggregate_chain(x, y, sample_weight)
         transition_matrix_num = transition_matrix.reshape(-1, self.n_dimensions)
         self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
         return transition_matrix_num
@@ -247,7 +247,7 @@ class MTD(_ChainBaseEstimator):
             self.samples = y.shape[0]
 
         x = self._check_input_shape(x)
-        x = self.aggregate_chain(x, y, sample_weight)
+        x = self._aggregate_chain(x, y, sample_weight)
 
         n_direct = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
         for i, idx in enumerate(self._indexes):
