@@ -297,3 +297,23 @@ def test_random_walk():
     target_matrix = np.array([[0.25, 0.25, 0.5 ]])
     rw.fit(y, sw)
     assert np.array_equal(rw.transition_matrix, target_matrix)
+
+
+def test_trim_input():
+    x = np.array([[1, 0, 0],
+        	  [1, 0, 0],
+		  [0, 0, 1],
+		  [0, 0, 1],
+		  [1, 1, 0],
+		  [0, 1, 0],
+		  [1, 1, 1],
+		  [0, 1, 1]])
+    y = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+    sw = np.array([50, 50, 10, 90, 80, 20, 49, 51])
+    target_matrix = np.array([[0.5, 0.5],                                                                                       [0.1, 0.9],
+                              [0.8, 0.2],
+                              [0.49, 0.51]])
+
+    m = MarkovChain(2, 2)
+    m.fit(x, y, sw)
+    assert np.array_equal(m.transition_matrix, target_matrix)
