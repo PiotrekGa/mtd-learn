@@ -20,25 +20,17 @@ import matplotlib.pyplot as plt
 
 from mtdlearn.mtd import MTD
 from mtdlearn.preprocessing import PathEncoder
-from mtdlearn.datasets import data_values3_order2_full
+from mtdlearn.datasets import ChainGenerator
 
 import warnings
 warnings.filterwarnings("ignore")
 # -
 
-# ## Import data
+# ## Generate data
 
-x = data_values3_order2_full['x']
-y = data_values3_order2_full['y']
-sample_weight = data_values3_order2_full['sample_weight']
+cg = ChainGenerator(('A', 'B', 'C'), '>', 3, min_len=4, max_len=5)
 
-x
-
-x[:5]
-
-y[:5]
-
-sample_weight[:5]
+x, y = cg.generate_data(1000)
 
 # ## Encode paths
 
