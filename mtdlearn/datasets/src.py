@@ -1,4 +1,18 @@
 import numpy as np
+from ..mtd import _ChainBaseEstimator
+
+
+class ChainGenerator(_ChainBaseEstimator):
+
+    def __init__(self, values, sep, max_len, order):
+        super().__init__(len(values), order)
+        self.values = values
+        self.sep = sep
+        self.max_len = max_len
+        self.order = order
+
+    def generate_data(self, samples):
+        raise NotImplementedError
 
 
 def generate_data(values, sep, min_len, max_len, order, samples, prob):
