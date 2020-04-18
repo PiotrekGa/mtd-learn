@@ -1,7 +1,7 @@
 from mtdlearn.mtd import MTD, MarkovChain, RandomWalk, _ChainBaseEstimator
 from mtdlearn.preprocessing import PathEncoder
 from mtdlearn.datasets import data_values3_order2_full as data
-from mtdlearn.datasets import generate_data
+from mtdlearn.datasets import ChainGenerator
 from .data_for_tests import data_for_tests
 import numpy as np
 import pytest
@@ -17,25 +17,26 @@ def test_dataset():
 
 
 def test_generate_data1():
-    x_gen, y_gen = generate_data(('A', 'B', 'C'), '>', 1, 10, 3, 1000, 0.95)
+    gen = ChainGenerator(('A', 'B', 'C'), '>', 3, 3, 10)
+    x_gen, y_gen = gen.generate_data(1000)
     assert x_gen.shape[0] == y_gen.shape[0]
     assert y_gen.shape[0] == 1000
     assert max([len(i[0].split('>')) for i in x_gen]) <= 10
-    assert min([len(i[0].split('>')) for i in x_gen]) >= 1
+    assert min([len(i[0].split('>')) for i in x_gen]) >= 3
 
 
 def test_generate_data2():
-    x_gen, y_gen = generate_data(('A', 'B', 'C', 'D'), '*', 5, 5, 5, 100, 1.0)
+    gen = ChainGenerator(('A', 'B', 'C', 'D'), '*', 5, 5, 5)
+    x_gen, y_gen = gen.generate_data(100)
     assert x_gen.shape[0] == y_gen.shape[0]
     assert y_gen.shape[0] == 100
     assert max([len(i[0].split('*')) for i in x_gen]) == 5
     assert min([len(i[0].split('*')) for i in x_gen]) == 5
-    for i, row in enumerate(x_gen):
-        assert row[0].split('*')[0] == y_gen[i]
 
 
 def test_path_encoder1():
-    x_gen, y_gen = generate_data(('A', 'B', 'C'), '*', 1, 3, 3, 100, 0.95)
+    gen = ChainGenerator(('A', 'B', 'C'), '*', 2, 2, 3)
+    x_gen, y_gen = gen.generate_data(100)
     pe = PathEncoder(3, '*', 'X')
     pe.fit(x_gen, y_gen)
     x_tr, y_tr = pe.transform(x_gen, y_gen)
@@ -57,7 +58,8 @@ def test_path_encoder1():
 
 
 def test_path_encoder2():
-    x_gen, y_gen = generate_data(('A', 'B', 'C', 'D'), '>', 1, 10, 3, 300, 0.95)
+    gen = ChainGenerator(('A', 'B', 'C', 'D'), '>', 3, 3, 10)
+    x_gen, y_gen = gen.generate_data(300)
     pe = PathEncoder(5, '>', 'X')
     pe.fit(x_gen, y_gen)
     x_tr, y_tr = pe.transform(x_gen, y_gen)
