@@ -5,12 +5,23 @@ from itertools import product
 
 class ChainGenerator(_ChainBaseEstimator):
 
-    def __init__(self, values, sep, max_len, order):
+    def __init__(self, values, sep, order, min_len=None, max_len=None):
         super().__init__(len(values), order)
         self.values = values
         self.sep = sep
-        self.max_len = max_len
         self.order = order
+        if min_len is None:
+            self.min_len = order
+        elif min_len > order:
+            raise ValueError('min_len cannot be higher that order')
+        else:
+            self.min_len = min_len
+        if max_len is None:
+            self.max_len = order
+        elif max_len < order:
+            raise ValueError('max_len cannot be smaller that order')
+        else:
+            self.max_len = max_len
         self.lambdas = None
         self.transition_matrices = None
         self._generate_mtd_model()
