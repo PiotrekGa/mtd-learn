@@ -5,9 +5,10 @@ from itertools import product
 
 class ChainGenerator(_ChainBaseEstimator):
 
-    def __init__(self, values, sep, order, min_len=None, max_len=None, lambdas=None, transition_matrices=None,
+    def __init__(self, values, sep, order, min_len=None, max_len=None, transition_matrix=None, lambdas=None,
+                 transition_matrices=None,
                  random_state=None):
-        super().__init__(len(values), order)
+        super().__init__(n_dimensions=len(values), order=order)
         self.values = values
         self.sep = sep
         self.order = order
@@ -28,11 +29,13 @@ class ChainGenerator(_ChainBaseEstimator):
         if max_len is not None and min_len is not None:
             if max_len < min_len:
                 raise ValueError('max_len cannot be smaller that min_len')
+        self.transition_matrix = transition_matrix
         self.lambdas = lambdas
         self.transition_matrices = transition_matrices
         self.random_state = random_state
-        self._generate_mtd_model()
-        self._create_markov()
+        if self.transition_matrix is None:
+            self._generate_mtd_model()
+            self._create_markov()
         self._label_dict = {i: j for i, j in enumerate(values)}
 
     def generate_data(self, samples, random_state=None):
