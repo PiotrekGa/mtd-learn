@@ -5,7 +5,7 @@ from itertools import product
 
 class ChainGenerator(_ChainBaseEstimator):
 
-    def __init__(self, values, sep, order, min_len=None, max_len=None):
+    def __init__(self, values, sep, order, min_len=None, max_len=None, lambdas=None, transition_matrices=None):
         super().__init__(len(values), order)
         self.values = values
         self.sep = sep
@@ -27,8 +27,8 @@ class ChainGenerator(_ChainBaseEstimator):
         if max_len is not None and min_len is not None:
             if max_len < min_len:
                 raise ValueError('max_len cannot be smaller that min_len')
-        self.lambdas = None
-        self.transition_matrices = None
+        self.lambdas = lambdas
+        self.transition_matrices = transition_matrices
         self._generate_mtd_model()
         self._create_markov()
         self._label_dict = {i: j for i, j in enumerate(values)}
@@ -60,11 +60,11 @@ class ChainGenerator(_ChainBaseEstimator):
         x_new = [np.random.choice(self.values, p=i) for i in prob]
         return x_new
 
-    def _generate_mtd_model(self, lambdas=None, transition_matrices=None):
-        if lambdas is None:
+    def _generate_mtd_model(self):
+        if self.lambdas is None:
             lambdas = np.random.rand(self.order)
             self.lambdas = lambdas / lambdas.sum()
-        if transition_matrices is None:
+        if self.transition_matrices is None:
             transition_matrices = np.random.rand(self.order, self.n_dimensions, self.n_dimensions)
             self.transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(self.order,
                                                                                                 self.n_dimensions, 1)
