@@ -1,5 +1,6 @@
 import numpy as np
 from ..mtd import _ChainBaseEstimator
+from itertools import product
 
 
 class ChainGenerator(_ChainBaseEstimator):
@@ -10,9 +11,53 @@ class ChainGenerator(_ChainBaseEstimator):
         self.sep = sep
         self.max_len = max_len
         self.order = order
+        self.lambdas = None
+        self.transition_matrices = None
+        self._generate_mtd_model()
+        self._create_markov()
+        self._label_dict = {i: j for i, j in enumerate(values)}
 
     def generate_data(self, samples):
-        raise NotImplementedError
+
+        x = []
+        y = []
+        cnt = 0
+        while cnt < samples:
+            cnt += 1
+            seq_list = np.random.choice(list(self._label_dict.keys()), self.order)
+            x.append(seq_list)
+
+        x = np.array(x).reshape(-1, self.order)
+        y = self.predict_random(x)
+
+        return x, y
+
+    def predict_random(self, x):
+        prob = self.predict_proba(x)
+        x_new = []
+        for i in prob:
+            x_new.append(np.random.choice(self.values, p=i))
+        return x_new
+
+    def _generate_mtd_model(self, lambdas=None, transition_matrices=None):
+        if lambdas is None:
+            lambdas = np.random.rand(self.order)
+            self.lambdas = lambdas / lambdas.sum()
+        if transition_matrices is None:
+            transition_matrices = np.random.rand(self.order, self.n_dimensions, self.n_dimensions)
+            self.transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(self.order,
+                                                                                                self.n_dimensions, 1)
+
+    def _create_markov(self):
+
+        array_coords = product(range(self.n_dimensions), repeat=self.order)
+
+        transition_matrix_list = []
+        for idx in array_coords:
+            t_matrix_part = np.array([self.transition_matrices[i, idx[i], :] for i in range(self.order)]).T
+            transition_matrix_list.append(np.dot(t_matrix_part,
+                                                 self.lambdas))
+        self.transition_matrix = np.array(transition_matrix_list)
 
 
 def generate_data(values, sep, min_len, max_len, order, samples, prob):
