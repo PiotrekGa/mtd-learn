@@ -11,7 +11,7 @@ class ChainGenerator(_ChainBaseEstimator):
         self.sep = sep
         self.order = order
         if not ((min_len is None and max_len is None) or (min_len is not None and max_len is not None)):
-            raise ValueError('if min_len is passed max_len ahs to be specified and vice versa')
+            raise ValueError('if min_len is passed max_len has to be specified and vice versa')
         if min_len is None:
             self.min_len = order
         elif min_len < order:
