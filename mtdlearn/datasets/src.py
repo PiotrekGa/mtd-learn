@@ -12,8 +12,8 @@ class ChainGenerator(_ChainBaseEstimator):
         self.order = order
         if min_len is None:
             self.min_len = order
-        elif min_len > order:
-            raise ValueError('min_len cannot be higher that order')
+        elif min_len < order:
+            raise ValueError('min_len cannot be smaller that order')
         else:
             self.min_len = min_len
         if max_len is None:
@@ -22,6 +22,8 @@ class ChainGenerator(_ChainBaseEstimator):
             raise ValueError('max_len cannot be smaller that order')
         else:
             self.max_len = max_len
+        if max_len < min_len:
+            raise ValueError('max_len cannot be smaller that min_len')
         self.lambdas = None
         self.transition_matrices = None
         self._generate_mtd_model()
@@ -31,7 +33,6 @@ class ChainGenerator(_ChainBaseEstimator):
     def generate_data(self, samples):
 
         x = []
-        y = []
         cnt = 0
         while cnt < samples:
             cnt += 1
@@ -41,13 +42,13 @@ class ChainGenerator(_ChainBaseEstimator):
         x = np.array(x).reshape(-1, self.order)
         y = self.predict_random(x)
 
+        x = [self.sep.join(list(map(self._label_dict.get, i))) for i in x.tolist()]
+
         return x, y
 
     def predict_random(self, x):
         prob = self.predict_proba(x)
-        x_new = []
-        for i in prob:
-            x_new.append(np.random.choice(self.values, p=i))
+        x_new = [np.random.choice(self.values, p=i) for i in prob]
         return x_new
 
     def _generate_mtd_model(self, lambdas=None, transition_matrices=None):
