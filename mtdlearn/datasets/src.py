@@ -50,7 +50,7 @@ class ChainGenerator(_ChainBaseEstimator):
 
         x = [self.sep.join(list(map(self._label_dict.get, i))) for i in x_to_encode]
 
-        return x, y
+        return np.array(x).reshape(-1, 1), np.array(y)
 
     def predict_random(self, x):
         prob = self.predict_proba(x)
