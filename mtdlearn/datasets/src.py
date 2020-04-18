@@ -35,7 +35,10 @@ class ChainGenerator(_ChainBaseEstimator):
         self._create_markov()
         self._label_dict = {i: j for i, j in enumerate(values)}
 
-    def generate_data(self, samples):
+    def generate_data(self, samples, random_state=None):
+
+        if random_state is not None:
+            np.random.seed(random_state)
 
         x = []
         cnt = 0
