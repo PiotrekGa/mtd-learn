@@ -32,6 +32,10 @@ cg = ChainGenerator(('A', 'B', 'C'), '>', 3, min_len=4, max_len=5)
 
 x, y = cg.generate_data(1000)
 
+x[:5]
+
+y[:5]
+
 # ## Encode paths
 
 pe = PathEncoder(3)
@@ -63,7 +67,7 @@ model.lambdas.round(3)
 
 model.transition_matrices.round(3)
 
-sns.barplot(x=[f'{abs(i-3)} lag' for i in range(model.order)], y=model.lambdas, palette='Reds');
+sns.barplot(x=[f't - {abs(i-3)}' for i in range(model.order)], y=model.lambdas, palette='Reds');
 
 # +
 fig, axn = plt.subplots(1, 3, sharex=True, sharey=True, figsize=(12, 4))
@@ -75,7 +79,7 @@ for i, ax in enumerate(axn.flat):
                 vmin=0, vmax=1,
                 cmap='Reds',
                 cbar_ax=None if i else cbar_ax)
-    ax.set_title(f'{3-i} lag')
+    ax.set_title(f't - {3-i}')
 
 fig.tight_layout(rect=[0, 0, .9, 1]);
 # -
