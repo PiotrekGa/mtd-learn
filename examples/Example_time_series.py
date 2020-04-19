@@ -19,7 +19,7 @@ import numpy as np
 import seaborn as sns
 
 from mtdlearn.mtd import MTD, RandomWalk
-from mtdlearn.preprocessing import PathEncoder
+from mtdlearn.preprocessing import PathEncoder, SequenceCutter
 
 # +
 df = pd.read_csv('euro_usd.csv')
@@ -33,21 +33,7 @@ df.loc[df.Change < -0.005, 'Change_enc'] = '0_BIG_DROP'
 df.loc[df.Change >= 0, 'Change_enc'] = '2_RISE'
 df.loc[df.Change >= 0.005, 'Change_enc'] = '3_BIG_RISE'
 
-
-df['Change_lagged_1'] = df.Change_enc.shift(1)
-df['Change_lagged_2'] = df.Change_enc.shift(2)
-df['Change_lagged_3'] = df.Change_enc.shift(3)
-df['Change_lagged_4'] = df.Change_enc.shift(4)
-
 df.dropna(inplace=True)
-
-x = df.Change_lagged_4 + '>' + df.Change_lagged_3 + '>' + df.Change_lagged_2 + '>' + df.Change_lagged_1
-y = df.Change_enc
-
-x = x.values.astype(str).reshape(-1, 1)
-y = y.values.astype(str)
-
-df.Change_enc.value_counts().sort_index()
 # -
 
 # ## Fit models
@@ -57,13 +43,13 @@ bics = []
 
 # +
 order = 0
-pe = PathEncoder(order)
-pe.fit(x, y)
 
-x_tr, y_tr = pe.transform(x, y)
+pe = PathEncoder(0, return_vector=True, input_vector=True)
+y = pe.fit_transform(df.Change_enc.values.astype(str))
 
-model = RandomWalk(n_dimensions=4)
-model.fit(y_tr)
+model = RandomWalk(4)
+model.fit(y)
+
 aics.append(model.aic)
 bics.append(model.bic)
 
@@ -71,6 +57,10 @@ print(model.aic.round(1), model.bic.round(1))
 
 # +
 order = 1
+
+sc = SequenceCutter(order)
+x, y = sc.transform(df.Change_enc.values)
+
 pe = PathEncoder(order)
 pe.fit(x, y)
 
@@ -85,6 +75,10 @@ print(model.aic.round(1), model.bic.round(1))
 
 # +
 order = 2
+
+sc = SequenceCutter(order)
+x, y = sc.transform(df.Change_enc.values)
+
 pe = PathEncoder(order)
 pe.fit(x, y)
 
@@ -99,6 +93,10 @@ print(model.aic.round(1), model.bic.round(1))
 
 # +
 order = 3
+
+sc = SequenceCutter(order)
+x, y = sc.transform(df.Change_enc.values)
+
 pe = PathEncoder(order)
 pe.fit(x, y)
 
@@ -113,6 +111,10 @@ print(model.aic.round(1), model.bic.round(1))
 
 # +
 order = 4
+
+sc = SequenceCutter(order)
+x, y = sc.transform(df.Change_enc.values)
+
 pe = PathEncoder(order)
 pe.fit(x, y)
 
@@ -128,5 +130,7 @@ print(model.aic.round(1), model.bic.round(1))
 
 # ## Choose model
 
-sns.lineplot(x=[0, 1, 2, 3, 4], y=aics)
-sns.lineplot(x=[0, 1, 2, 3, 4], y=bics);
+xs = [0, 1, 2, 3, 4]
+
+sns.lineplot(x=xs, y=aics)
+sns.lineplot(x=xs, y=bics);
