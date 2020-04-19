@@ -126,7 +126,7 @@ class SequenceCutter(TransformerMixin):
         return self
 
     def transform(self, x, y=None):
-        x_new = np.hstack([x[i:-self.order + i] for i in range(self.order)])
-        y = x[self.order:, 0]
+        x_new = np.hstack([x[i:-self.order + i].reshape(-1, 1) for i in range(self.order)])
+        y = x[self.order:]
         x_new = np.array([self.sep.join(i) for i in x_new]).reshape(-1, 1)
         return x_new, y

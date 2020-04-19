@@ -341,16 +341,16 @@ def test_input_exception():
 
 
 def test_sequence_cutter():
-    x = np.array([['A'],
-                  ['C'],
-                  ['A'],
-                  ['A'],
-                  ['B'],
-                  ['A'],
-                  ['B'],
-                  ['C'],
-                  ['C'],
-                  ['C']])
+    x = np.array(['A',
+                  'C',
+                  'A',
+                  'A',
+                  'B',
+                  'A',
+                  'B',
+                  'C',
+                  'C',
+                  'C'])
     x_exp = np.array([['A>C>A'], ['C>A>A'], ['A>A>B'], ['A>B>A'], ['B>A>B'], ['A>B>C'], ['B>C>C']])
     y_exp = np.array(['A', 'B', 'A', 'B', 'C', 'C', 'C'])
     sc = SequenceCutter(3)
