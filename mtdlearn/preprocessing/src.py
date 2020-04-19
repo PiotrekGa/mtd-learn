@@ -38,10 +38,11 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
     """
 
-    def __init__(self, order, sep='>', r_just_string='null', return_vector=False):
+    def __init__(self, order, sep='>', r_just_string='null', input_vector=False, return_vector=False):
         self.order = order
         self.sep = sep
         self.r_just_string = r_just_string
+        self.input_vector = input_vector
         self.return_vector = return_vector
         self.label_dict = None
         self.label_dict_inverse = None
@@ -56,6 +57,9 @@ class PathEncoder(TransformerMixin, BaseEstimator):
                   Target values
         :return: self
         """
+        if self.input_vector:
+            x = x.reshape(-1, 1)
+
         x = np.char.split(x, self.sep)
 
         unique_keys = [[self.r_just_string]]
@@ -86,6 +90,9 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         :return: NumPy array of shape (n_samples,), if y is not None
         """
 
+        if self.input_vector:
+            x = x.reshape(-1, 1)
+
         x_new = []
         for i in x[:, 0]:
             values_list = list(map(self.label_dict.get, i.split(self.sep)[-self.order:]))
@@ -112,6 +119,10 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         :return: NumPy array of shape (n_samples, 1)
         :return: NumPy array of shape (n_samples,), if y is not None
         """
+
+        if self.input_vector:
+            x = x.reshape(-1, 1)
+
         x_rev = [self.sep.join(list(map(self.label_dict_inverse.get, i))) for i in x.tolist()]
 
         if y is None:
