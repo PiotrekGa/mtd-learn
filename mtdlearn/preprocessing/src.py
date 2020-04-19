@@ -38,10 +38,11 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
     """
 
-    def __init__(self, order, sep='>', r_just_string='null'):
+    def __init__(self, order, sep='>', r_just_string='null', return_vector=False):
         self.order = order
         self.sep = sep
         self.r_just_string = r_just_string
+        self.return_vector = return_vector
         self.label_dict = None
         self.label_dict_inverse = None
 
@@ -93,7 +94,10 @@ class PathEncoder(TransformerMixin, BaseEstimator):
             x_new.append(values_list)
 
         if y is None:
-            return np.array(x_new)
+            if self.return_vector:
+                return np.array(x_new).ravel()
+            else:
+                return np.array(x_new)
         else:
             return np.array(x_new), np.vectorize(self.label_dict.get)(y)
 
