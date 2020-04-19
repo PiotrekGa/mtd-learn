@@ -1,5 +1,5 @@
 from mtdlearn.mtd import MTD, MarkovChain, RandomWalk, _ChainBaseEstimator
-from mtdlearn.preprocessing import PathEncoder
+from mtdlearn.preprocessing import PathEncoder, SequenceCutter
 from mtdlearn.datasets import data_values3_order2_full as data
 from mtdlearn.datasets import ChainGenerator
 from .data_for_tests import data_for_tests
@@ -338,3 +338,22 @@ def test_input_exception():
 
     with pytest.raises(ValueError):
         m.fit(x, y)
+
+
+def test_sequence_cutter():
+    x = np.array([['A'],
+                  ['C'],
+                  ['A'],
+                  ['A'],
+                  ['B'],
+                  ['A'],
+                  ['B'],
+                  ['C'],
+                  ['C'],
+                  ['C']])
+    x_exp = np.array([['A>C>A'], ['C>A>A'], ['A>A>B'], ['A>B>A'], ['B>A>B'], ['A>B>C'], ['B>C>C']])
+    y_exp = np.array(['A', 'B', 'A', 'B', 'C', 'C', 'C'])
+    sc = SequenceCutter(3)
+    x_tr, y_tr = sc.transform(x)
+    assert np.array_equal(x_exp, x_tr)
+    assert np.array_equal(y_exp, y_tr)

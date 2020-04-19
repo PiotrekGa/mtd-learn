@@ -114,3 +114,19 @@ class PathEncoder(TransformerMixin, BaseEstimator):
             return np.array(x_rev).reshape(-1, 1)
         else:
             return np.array(x_rev).reshape(-1, 1), np.vectorize(self.label_dict_inverse.get)(y)
+
+
+class SequenceCutter(TransformerMixin):
+
+    def __init__(self, order, sep='>'):
+        self.order = order
+        self.sep = sep
+
+    def fit(self, x, y=None):
+        return self
+
+    def transform(self, x, y=None):
+        x_new = np.hstack([x[i:-self.order + i] for i in range(self.order)])
+        y = x[self.order:, 0]
+        x_new = np.array([self.sep.join(i) for i in x_new]).reshape(-1, 1)
+        return x_new, y

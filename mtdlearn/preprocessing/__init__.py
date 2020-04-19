@@ -1,1 +1,1 @@
-from .src import PathEncoder
+from .src import PathEncoder, SequenceCutter
