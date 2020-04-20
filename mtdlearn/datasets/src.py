@@ -51,7 +51,7 @@ class ChainGenerator(_ChainBaseEstimator):
             x.append(seq_list)
 
         x = np.array(x).reshape(-1, self.order)
-        y = self.predict_random(x)
+        y = self._predict_random(x)
 
         x_to_add = np.random.randint(self.min_len, self.max_len + 1, samples)
 
@@ -63,7 +63,7 @@ class ChainGenerator(_ChainBaseEstimator):
 
         return np.array(x).reshape(-1, 1), np.array(y)
 
-    def predict_random(self, x):
+    def _predict_random(self, x):
         prob = self.predict_proba(x)
         x_new = [np.random.choice(self.values, p=i) for i in prob]
         return x_new
