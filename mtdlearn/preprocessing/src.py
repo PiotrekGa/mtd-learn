@@ -165,7 +165,7 @@ class SequenceCutter(TransformerMixin):
         """
         return self
 
-    def transform(self, x, y=None):
+    def transform(self, x):
         """
         Transform input sequence into array with subpaths
 
