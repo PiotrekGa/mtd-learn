@@ -160,9 +160,20 @@ class SequenceCutter(TransformerMixin):
         self.sep = sep
 
     def fit(self, x, y=None):
+        """
+        Fit left for pipeline compatibility
+        """
         return self
 
     def transform(self, x, y=None):
+        """
+        Transform input sequence into array with subpaths
+
+        :param x: NumPy array of shape (n_samples, )
+                  Array with states
+        :return: NumPy array of shape (n_samples, order)
+        :return: NumPy array of shape (n_samples,)
+        """
         x_new = np.hstack([x[i:-self.order + i].reshape(-1, 1) for i in range(self.order)])
         y = x[self.order:]
         x_new = np.array([self.sep.join(i) for i in x_new]).reshape(-1, 1)
