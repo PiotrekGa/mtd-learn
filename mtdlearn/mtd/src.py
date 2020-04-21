@@ -460,6 +460,17 @@ class MarkovChain(_ChainBaseEstimator):
         self.verbose = verbose
 
     def fit(self, x, y, sample_weight=None):
+        """
+        Fit Markov Chain model.
+
+        :param x: NumPy array of shape (n_samples, order)
+                  Training data
+        :param y: NumPy array of shape (n_samples,)
+                  Target values
+        :param sample_weight: NumPy array of shape (n_samples,), default=None
+                              Individual weights for each sample
+        :return: self
+        """
 
         if sample_weight is not None:
             self.samples = sample_weight.sum()
@@ -516,6 +527,15 @@ class RandomWalk(_ChainBaseEstimator):
         self.verbose = verbose
 
     def fit(self, y, sample_weight=None):
+        """
+        Fit Random Walk model.
+
+        :param y: NumPy array of shape (n_samples,)
+                  Target values
+        :param sample_weight: NumPy array of shape (n_samples,), default=None
+                              Individual weights for each sample
+        :return: self
+        """
         if sample_weight is not None:
             self.samples = sample_weight.sum()
         else:
