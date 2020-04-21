@@ -132,6 +132,28 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
 
 class SequenceCutter(TransformerMixin):
+    """
+    Transformin a sequence into array with subpaths
+
+    Parameters
+    ----------
+    order: int
+        Number of states to be encoded
+    sep: str, optional (default='>')
+        Separator between states
+
+    Example
+    ----------
+    import numpy as np
+    from mtdlearn.preprocessing import SequenceCutter
+
+    y = np.array(['A', 'B', 'D', 'E', 'A'])
+
+    sc = SequenceCutter(2)
+    sc.fit(y)
+    x_tr, y_tr = sc.transform(y)
+
+    """
 
     def __init__(self, order, sep='>'):
         self.order = order
