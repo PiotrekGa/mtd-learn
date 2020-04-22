@@ -81,6 +81,16 @@ class ChainGenerator(_ChainBaseEstimator):
         self._label_dict = {i: j for i, j in enumerate(values)}
 
     def generate_data(self, samples, random_state=None):
+        """
+        Generate data
+
+        :param samples: int
+                        Number of samples to be generated.
+        :param random_state: int
+                             Random state for generation
+        :return: NumPy array of shape (samples, 1)
+        :return: NumPy array of shape (samples,)
+        """
 
         if random_state is not None:
             np.random.seed(random_state)
