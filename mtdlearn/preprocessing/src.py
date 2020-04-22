@@ -62,7 +62,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
         x = np.char.split(x, self.sep)
 
-        unique_keys = [[self.r_just_string]]
+        unique_keys = []
         for i in x:
             unique_keys.append(i[0][-self.order:])
 
@@ -73,6 +73,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
             unique_keys = list(set(unique_keys))
 
         unique_keys.sort()
+        unique_keys.append(self.r_just_string)
         self.label_dict = {k: i for i, k in enumerate(unique_keys)}
         self.label_dict_inverse = {i: k for i, k in enumerate(unique_keys)}
 
