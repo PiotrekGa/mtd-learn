@@ -106,9 +106,9 @@ class _ChainBaseEstimator(BaseEstimator):
 
     def _check_input_shape(self, x):
         if x.shape[1] > self.order:
-            x = x[:, -self.order:]
             print(f'WARNING: The input has too many columns. Expected: {self.order}, got: {x.shape[1]}. '
                   f'The columns were trimmed.')
+            x = x[:, -self.order:]
         if x.shape[1] < self.order:
             raise ValueError(f'WARNING: The input has less columns than order. Expected: {self.order}, '
                              f'got: {x.shape[1]}.')
