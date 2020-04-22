@@ -4,6 +4,48 @@ from itertools import product
 
 
 class ChainGenerator(_ChainBaseEstimator):
+    """
+    Class for generating discrete space datasets
+
+
+    Parameters
+    ----------
+    values: list or tuple of strings
+        States to be used for generation.
+
+    sep: string
+        Separator between states.
+
+    order: int
+        Number of lags of the model.
+
+    min_len: int, optional (default=None)
+        Minimal length of the sequence. If None, then equal to order.
+
+    max_len: int, optional (default=None)
+        Maximal length of the sequence. If None, then equal to order.
+
+    transition_matrix: NumPy array, optional (default=None)
+        Markov model array, to be used for data generation. If None, then the matrix will be generated.
+
+    lambdas: NumPy array, optional (default=None)
+        MTD model weights vector, to be used for data generation. If None, then the vector will be generated.
+
+    transition_matrices: NumPy array, optional (default=None)
+        MTD model transition matrices, to be used for data generation. If None, then the matrices will be generated.
+
+    random_state: int, optional (default=None)
+        Random state, to be used for NumPy seed.
+
+    Example
+    ----------
+    from mtdlearn.datasets import ChainGenerator
+
+    cg = ChainGenerator(['A', 'B', 'C'], '>', 4)
+
+    x, y = cg.generate_data(100)
+
+"""
 
     def __init__(self, values, sep, order, min_len=None, max_len=None, transition_matrix=None, lambdas=None,
                  transition_matrices=None,
