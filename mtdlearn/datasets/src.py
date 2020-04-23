@@ -117,7 +117,7 @@ class ChainGenerator(_ChainBase):
 
     def predict_random(self, x):
         """
-        Return state with probability from the model.
+        Return state sampled from probability distribution from transition matrix. Used primarily for data generation.
 
         :param x: NumPy array of shape (n_samples, order)
         :return:  NumPy array of shape (n_samples,)
