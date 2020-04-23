@@ -357,3 +357,17 @@ def test_sequence_cutter():
     x_tr, y_tr = sc.transform(x)
     assert np.array_equal(x_exp, x_tr)
     assert np.array_equal(y_exp, y_tr)
+
+
+def test_check_matrix():
+    mtd = MTD(2, 2)
+
+    with pytest.raises(ValueError):
+        x = np.array([[1, 1], [2, 2]])
+        y = np.array([1, 1])
+        mtd.fit(x, y)
+
+    with pytest.raises(ValueError):
+        x = np.array([[1, 0], [3, 3]])
+        y = np.array([1, 1])
+        mtd.fit(x, y)

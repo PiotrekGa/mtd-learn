@@ -46,10 +46,20 @@ class _ChainBase(BaseEstimator):
     @staticmethod
     def _aggregate_chain(x, y, sample_weight=None):
 
+        def check_labels(array):
+            max_value = array.max()
+            min_value = array.min()
+            n_unique_values = np.unique(array).shape[0]
+            if min_value != 0:
+                raise ValueError('Lowest label should be equal to zero')
+            if max_value + 1 != n_unique_values:
+                raise ValueError('Highest label should be equal to number of unique labels minus one')
+
         if sample_weight is None:
             sample_weight = np.ones(y.shape[0], dtype=np.int)
 
         matrix = np.hstack([x, y.reshape(-1, 1)])
+        check_labels(matrix)
         n_unique = int(matrix.max()) + 1
         n_columns = matrix.shape[1]
         values_dict = {i: 0 for i in range(n_unique ** (x.shape[1] + 1))}
@@ -243,6 +253,8 @@ class MTD(_ChainBase):
     def fit(self, x, y, sample_weight=None):
         """
         Fit MTD model.
+
+        Note that the labels (for combined x and y) has to start from zero and be consecutive.
 
         :param x: NumPy array of shape (n_samples, order)
                   Training data
