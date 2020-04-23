@@ -100,11 +100,6 @@ def test_chain_aggregator2():
     assert result.sum() == 199
 
 
-def test_create_indexes():
-    mtd = MTD(4, 3)
-    assert len(mtd._indexes) == 256
-
-
 def test_manual_exp_max():
     indexes = data_for_tests['indexes']
     transition_matrices = data_for_tests['transition_matrices'].copy()

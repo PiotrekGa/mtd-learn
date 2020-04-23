@@ -261,7 +261,6 @@ class MTD(_ChainBase):
         self.min_gain = min_gain
         self.verbose = verbose
         self.n_jobs = n_jobs
-        self._create_indexes()
 
     def fit(self, x, y, sample_weight=None):
         """
@@ -282,6 +281,8 @@ class MTD(_ChainBase):
             self.samples = sample_weight.sum()
         else:
             self.samples = y.shape[0]
+
+        self._create_indexes()
 
         x = self._check_and_reshape_input(x)
         x = self._aggregate_chain(x, y, sample_weight)
