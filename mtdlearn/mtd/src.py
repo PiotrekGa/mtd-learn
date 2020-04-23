@@ -29,6 +29,8 @@ class _ChainBase(BaseEstimator):
         self.n_dimensions = n_dimensions
         self.order = order
         self._transition_matrix = None
+        self.transition_matrices = None
+        self.lambdas = None
 
         idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
         self._indexes = []
@@ -136,6 +138,17 @@ class _ChainBase(BaseEstimator):
                              f'got: {x.shape[1]}.')
         return x
 
+    def _create_markov(self):
+
+        array_coords = product(range(self.n_dimensions), repeat=self.order)
+
+        transition_matrix_list = []
+        for idx in array_coords:
+            t_matrix_part = np.array([self.transition_matrices[i, idx[i], :] for i in range(self.order)]).T
+            transition_matrix_list.append(np.dot(t_matrix_part,
+                                                 self.lambdas))
+        self.transition_matrix = np.array(transition_matrix_list)
+
 
 class MTD(_ChainBase):
     """
@@ -241,8 +254,6 @@ class MTD(_ChainBase):
         super().__init__(n_dimensions, order)
         self._n_parameters = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
         self.number_of_initiations = number_of_initiations
-        self.lambdas = None
-        self.transition_matrices = None
         self.lambdas_init = lambdas_init
         self.transition_matrices_init = transition_matrices_init
         self.max_iter = max_iter
@@ -414,17 +425,6 @@ class MTD(_ChainBase):
         transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(order, n_dimensions, 1)
 
         return lambdas, transition_matrices
-
-    def _create_markov(self):
-
-        array_coords = product(range(self.n_dimensions), repeat=self.order)
-
-        transition_matrix_list = []
-        for idx in array_coords:
-            t_matrix_part = np.array([self.transition_matrices[i, idx[i], :] for i in range(self.order)]).T
-            transition_matrix_list.append(np.dot(t_matrix_part,
-                                                 self.lambdas))
-        self.transition_matrix = np.array(transition_matrix_list)
 
     @staticmethod
     def _select_the_best_candidate(candidates):

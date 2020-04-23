@@ -1,6 +1,5 @@
 import numpy as np
 from ..mtd import _ChainBase
-from itertools import product
 
 
 class ChainGenerator(_ChainBase):
@@ -136,17 +135,6 @@ class ChainGenerator(_ChainBase):
             transition_matrices = np.random.rand(self.order, self.n_dimensions, self.n_dimensions)
             self.transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(self.order,
                                                                                                 self.n_dimensions, 1)
-
-    def _create_markov(self):
-
-        array_coords = product(range(self.n_dimensions), repeat=self.order)
-
-        transition_matrix_list = []
-        for idx in array_coords:
-            t_matrix_part = np.array([self.transition_matrices[i, idx[i], :] for i in range(self.order)]).T
-            transition_matrix_list.append(np.dot(t_matrix_part,
-                                                 self.lambdas))
-        self.transition_matrix = np.array(transition_matrix_list)
 
 
 data_values3_order2_full = dict()
