@@ -7,6 +7,18 @@ np.seterr(divide='ignore', invalid='ignore')
 
 
 class _ChainBase(BaseEstimator):
+    """
+    Base class for chain processing and estimation.
+
+
+    Parameters
+    ----------
+    n_dimensions: int
+        Number of states of the process.
+
+    order: int
+        Number of lags of the model.
+    """
 
     def __init__(self, n_dimensions=None, order=None):
         self.log_likelihood = None
