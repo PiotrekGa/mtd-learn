@@ -76,7 +76,7 @@ class _ChainBase(BaseEstimator):
         for n, index in enumerate(indexes):
             values_dict[index] += sample_weight[n]
 
-        return np.array(list(values_dict.values()))
+        return np.array(list(values_dict.values())), n_dimensions
 
     def _calculate_aic(self):
 
@@ -124,7 +124,7 @@ class _ChainBase(BaseEstimator):
         self.log_likelihood = (transition_matrix_num * logs).sum()
 
     def _create_transition_matrix(self, x, y, sample_weight):
-        transition_matrix = self._aggregate_chain(x, y, sample_weight)
+        transition_matrix, n_dimensions = self._aggregate_chain(x, y, sample_weight)
         transition_matrix_num = transition_matrix.reshape(-1, self.n_dimensions)
         self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
         return transition_matrix_num
@@ -285,7 +285,7 @@ class MTD(_ChainBase):
         self._create_indexes()
 
         x = self._check_and_reshape_input(x)
-        x = self._aggregate_chain(x, y, sample_weight)
+        x, n_dimensions = self._aggregate_chain(x, y, sample_weight)
 
         n_direct = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
         for i, idx in enumerate(self._indexes):
