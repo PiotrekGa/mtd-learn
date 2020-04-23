@@ -116,6 +116,12 @@ class ChainGenerator(_ChainBaseEstimator):
         return np.array(x).reshape(-1, 1), np.array(y)
 
     def predict_random(self, x):
+        """
+        Return state with probability from the model.
+
+        :param x: NumPy array of shape (n_samples, order)
+        :return:  NumPy array of shape (n_samples,)
+        """
         prob = self.predict_proba(x)
         x_new = [np.random.choice(self.values, p=i) for i in prob]
         return x_new
