@@ -31,7 +31,9 @@ class _ChainBase(BaseEstimator):
         self._transition_matrix = None
         self.transition_matrices = None
         self.lambdas = None
+        self._create_indexes()
 
+    def _create_indexes(self):
         idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
         self._indexes = []
         for i in idx_gen:
