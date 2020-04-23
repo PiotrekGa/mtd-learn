@@ -6,7 +6,7 @@ from sklearn.base import BaseEstimator
 np.seterr(divide='ignore', invalid='ignore')
 
 
-class _ChainBaseEstimator(BaseEstimator):
+class _ChainBase(BaseEstimator):
 
     def __init__(self, n_dimensions=None, order=None):
         self.log_likelihood = None
@@ -115,7 +115,7 @@ class _ChainBaseEstimator(BaseEstimator):
         return x
 
 
-class MTD(_ChainBaseEstimator):
+class MTD(_ChainBase):
     """
     Mixture Transition Distribution (MTD) model with separate transition matrices for each lag.
 
@@ -418,7 +418,7 @@ class MTD(_ChainBaseEstimator):
         return log_likelihood, lambdas, transition_matrices
 
 
-class MarkovChain(_ChainBaseEstimator):
+class MarkovChain(_ChainBase):
     """
     Markov Chain model.
 
@@ -488,7 +488,7 @@ class MarkovChain(_ChainBaseEstimator):
             print(f'log-likelihood value: {self.log_likelihood}')
 
 
-class RandomWalk(_ChainBaseEstimator):
+class RandomWalk(_ChainBase):
     """
     Random Walk model.
 

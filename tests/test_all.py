@@ -1,4 +1,4 @@
-from mtdlearn.mtd import MTD, MarkovChain, RandomWalk, _ChainBaseEstimator
+from mtdlearn.mtd import MTD, MarkovChain, RandomWalk, _ChainBase
 from mtdlearn.preprocessing import PathEncoder, SequenceCutter
 from mtdlearn.datasets import data_values3_order2_full as data
 from mtdlearn.datasets import ChainGenerator
@@ -83,7 +83,7 @@ def test_path_encoder2():
 def test_chain_aggregator1():
     x_gen = np.array([[0, 0], [0, 1]])
     y_gen = np.array([0, 1])
-    ca = _ChainBaseEstimator(2, 2)
+    ca = _ChainBase(2, 2)
     result = ca._aggregate_chain(x_gen, y_gen)
     assert np.array_equal(result, np.array([1, 0, 0, 1, 0, 0, 0, 0]))
 
@@ -92,7 +92,7 @@ def test_chain_aggregator2():
     x_gen = np.array([[1, 0, 0], [2, 2, 2]])
     y_gen = np.array([1, 2])
     sample_weight_gen = np.array([100, 99])
-    ca = _ChainBaseEstimator(3, 2)
+    ca = _ChainBase(3, 2)
     result = ca._aggregate_chain(x_gen, y_gen, sample_weight_gen)
     assert result[28] == 100
     assert result[80] == 99

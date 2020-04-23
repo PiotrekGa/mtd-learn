@@ -1,9 +1,9 @@
 import numpy as np
-from ..mtd import _ChainBaseEstimator
+from ..mtd import _ChainBase
 from itertools import product
 
 
-class ChainGenerator(_ChainBaseEstimator):
+class ChainGenerator(_ChainBase):
     """
     Class for generating discrete space datasets
 
