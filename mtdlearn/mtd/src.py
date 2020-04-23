@@ -31,7 +31,6 @@ class _ChainBase(BaseEstimator):
         self._transition_matrix = None
         self.transition_matrices = None
         self.lambdas = None
-        self._create_indexes()
 
     def _create_indexes(self):
         idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
@@ -262,6 +261,7 @@ class MTD(_ChainBase):
         self.min_gain = min_gain
         self.verbose = verbose
         self.n_jobs = n_jobs
+        self._create_indexes()
 
     def fit(self, x, y, sample_weight=None):
         """
@@ -484,6 +484,7 @@ class MarkovChain(_ChainBase):
         super().__init__(n_dimensions, order)
         self._n_parameters = (self.n_dimensions ** self.order) * (self.n_dimensions - 1)
         self.verbose = verbose
+        self._create_indexes()
 
     def fit(self, x, y, sample_weight=None):
         """
@@ -551,6 +552,7 @@ class RandomWalk(_ChainBase):
         super().__init__(n_dimensions, 0)
         self._n_parameters = self.n_dimensions - 1
         self.verbose = verbose
+        self._create_indexes()
 
     def fit(self, y, sample_weight=None):
         """
