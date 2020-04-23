@@ -49,26 +49,26 @@ class _ChainBase(BaseEstimator):
     @staticmethod
     def _aggregate_chain(x, y, sample_weight=None):
 
-        def check_labels(array):
+        def calculate_dimensions(array):
             max_value = array.max()
             min_value = array.min()
-            n_unique_values = np.unique(array).shape[0]
+            n_dim = np.unique(array).shape[0]
             if min_value != 0:
                 raise ValueError('Lowest label should be equal to zero')
-            if max_value + 1 != n_unique_values:
+            if max_value + 1 != n_dim:
                 raise ValueError('Highest label should be equal to number of unique labels minus one')
+            return n_dim
 
         if sample_weight is None:
             sample_weight = np.ones(y.shape[0], dtype=np.int)
 
         matrix = np.hstack([x, y.reshape(-1, 1)])
-        check_labels(matrix)
-        n_unique = int(matrix.max()) + 1
+        n_dimensions = calculate_dimensions(matrix)
         n_columns = matrix.shape[1]
-        values_dict = {i: 0 for i in range(n_unique ** (x.shape[1] + 1))}
+        values_dict = {i: 0 for i in range(n_dimensions ** (x.shape[1] + 1))}
         idx = []
         for i in range(n_columns):
-            idx.append(n_unique ** i)
+            idx.append(n_dimensions ** i)
 
         idx = np.array(idx[::-1])
         indexes = np.dot(matrix, idx)
