@@ -17,7 +17,7 @@ def test_dataset():
 
 
 def test_generate_data1():
-    gen = ChainGenerator(('A', 'B', 'C'), '>', 3, 3, 10)
+    gen = ChainGenerator(('A', 'B', 'C'), 3, min_len=3, max_len=10)
     x_gen, y_gen = gen.generate_data(1000)
     assert x_gen.shape[0] == y_gen.shape[0]
     assert y_gen.shape[0] == 1000
@@ -26,7 +26,7 @@ def test_generate_data1():
 
 
 def test_generate_data2():
-    gen = ChainGenerator(('A', 'B', 'C', 'D'), '*', 5, 5, 5)
+    gen = ChainGenerator(('A', 'B', 'C', 'D'), 5, sep='*', min_len=5, max_len=5)
     x_gen, y_gen = gen.generate_data(100)
     assert x_gen.shape[0] == y_gen.shape[0]
     assert y_gen.shape[0] == 100
@@ -35,7 +35,7 @@ def test_generate_data2():
 
 
 def test_path_encoder1():
-    gen = ChainGenerator(('A', 'B', 'C'), '*', 2, 2, 3)
+    gen = ChainGenerator(('A', 'B', 'C'), 2, sep='*', min_len=2, max_len=3)
     x_gen, y_gen = gen.generate_data(100)
     pe = PathEncoder(3, '*', 'X')
     pe.fit(x_gen, y_gen)
@@ -58,7 +58,7 @@ def test_path_encoder1():
 
 
 def test_path_encoder2():
-    gen = ChainGenerator(('A', 'B', 'C', 'D'), '>', 3, 3, 10)
+    gen = ChainGenerator(('A', 'B', 'C', 'D'), 3, min_len=3, max_len=10)
     x_gen, y_gen = gen.generate_data(300)
     pe = PathEncoder(5, '>', 'X')
     pe.fit(x_gen, y_gen)

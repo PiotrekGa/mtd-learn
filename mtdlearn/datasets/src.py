@@ -13,11 +13,11 @@ class ChainGenerator(_ChainBase):
     values: list or tuple of strings
         States to be used for generation.
 
-    sep: string
-        Separator between states.
-
     order: int
         Number of lags of the model.
+
+    sep: string, optional (default='>')
+        Separator between states.
 
     min_len: int, optional (default=None)
         Minimal length of the sequence. If None, then equal to order.
@@ -41,19 +41,19 @@ class ChainGenerator(_ChainBase):
     ----------
     from mtdlearn.datasets import ChainGenerator
 
-    cg = ChainGenerator(['A', 'B', 'C'], '>', 4)
+    cg = ChainGenerator(['A', 'B', 'C'], 4)
 
     x, y = cg.generate_data(100)
 
 """
 
-    def __init__(self, values, sep, order, min_len=None, max_len=None, transition_matrix=None, lambdas=None,
+    def __init__(self, values, order, sep='>', min_len=None, max_len=None, transition_matrix=None, lambdas=None,
                  transition_matrices=None,
                  random_state=None):
         super().__init__(n_dimensions=len(values), order=order)
         self.values = values
-        self.sep = sep
         self.order = order
+        self.sep = sep
         if not ((min_len is None and max_len is None) or (min_len is not None and max_len is not None)):
             raise ValueError('if min_len is passed max_len has to be specified and vice versa')
         if min_len is None:
