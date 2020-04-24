@@ -482,13 +482,10 @@ class MarkovChain(_ChainBase):
         Value of the Bayesian Information Criterion (BIC)
     """
 
-    def __init__(self, n_dimensions, order, verbose=1):
+    def __init__(self, order, verbose=1):
 
         super().__init__(order)
-        self.n_dimensions = n_dimensions
-        self._n_parameters = (self.n_dimensions ** self.order) * (self.n_dimensions - 1)
         self.verbose = verbose
-        self._create_indexes()
 
     def fit(self, x, y, sample_weight=None):
         """
@@ -509,6 +506,10 @@ class MarkovChain(_ChainBase):
             self.samples = y.shape[0]
 
         x = self._check_and_reshape_input(x)
+        self.n_dimensions = np.unique(np.hstack([x, y.reshape(-1, 1)])).shape[0]
+        self._n_parameters = (self.n_dimensions ** self.order) * (self.n_dimensions - 1)
+        self._create_indexes()
+
         transition_matrix_num = self._create_transition_matrix(x, y, sample_weight)
 
         self._calculate_log_likelihood(transition_matrix_num)
