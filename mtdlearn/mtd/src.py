@@ -20,13 +20,13 @@ class _ChainBase(BaseEstimator):
         Number of lags of the model.
     """
 
-    def __init__(self, n_dimensions=None, order=None):
+    def __init__(self, order=None):
         self.log_likelihood = None
         self.aic = None
         self.bic = None
         self._n_parameters = None
         self.samples = None
-        self.n_dimensions = n_dimensions
+        self.n_dimensions = None
         self.order = order
         self._transition_matrix = None
         self.transition_matrices = None
@@ -158,8 +158,6 @@ class MTD(_ChainBase):
 
     Parameters
     ----------
-    n_dimensions: int
-        Number of states of the process.
 
     order: int
         Number of lags of the model.
@@ -188,6 +186,10 @@ class MTD(_ChainBase):
 
     Attributes
     ----------
+
+    n_dimensions: int
+        Number of states of the process.
+
     _n_parameters: int
         Number of independent parameters of the model following [1] section 2
 
@@ -249,11 +251,10 @@ class MTD(_ChainBase):
 
     """
 
-    def __init__(self, n_dimensions, order, number_of_initiations=10, max_iter=100, min_gain=0.1, lambdas_init=None,
+    def __init__(self, order, number_of_initiations=10, max_iter=100, min_gain=0.1, lambdas_init=None,
                  transition_matrices_init=None, verbose=1, n_jobs=-1):
 
-        super().__init__(n_dimensions, order)
-        self._n_parameters = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
+        super().__init__(order)
         self.number_of_initiations = number_of_initiations
         self.lambdas_init = lambdas_init
         self.transition_matrices_init = transition_matrices_init
@@ -282,10 +283,10 @@ class MTD(_ChainBase):
         else:
             self.samples = y.shape[0]
 
-        self._create_indexes()
-
         x = self._check_and_reshape_input(x)
-        x, n_dimensions = self._aggregate_chain(x, y, sample_weight)
+        x, self.n_dimensions = self._aggregate_chain(x, y, sample_weight)
+
+        self._create_indexes()
 
         n_direct = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
         for i, idx in enumerate(self._indexes):
@@ -310,6 +311,7 @@ class MTD(_ChainBase):
             print(f'log-likelihood value: {self.log_likelihood}')
 
         self._create_markov()
+        self._n_parameters = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
         self._calculate_aic()
         self._calculate_bic()
 
@@ -482,7 +484,8 @@ class MarkovChain(_ChainBase):
 
     def __init__(self, n_dimensions, order, verbose=1):
 
-        super().__init__(n_dimensions, order)
+        super().__init__(order)
+        self.n_dimensions = n_dimensions
         self._n_parameters = (self.n_dimensions ** self.order) * (self.n_dimensions - 1)
         self.verbose = verbose
         self._create_indexes()
@@ -550,7 +553,8 @@ class RandomWalk(_ChainBase):
 
     def __init__(self, n_dimensions, verbose=1):
 
-        super().__init__(n_dimensions, 0)
+        super().__init__(0)
+        self.n_dimensions = n_dimensions
         self._n_parameters = self.n_dimensions - 1
         self.verbose = verbose
         self._create_indexes()

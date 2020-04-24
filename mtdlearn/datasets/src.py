@@ -49,7 +49,8 @@ class ChainGenerator(_ChainBase):
     def __init__(self, values, order, sep='>', min_len=None, max_len=None, transition_matrix=None, lambdas=None,
                  transition_matrices=None,
                  random_state=None):
-        super().__init__(n_dimensions=len(values), order=order)
+        super().__init__(order=order)
+        self.n_dimensions = len(values)
         self.values = values
         self.order = order
         self.sep = sep
