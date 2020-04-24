@@ -64,9 +64,10 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
         unique_keys = []
         for i in x:
-            unique_keys.append(i[0][-self.order:])
+            unique_keys.extend(i[0][-self.order:])
+            unique_keys = list(set(unique_keys))
 
-        unique_keys = list(set(sum(unique_keys, [])))
+        unique_keys = list(set(unique_keys))
         if y is not None:
             y = np.unique(y).tolist()
             unique_keys.extend(y)
