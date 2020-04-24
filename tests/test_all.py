@@ -276,7 +276,7 @@ def test_mc_fit():
 
 
 def test_random_walk():
-    rw = RandomWalk(3)
+    rw = RandomWalk()
     y = np.array([0, 1, 2, 2])
     sw = np.array([10, 10, 10, 10])
     x_to_predict = np.array([[1], [], [10, 10]])

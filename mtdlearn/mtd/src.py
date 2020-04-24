@@ -526,8 +526,6 @@ class RandomWalk(_ChainBase):
 
     Parameters
     ----------
-    n_dimensions: int
-        Number of states of the process.
 
     verbose: int, optional (default=1)
         Controls the verbosity when fitting and predicting.
@@ -535,6 +533,9 @@ class RandomWalk(_ChainBase):
 
     Attributes
     ----------
+    n_dimensions: int
+        Number of states of the process.
+
     _n_parameters: int
         Number of independent parameters of the model
 
@@ -551,13 +552,10 @@ class RandomWalk(_ChainBase):
         Value of the Bayesian Information Criterion (BIC)
     """
 
-    def __init__(self, n_dimensions, verbose=1):
+    def __init__(self, verbose=1):
 
         super().__init__(0)
-        self.n_dimensions = n_dimensions
-        self._n_parameters = self.n_dimensions - 1
         self.verbose = verbose
-        self._create_indexes()
 
     def fit(self, y, sample_weight=None):
         """
@@ -573,6 +571,10 @@ class RandomWalk(_ChainBase):
             self.samples = sample_weight.sum()
         else:
             self.samples = y.shape[0]
+
+        self.n_dimensions = np.unique(y).shape[0]
+        self._n_parameters = self.n_dimensions - 1
+        self._create_indexes()
 
         x = np.array([[] for _ in range(len(y))])
 
