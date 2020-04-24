@@ -13,8 +13,6 @@ class _ChainBase(BaseEstimator):
 
     Parameters
     ----------
-    n_dimensions: int
-        Number of states of the process.
 
     order: int
         Number of lags of the model.
@@ -454,8 +452,6 @@ class MarkovChain(_ChainBase):
 
     Parameters
     ----------
-    n_dimensions: int
-        Number of states of the process.
 
     order: int
         Number of lags of the model.
@@ -466,6 +462,10 @@ class MarkovChain(_ChainBase):
 
     Attributes
     ----------
+
+    n_dimensions: int
+        Number of states of the process.
+
     _n_parameters: int
         Number of independent parameters of the model
 
@@ -534,6 +534,7 @@ class RandomWalk(_ChainBase):
 
     Attributes
     ----------
+
     n_dimensions: int
         Number of states of the process.
 
