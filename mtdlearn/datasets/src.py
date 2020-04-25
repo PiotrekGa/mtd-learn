@@ -98,7 +98,7 @@ class ChainGenerator(_ChainBase):
         x = np.random.choice(list(self._label_dict.keys()), (samples, self.order))
         y = self.predict_random(x)
 
-        if self.min_len > self.order:
+        if self.max_len > self.order:
             x_to_add = np.random.randint(self.min_len, self.max_len + 1, samples)
             x = [np.hstack([np.random.choice(list(self._label_dict.keys()), i[1] - self.order), i[0]])
                  for i
