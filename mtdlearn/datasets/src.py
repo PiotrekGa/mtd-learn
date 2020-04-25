@@ -95,19 +95,11 @@ class ChainGenerator(_ChainBase):
         if random_state is not None:
             np.random.seed(random_state)
 
-        x = []
-        cnt = 0
-        while cnt < samples:
-            cnt += 1
-            seq_list = np.random.choice(list(self._label_dict.keys()), self.order)
-            x.append(seq_list)
-
-        x = np.array(x).reshape(-1, self.order)
+        x = np.random.choice(list(self._label_dict.keys()), (samples, self.order))
         y = self.predict_random(x)
 
         if self.min_len > self.order:
             x_to_add = np.random.randint(self.min_len, self.max_len + 1, samples)
-
             x = [np.hstack([np.random.choice(list(self._label_dict.keys()), i[1] - self.order), i[0]])
                  for i
                  in zip(x.tolist(), list(x_to_add))]
