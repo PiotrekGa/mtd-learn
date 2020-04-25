@@ -105,13 +105,14 @@ class ChainGenerator(_ChainBase):
         x = np.array(x).reshape(-1, self.order)
         y = self.predict_random(x)
 
-        x_to_add = np.random.randint(self.min_len, self.max_len + 1, samples)
+        if self.min_len > self.order:
+            x_to_add = np.random.randint(self.min_len, self.max_len + 1, samples)
 
-        x_to_encode = [np.hstack([np.random.choice(list(self._label_dict.keys()), i[1] - self.order), i[0]])
-                       for i
-                       in zip(x.tolist(), list(x_to_add))]
+            x = [np.hstack([np.random.choice(list(self._label_dict.keys()), i[1] - self.order), i[0]])
+                 for i
+                 in zip(x.tolist(), list(x_to_add))]
 
-        x = [self.sep.join(list(map(self._label_dict.get, i))) for i in x_to_encode]
+        x = [self.sep.join(list(map(self._label_dict.get, i))) for i in x]
 
         return np.array(x).reshape(-1, 1), np.array(y)
 
