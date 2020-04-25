@@ -65,9 +65,9 @@ class _ChainBase(BaseEstimator):
         idx = [n_dimensions ** i for i in range(n_columns)]
 
         idx = np.array(idx[::-1])
-        indexes = np.dot(matrix, idx)
+        data_indexes = np.dot(matrix, idx)
 
-        for n, index in enumerate(indexes):
+        for n, index in enumerate(data_indexes):
             values_dict[index] += sample_weight[n]
 
         return np.array(list(values_dict.values())), n_dimensions
