@@ -165,16 +165,17 @@ def test_one_fit():
     assert np.isclose(expected_transition_matrices - transition_matrices_out, np.zeros((2, 2))).min()
 
 
-# def test_fit_with_init():
-#     transition_matrices = data_for_tests['transition_matrices'].copy()
-#     lambdas = data_for_tests['lambdas'].copy()
-#     pe = PathEncoder(2)
-#     pe.fit(x, y)
-#     x_tr, y_tr = pe.transform(x, y)
-#     mtd = MTD(2, max_iter=0, verbose=0, lambdas_init=lambdas, transition_matrices_init=transition_matrices)
-#     mtd.fit(x_tr, y_tr)
-#     assert np.isclose(mtd.transition_matrices - transition_matrices, np.zeros((2, 2))).min()
-#     assert np.isclose(mtd.lambdas - lambdas, np.zeros(2)).min()
+def test_fit_with_init():
+    transition_matrices = np.random.rand(2, 3, 3)
+    transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(2, 3, 1)
+    lambdas = np.random.rand(2)
+    lambdas = lambdas / lambdas.sum()
+    x_tr = np.random.randint(3, size=(10, 2))
+    y_tr = np.random.randint(3, size=10)
+    mtd = MTD(2, max_iter=0, verbose=0, lambdas_init=lambdas, transition_matrices_init=transition_matrices)
+    mtd.fit(x_tr, y_tr)
+    assert np.isclose(mtd.transition_matrices - transition_matrices, np.zeros((2, 3, 3))).min()
+    assert np.isclose(mtd.lambdas - lambdas, np.zeros(2)).min()
 
 
 def test_ex_max():
