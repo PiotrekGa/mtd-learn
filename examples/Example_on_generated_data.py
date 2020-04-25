@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.3.3
+#       jupytext_version: 1.3.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -28,7 +28,7 @@ warnings.filterwarnings("ignore")
 
 # ## Generate data
 
-cg = ChainGenerator(('A', 'B', 'C'), '>', 3, min_len=4, max_len=5)
+cg = ChainGenerator(('A', 'B', 'C'), 3, min_len=4, max_len=5)
 
 x, y = cg.generate_data(1000)
 
@@ -51,7 +51,7 @@ y_tr3[:5]
 
 # ## Fitting model
 
-model = MTD(n_dimensions=3, order=3)
+model = MTD(order=3)
 
 model.fit(x_tr3, y_tr3)
 
