@@ -62,9 +62,7 @@ class _ChainBase(BaseEstimator):
         n_dimensions = calculate_dimensions(matrix)
         n_columns = matrix.shape[1]
         values_dict = {i: 0 for i in range(n_dimensions ** (x.shape[1] + 1))}
-        idx = []
-        for i in range(n_columns):
-            idx.append(n_dimensions ** i)
+        idx = [n_dimensions ** i for i in range(n_columns)]
 
         idx = np.array(idx[::-1])
         indexes = np.dot(matrix, idx)
