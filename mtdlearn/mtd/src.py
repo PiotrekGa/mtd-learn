@@ -2,6 +2,7 @@ import numpy as np
 from itertools import product
 from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
+from datetime import datetime
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -350,7 +351,9 @@ class MTD(_ChainBase):
             iteration += 1
 
             if verbose > 1:
-                print(f'iteration: {iteration}  gain: {round(gain, 5)} ll_value: {round(log_likelihood, 5)}')
+                current_time = datetime.now()
+                print(f'{current_time.time()} iteration: {iteration}  '
+                      f'gain: {round(gain, 5)} ll_value: {round(log_likelihood, 5)}')
 
         if iteration == max_iter:
             print('WARNING: The model has not converged. Consider increasing the max_iter parameter.')
