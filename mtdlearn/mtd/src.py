@@ -44,7 +44,7 @@ class _ChainBase(BaseEstimator):
         self._transition_matrix = new_transition_matrix
 
     @staticmethod
-    def _aggregate_chain(x, y, sample_weight=None):
+    def _aggregate_chain(x, sample_weight=None):
 
         def calculate_dimensions(array):
             max_value = array.max()
@@ -57,16 +57,15 @@ class _ChainBase(BaseEstimator):
             return n_dim
 
         if sample_weight is None:
-            sample_weight = np.ones(y.shape[0], dtype=np.int)
+            sample_weight = np.ones(x.shape[0], dtype=np.int)
 
-        matrix = np.hstack([x, y.reshape(-1, 1)])
-        n_dimensions = calculate_dimensions(matrix)
-        n_columns = matrix.shape[1]
-        values_dict = {i: 0 for i in range(n_dimensions ** (x.shape[1] + 1))}
+        n_dimensions = calculate_dimensions(x)
+        n_columns = x.shape[1]
+        values_dict = {i: 0 for i in range(n_dimensions ** (x.shape[1]))}
         idx = [n_dimensions ** i for i in range(n_columns)]
 
         idx = np.array(idx[::-1])
-        data_indexes = np.dot(matrix, idx)
+        data_indexes = np.dot(x, idx)
 
         for n, index in enumerate(data_indexes):
             values_dict[index] += sample_weight[n]
@@ -119,7 +118,8 @@ class _ChainBase(BaseEstimator):
         self.log_likelihood = (transition_matrix_num * logs).sum()
 
     def _create_transition_matrix(self, x, y, sample_weight):
-        transition_matrix, n_dimensions = self._aggregate_chain(x, y, sample_weight)
+        x = np.hstack([x, y.reshape(-1, 1)])
+        transition_matrix, n_dimensions = self._aggregate_chain(x, sample_weight)
         transition_matrix_num = transition_matrix.reshape(-1, self.n_dimensions)
         self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
         return transition_matrix_num
@@ -279,7 +279,8 @@ class MTD(_ChainBase):
             self.samples = y.shape[0]
 
         x = self._check_and_reshape_input(x)
-        x, self.n_dimensions = self._aggregate_chain(x, y, sample_weight)
+        x = np.hstack([x, y.reshape(-1, 1)])
+        x, self.n_dimensions = self._aggregate_chain(x, sample_weight)
 
         self._create_indexes()
 
