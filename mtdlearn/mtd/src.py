@@ -43,26 +43,24 @@ class _ChainBase(BaseEstimator):
     def transition_matrix(self, new_transition_matrix):
         self._transition_matrix = new_transition_matrix
 
-    @staticmethod
-    def _aggregate_chain(x, sample_weight=None):
+    def _calculate_dimensions(self, array):
+        max_value = array.max()
+        min_value = array.min()
+        n_dim = np.unique(array).shape[0]
+        if min_value != 0:
+            raise ValueError('Lowest label should be equal to zero')
+        if max_value + 1 != n_dim:
+            raise ValueError('Highest label should be equal to number of unique labels minus one')
+        self.n_dimensions = n_dim
 
-        def calculate_dimensions(array):
-            max_value = array.max()
-            min_value = array.min()
-            n_dim = np.unique(array).shape[0]
-            if min_value != 0:
-                raise ValueError('Lowest label should be equal to zero')
-            if max_value + 1 != n_dim:
-                raise ValueError('Highest label should be equal to number of unique labels minus one')
-            return n_dim
+    def _aggregate_chain(self, x, sample_weight=None):
 
         if sample_weight is None:
             sample_weight = np.ones(x.shape[0], dtype=np.int)
 
-        n_dimensions = calculate_dimensions(x)
         n_columns = x.shape[1]
-        values_dict = {i: 0 for i in range(n_dimensions ** (x.shape[1]))}
-        idx = [n_dimensions ** i for i in range(n_columns)]
+        values_dict = {i: 0 for i in range(self.n_dimensions ** (x.shape[1]))}
+        idx = [self.n_dimensions ** i for i in range(n_columns)]
 
         idx = np.array(idx[::-1])
         data_indexes = np.dot(x, idx)
@@ -70,7 +68,7 @@ class _ChainBase(BaseEstimator):
         for n, index in enumerate(data_indexes):
             values_dict[index] += sample_weight[n]
 
-        return np.array(list(values_dict.values())), n_dimensions
+        return np.array(list(values_dict.values()))
 
     def _calculate_aic(self):
 
@@ -119,7 +117,8 @@ class _ChainBase(BaseEstimator):
 
     def _create_transition_matrix(self, x, y, sample_weight):
         x = np.hstack([x, y.reshape(-1, 1)])
-        transition_matrix, n_dimensions = self._aggregate_chain(x, sample_weight)
+        self._calculate_dimensions(x)
+        transition_matrix = self._aggregate_chain(x, sample_weight)
         transition_matrix_num = transition_matrix.reshape(-1, self.n_dimensions)
         self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
         return transition_matrix_num
@@ -280,7 +279,8 @@ class MTD(_ChainBase):
 
         x = self._check_and_reshape_input(x)
         x = np.hstack([x, y.reshape(-1, 1)])
-        x, self.n_dimensions = self._aggregate_chain(x, sample_weight)
+        self._calculate_dimensions(x)
+        x = self._aggregate_chain(x, sample_weight)
 
         self._create_indexes()
 
