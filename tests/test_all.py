@@ -82,27 +82,26 @@ def test_path_encoder2():
 
 def test_chain_aggregator1():
     x_gen = np.array([[0, 0], [0, 1]])
-    y_gen = np.array([0, 1])
-    ca = _ChainBase(2, 2)
-    result = ca._aggregate_chain(x_gen, y_gen)
+    y_gen = np.array([0, 1]).reshape(-1, 1)
+    x = np.hstack([x_gen, y_gen])
+    ca = _ChainBase(2)
+    ca._n_dimensions = 2
+    result = ca._aggregate_chain(x)
     assert np.array_equal(result, np.array([1, 0, 0, 1, 0, 0, 0, 0]))
 
 
 def test_chain_aggregator2():
     x_gen = np.array([[1, 0, 0], [2, 2, 2]])
-    y_gen = np.array([1, 2])
+    y_gen = np.array([1, 2]).reshape(-1, 1)
+    x = np.hstack([x_gen, y_gen])
     sample_weight_gen = np.array([100, 99])
-    ca = _ChainBase(3, 2)
-    result = ca._aggregate_chain(x_gen, y_gen, sample_weight_gen)
+    ca = _ChainBase(2)
+    ca._n_dimensions = 3
+    result = ca._aggregate_chain(x, sample_weight_gen)
     assert result[28] == 100
     assert result[80] == 99
     assert result.shape == (81,)
     assert result.sum() == 199
-
-
-def test_create_indexes():
-    mtd = MTD(4, 3)
-    assert len(mtd._indexes) == 256
 
 
 def test_manual_exp_max():
@@ -171,14 +170,15 @@ def test_one_fit():
 
 
 def test_fit_with_init():
-    transition_matrices = data_for_tests['transition_matrices'].copy()
-    lambdas = data_for_tests['lambdas'].copy()
-    pe = PathEncoder(2)
-    pe.fit(x, y)
-    x_tr, y_tr = pe.transform(x, y)
-    mtd = MTD(2, 2, max_iter=0, verbose=0, lambdas_init=lambdas, transition_matrices_init=transition_matrices)
+    transition_matrices = np.random.rand(2, 3, 3)
+    transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(2, 3, 1)
+    lambdas = np.random.rand(2)
+    lambdas = lambdas / lambdas.sum()
+    x_tr = np.random.randint(3, size=(10, 2))
+    y_tr = np.random.randint(3, size=10)
+    mtd = MTD(2, max_iter=0, verbose=0, lambdas_init=lambdas, transition_matrices_init=transition_matrices)
     mtd.fit(x_tr, y_tr)
-    assert np.isclose(mtd.transition_matrices - transition_matrices, np.zeros((2, 2))).min()
+    assert np.isclose(mtd.transition_matrices - transition_matrices, np.zeros((2, 3, 3))).min()
     assert np.isclose(mtd.lambdas - lambdas, np.zeros(2)).min()
 
 
@@ -188,7 +188,7 @@ def test_ex_max():
         pe = PathEncoder(2)
         pe.fit(x, y)
         x_tr, y_tr = pe.transform(x, y)
-        mtd = MTD(3, 2, verbose=0, number_of_initiations=1)
+        mtd = MTD(2, verbose=0, number_of_initiations=1)
         mtd.fit(x_tr, y_tr)
         assert mtd.lambdas.shape == (2,)
         assert np.isclose(sum(mtd.lambdas), 1.0)
@@ -204,7 +204,7 @@ def test_create_markov():
     pe = PathEncoder(2)
     pe.fit(x, y)
     x_tr, y_tr = pe.transform(x, y)
-    mtd = MTD(3, 2, verbose=0)
+    mtd = MTD(2, verbose=0)
     mtd.fit(x_tr, y_tr)
     assert mtd.transition_matrix.max() <= 1.0
     assert mtd.transition_matrix.min() >= 0.0
@@ -212,71 +212,29 @@ def test_create_markov():
     assert mtd.transition_matrix.shape == (9, 3)
 
 
-def test_n_parameters():
-    mtd = MTD(4, 1)
-    assert mtd._n_parameters == 12
-    mtd = MTD(4, 2)
-    assert mtd._n_parameters == 21
-    mtd = MTD(4, 3)
-    assert mtd._n_parameters == 30
-    mtd = MTD(4, 4)
-    assert mtd._n_parameters == 39
-    mtd = MTD(4, 5)
-    assert mtd._n_parameters == 48
-
-
 def test_predict():
-    transition_matrices = data_for_tests['transition_matrices'].copy()
-    lambdas = data_for_tests['lambdas'].copy()
-    pe = PathEncoder(2)
-    pe.fit(x, y)
-    x_tr, y_tr = pe.transform(x, y)
-    mtd = MTD(2, 2,
-              max_iter=0,
-              verbose=0,
-              number_of_initiations=1,
-              lambdas_init=lambdas,
-              transition_matrices_init=transition_matrices)
+    transition_matrices = np.array([[[0.2, 0.8], [0.7, 0.3]], [[0.1, 0.9], [0.5, 0.5]]])
+    lambdas = np.array([0.5, 0.5])
+
+    x_tr = np.random.randint(2, size=(10, 2))
+    y_tr = np.random.randint(2, size=10)
+    mtd = MTD(2, max_iter=0, verbose=0, lambdas_init=lambdas, transition_matrices_init=transition_matrices)
     mtd.fit(x_tr, y_tr)
     assert np.array_equal(mtd.predict(np.array([[0, 0], [0, 1], [1, 0], [1, 1]])), np.array([1, 1, 1, 0]))
 
 
 def test_predict_proba():
-    transition_matrices = data_for_tests['transition_matrices'].copy()
-    lambdas = data_for_tests['lambdas'].copy()
-    pe = PathEncoder(2)
-    pe.fit(x, y)
-    x_tr, y_tr = pe.transform(x, y)
-    mtd = MTD(2, 2,
-              max_iter=0,
-              verbose=0,
-              number_of_initiations=1,
-              lambdas_init=lambdas,
-              transition_matrices_init=transition_matrices)
+    transition_matrices = np.array([[[0.2, 0.8], [0.7, 0.3]], [[0.1, 0.9], [0.5, 0.5]]])
+    lambdas = np.array([0.5, 0.5])
+
+    x_tr = np.random.randint(2, size=(10, 2))
+    y_tr = np.random.randint(2, size=10)
+    mtd = MTD(2, max_iter=0, verbose=0, lambdas_init=lambdas, transition_matrices_init=transition_matrices)
     mtd.fit(x_tr, y_tr)
-    assert np.isclose(mtd.predict_proba(np.array([[0, 0], [0, 1], [1, 0], [1, 1]])), np.array([[0.22, 0.78],
-                                                                                               [0.46, 0.54],
-                                                                                               [0.34, 0.66],
-                                                                                               [0.58, 0.42]])).min()
-
-
-def test_markovchain_init():
-    m = MarkovChain(2, 1)
-    assert m._n_parameters == 2
-    m = MarkovChain(2, 2)
-    assert m._n_parameters == 4
-    m = MarkovChain(2, 3)
-    assert m._n_parameters == 8
-    m = MarkovChain(2, 4)
-    assert m._n_parameters == 16
-    m = MarkovChain(5, 1)
-    assert m._n_parameters == 20
-    m = MarkovChain(5, 2)
-    assert m._n_parameters == 100
-    m = MarkovChain(5, 3)
-    assert m._n_parameters == 500
-    m = MarkovChain(5, 4)
-    assert m._n_parameters == 2500
+    assert np.isclose(mtd.predict_proba(np.array([[0, 0], [0, 1], [1, 0], [1, 1]])), np.array([[0.15, 0.85],
+                                                                                               [0.35, 0.65],
+                                                                                               [0.4, 0.6],
+                                                                                               [0.6, 0.4]])).min()
 
 
 def test_mc_fit():
@@ -288,13 +246,13 @@ def test_mc_fit():
                               [0.8, 0.2],
                               [0.49, 0.51]])
 
-    m = MarkovChain(2, 2)
+    m = MarkovChain(2)
     m.fit(x, y, sw)
     assert np.array_equal(m.transition_matrix, target_matrix)
 
 
 def test_random_walk():
-    rw = RandomWalk(3)
+    rw = RandomWalk()
     y = np.array([0, 1, 2, 2])
     sw = np.array([10, 10, 10, 10])
     x_to_predict = np.array([[1], [], [10, 10]])
@@ -320,7 +278,7 @@ def test_trim_input():
                               [0.8, 0.2],
                               [0.49, 0.51]])
 
-    m = MarkovChain(2, 2)
+    m = MarkovChain(2)
     m.fit(x, y, sw)
     assert np.array_equal(m.transition_matrix, target_matrix)
 
@@ -334,7 +292,7 @@ def test_input_exception():
                   [1, 0],
                   [1, 1]])
     y = np.array([0, 1, 0, 1, 0, 1, 0, 1])
-    m = MarkovChain(2, 3)
+    m = MarkovChain(3)
 
     with pytest.raises(ValueError):
         m.fit(x, y)

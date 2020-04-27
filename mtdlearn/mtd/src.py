@@ -2,6 +2,7 @@ import numpy as np
 from itertools import product
 from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
+from datetime import datetime
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -13,27 +14,26 @@ class _ChainBase(BaseEstimator):
 
     Parameters
     ----------
-    n_dimensions: int
-        Number of states of the process.
 
     order: int
         Number of lags of the model.
     """
 
-    def __init__(self, n_dimensions=None, order=None):
+    def __init__(self, order=None):
         self.log_likelihood = None
         self.aic = None
         self.bic = None
         self._n_parameters = None
         self.samples = None
-        self.n_dimensions = n_dimensions
+        self._n_dimensions = None
         self.order = order
         self._transition_matrix = None
+        self.transition_matrices = None
+        self.lambdas = None
 
-        idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
-        self._indexes = []
-        for i in idx_gen:
-            self._indexes.append(i)
+    def _create_indexes(self):
+        idx_gen = product(range(self._n_dimensions), repeat=self.order + 1)
+        self._indexes = [i for i in idx_gen]
 
     @property
     def transition_matrix(self):
@@ -43,34 +43,29 @@ class _ChainBase(BaseEstimator):
     def transition_matrix(self, new_transition_matrix):
         self._transition_matrix = new_transition_matrix
 
-    @staticmethod
-    def _aggregate_chain(x, y, sample_weight=None):
+    def _calculate_dimensions(self, array):
+        max_value = array.max()
+        min_value = array.min()
+        n_dim = np.unique(array).shape[0]
+        if min_value != 0:
+            raise ValueError('Lowest label should be equal to zero')
+        if max_value + 1 != n_dim:
+            raise ValueError('Highest label should be equal to number of unique labels minus one')
+        self._n_dimensions = n_dim
 
-        def check_labels(array):
-            max_value = array.max()
-            min_value = array.min()
-            n_unique_values = np.unique(array).shape[0]
-            if min_value != 0:
-                raise ValueError('Lowest label should be equal to zero')
-            if max_value + 1 != n_unique_values:
-                raise ValueError('Highest label should be equal to number of unique labels minus one')
+    def _aggregate_chain(self, x, sample_weight=None):
 
         if sample_weight is None:
-            sample_weight = np.ones(y.shape[0], dtype=np.int)
+            sample_weight = np.ones(x.shape[0], dtype=np.int)
 
-        matrix = np.hstack([x, y.reshape(-1, 1)])
-        check_labels(matrix)
-        n_unique = int(matrix.max()) + 1
-        n_columns = matrix.shape[1]
-        values_dict = {i: 0 for i in range(n_unique ** (x.shape[1] + 1))}
-        idx = []
-        for i in range(n_columns):
-            idx.append(n_unique ** i)
+        n_columns = x.shape[1]
+        values_dict = {i: 0 for i in range(self._n_dimensions ** (x.shape[1]))}
+        idx = [self._n_dimensions ** i for i in range(n_columns)]
 
         idx = np.array(idx[::-1])
-        indexes = np.dot(matrix, idx)
+        data_indexes = np.dot(x, idx)
 
-        for n, index in enumerate(indexes):
+        for n, index in enumerate(data_indexes):
             values_dict[index] += sample_weight[n]
 
         return np.array(list(values_dict.values()))
@@ -90,7 +85,7 @@ class _ChainBase(BaseEstimator):
         The returned estimates for all states are ordered by the
         label of state.
         :param x: NumPy array of shape (n_samples, order)
-        :return:  NumPy array of shape (n_samples, n_dimensions)
+        :return:  NumPy array of shape (n_samples, _n_dimensions)
         """
 
         if self.order == 0:
@@ -98,7 +93,7 @@ class _ChainBase(BaseEstimator):
 
         idx = []
         for i in range(x.shape[1]):
-            idx.append(self.n_dimensions ** i)
+            idx.append(self._n_dimensions ** i)
         idx = np.array(idx[::-1])
         indexes = np.dot(x, idx)
 
@@ -121,12 +116,14 @@ class _ChainBase(BaseEstimator):
         self.log_likelihood = (transition_matrix_num * logs).sum()
 
     def _create_transition_matrix(self, x, y, sample_weight):
-        transition_matrix = self._aggregate_chain(x, y, sample_weight)
-        transition_matrix_num = transition_matrix.reshape(-1, self.n_dimensions)
+        x = np.hstack([x, y.reshape(-1, 1)])
+        self._calculate_dimensions(x)
+        transition_matrix = self._aggregate_chain(x, sample_weight)
+        transition_matrix_num = transition_matrix.reshape(-1, self._n_dimensions)
         self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
         return transition_matrix_num
 
-    def _check_input_shape(self, x):
+    def _check_and_reshape_input(self, x):
         if x.shape[1] > self.order:
             print(f'WARNING: The input has too many columns. Expected: {self.order}, got: {x.shape[1]}. '
                   f'The columns were trimmed.')
@@ -136,6 +133,17 @@ class _ChainBase(BaseEstimator):
                              f'got: {x.shape[1]}.')
         return x
 
+    def _create_markov(self):
+
+        array_coords = product(range(self._n_dimensions), repeat=self.order)
+
+        transition_matrix_list = []
+        for idx in array_coords:
+            t_matrix_part = np.array([self.transition_matrices[i, idx[i], :] for i in range(self.order)]).T
+            transition_matrix_list.append(np.dot(t_matrix_part,
+                                                 self.lambdas))
+        self.transition_matrix = np.array(transition_matrix_list)
+
 
 class MTD(_ChainBase):
     """
@@ -144,8 +152,6 @@ class MTD(_ChainBase):
 
     Parameters
     ----------
-    n_dimensions: int
-        Number of states of the process.
 
     order: int
         Number of lags of the model.
@@ -174,6 +180,10 @@ class MTD(_ChainBase):
 
     Attributes
     ----------
+
+    _n_dimensions: int
+        Number of states of the process.
+
     _n_parameters: int
         Number of independent parameters of the model following [1] section 2
 
@@ -202,10 +212,10 @@ class MTD(_ChainBase):
 
     np.random.seed(42)
 
-    n_dimensions = 3
+    _n_dimensions = 3
     order = 2
 
-    m = MTD(n_dimensions, order, n_jobs=-1)
+    m = MTD(_n_dimensions, order, n_jobs=-1)
 
     x = np.array([[0, 0],
                   [1, 1],
@@ -235,14 +245,11 @@ class MTD(_ChainBase):
 
     """
 
-    def __init__(self, n_dimensions, order, number_of_initiations=10, max_iter=100, min_gain=0.1, lambdas_init=None,
+    def __init__(self, order, number_of_initiations=10, max_iter=100, min_gain=0.1, lambdas_init=None,
                  transition_matrices_init=None, verbose=1, n_jobs=-1):
 
-        super().__init__(n_dimensions, order)
-        self._n_parameters = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
+        super().__init__(order)
         self.number_of_initiations = number_of_initiations
-        self.lambdas = None
-        self.transition_matrices = None
         self.lambdas_init = lambdas_init
         self.transition_matrices_init = transition_matrices_init
         self.max_iter = max_iter
@@ -270,10 +277,14 @@ class MTD(_ChainBase):
         else:
             self.samples = y.shape[0]
 
-        x = self._check_input_shape(x)
-        x = self._aggregate_chain(x, y, sample_weight)
+        x = self._check_and_reshape_input(x)
+        x = np.hstack([x, y.reshape(-1, 1)])
+        self._calculate_dimensions(x)
+        x = self._aggregate_chain(x, sample_weight)
 
-        n_direct = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
+        self._create_indexes()
+
+        n_direct = np.zeros((self.order, self._n_dimensions, self._n_dimensions))
         for i, idx in enumerate(self._indexes):
             for j, k in enumerate(idx[:-1]):
                 n_direct[j, k, idx[-1]] += x[i]
@@ -281,7 +292,7 @@ class MTD(_ChainBase):
         candidates = Parallel(n_jobs=self.n_jobs)(delayed(MTD._fit_one)(x,
                                                                         self._indexes,
                                                                         self.order,
-                                                                        self.n_dimensions,
+                                                                        self._n_dimensions,
                                                                         self.min_gain,
                                                                         self.max_iter,
                                                                         self.verbose,
@@ -296,6 +307,7 @@ class MTD(_ChainBase):
             print(f'log-likelihood value: {self.log_likelihood}')
 
         self._create_markov()
+        self._n_parameters = (1 + self.order * (self._n_dimensions - 1)) * (self._n_dimensions - 1)
         self._calculate_aic()
         self._calculate_bic()
 
@@ -340,7 +352,9 @@ class MTD(_ChainBase):
             iteration += 1
 
             if verbose > 1:
-                print(f'iteration: {iteration}  gain: {round(gain, 5)} ll_value: {round(log_likelihood, 5)}')
+                current_time = datetime.now()
+                print(f'{current_time.time()} iteration: {iteration}  '
+                      f'gain: {round(gain, 5)} ll_value: {round(log_likelihood, 5)}')
 
         if iteration == max_iter:
             print('WARNING: The model has not converged. Consider increasing the max_iter parameter.')
@@ -415,17 +429,6 @@ class MTD(_ChainBase):
 
         return lambdas, transition_matrices
 
-    def _create_markov(self):
-
-        array_coords = product(range(self.n_dimensions), repeat=self.order)
-
-        transition_matrix_list = []
-        for idx in array_coords:
-            t_matrix_part = np.array([self.transition_matrices[i, idx[i], :] for i in range(self.order)]).T
-            transition_matrix_list.append(np.dot(t_matrix_part,
-                                                 self.lambdas))
-        self.transition_matrix = np.array(transition_matrix_list)
-
     @staticmethod
     def _select_the_best_candidate(candidates):
 
@@ -449,8 +452,6 @@ class MarkovChain(_ChainBase):
 
     Parameters
     ----------
-    n_dimensions: int
-        Number of states of the process.
 
     order: int
         Number of lags of the model.
@@ -461,6 +462,10 @@ class MarkovChain(_ChainBase):
 
     Attributes
     ----------
+
+    _n_dimensions: int
+        Number of states of the process.
+
     _n_parameters: int
         Number of independent parameters of the model
 
@@ -477,10 +482,9 @@ class MarkovChain(_ChainBase):
         Value of the Bayesian Information Criterion (BIC)
     """
 
-    def __init__(self, n_dimensions, order, verbose=1):
+    def __init__(self, order, verbose=1):
 
-        super().__init__(n_dimensions, order)
-        self._n_parameters = (self.n_dimensions ** self.order) * (self.n_dimensions - 1)
+        super().__init__(order)
         self.verbose = verbose
 
     def fit(self, x, y, sample_weight=None):
@@ -501,7 +505,11 @@ class MarkovChain(_ChainBase):
         else:
             self.samples = y.shape[0]
 
-        x = self._check_input_shape(x)
+        x = self._check_and_reshape_input(x)
+        self._n_dimensions = np.unique(np.hstack([x, y.reshape(-1, 1)])).shape[0]
+        self._n_parameters = (self._n_dimensions ** self.order) * (self._n_dimensions - 1)
+        self._create_indexes()
+
         transition_matrix_num = self._create_transition_matrix(x, y, sample_weight)
 
         self._calculate_log_likelihood(transition_matrix_num)
@@ -519,8 +527,6 @@ class RandomWalk(_ChainBase):
 
     Parameters
     ----------
-    n_dimensions: int
-        Number of states of the process.
 
     verbose: int, optional (default=1)
         Controls the verbosity when fitting and predicting.
@@ -528,6 +534,10 @@ class RandomWalk(_ChainBase):
 
     Attributes
     ----------
+
+    _n_dimensions: int
+        Number of states of the process.
+
     _n_parameters: int
         Number of independent parameters of the model
 
@@ -544,10 +554,9 @@ class RandomWalk(_ChainBase):
         Value of the Bayesian Information Criterion (BIC)
     """
 
-    def __init__(self, n_dimensions, verbose=1):
+    def __init__(self, verbose=1):
 
-        super().__init__(n_dimensions, 0)
-        self._n_parameters = self.n_dimensions - 1
+        super().__init__(0)
         self.verbose = verbose
 
     def fit(self, y, sample_weight=None):
@@ -564,6 +573,10 @@ class RandomWalk(_ChainBase):
             self.samples = sample_weight.sum()
         else:
             self.samples = y.shape[0]
+
+        self._n_dimensions = np.unique(y).shape[0]
+        self._n_parameters = self._n_dimensions - 1
+        self._create_indexes()
 
         x = np.array([[] for _ in range(len(y))])
 

@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.3.3
+#       jupytext_version: 1.3.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -66,7 +66,7 @@ pe.fit(x, y)
 
 x_tr, y_tr = pe.transform(x, y)
 
-model = MTD(n_dimensions=4, order=order, n_jobs=-1, number_of_initiations=100)
+model = MTD(order=order, n_jobs=-1, number_of_initiations=100)
 model.fit(x_tr, y_tr)
 aics.append(model.aic)
 bics.append(model.bic)
@@ -84,7 +84,7 @@ pe.fit(x, y)
 
 x_tr, y_tr = pe.transform(x, y)
 
-model = MTD(n_dimensions=4, order=order, n_jobs=-1, number_of_initiations=100)
+model = MTD(order=order, n_jobs=-1, number_of_initiations=100)
 model.fit(x_tr, y_tr)
 aics.append(model.aic)
 bics.append(model.bic)
@@ -102,7 +102,7 @@ pe.fit(x, y)
 
 x_tr, y_tr = pe.transform(x, y)
 
-model = MTD(n_dimensions=4, order=order, n_jobs=-1, number_of_initiations=100)
+model = MTD(order=order, n_jobs=-1, number_of_initiations=100)
 model.fit(x_tr, y_tr)
 aics.append(model.aic)
 bics.append(model.bic)
@@ -120,7 +120,7 @@ pe.fit(x, y)
 
 x_tr, y_tr = pe.transform(x, y)
 
-model = MTD(n_dimensions=4, order=order, n_jobs=-1, number_of_initiations=100)
+model = MTD(order=order, n_jobs=-1, number_of_initiations=100)
 model.fit(x_tr, y_tr)
 aics.append(model.aic)
 bics.append(model.bic)

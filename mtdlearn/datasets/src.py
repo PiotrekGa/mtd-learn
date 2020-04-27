@@ -1,6 +1,5 @@
 import numpy as np
 from ..mtd import _ChainBase
-from itertools import product
 
 
 class ChainGenerator(_ChainBase):
@@ -50,7 +49,8 @@ class ChainGenerator(_ChainBase):
     def __init__(self, values, order, sep='>', min_len=None, max_len=None, transition_matrix=None, lambdas=None,
                  transition_matrices=None,
                  random_state=None):
-        super().__init__(n_dimensions=len(values), order=order)
+        super().__init__(order=order)
+        self._n_dimensions = len(values)
         self.values = values
         self.order = order
         self.sep = sep
@@ -95,23 +95,16 @@ class ChainGenerator(_ChainBase):
         if random_state is not None:
             np.random.seed(random_state)
 
-        x = []
-        cnt = 0
-        while cnt < samples:
-            cnt += 1
-            seq_list = np.random.choice(list(self._label_dict.keys()), self.order)
-            x.append(seq_list)
-
-        x = np.array(x).reshape(-1, self.order)
+        x = np.random.choice(list(self._label_dict.keys()), (samples, self.order))
         y = self.predict_random(x)
 
-        x_to_add = np.random.randint(self.min_len, self.max_len + 1, samples)
+        if self.max_len > self.order:
+            x_to_add = np.random.randint(self.min_len, self.max_len + 1, samples)
+            x = [np.hstack([np.random.choice(list(self._label_dict.keys()), i[1] - self.order), i[0]])
+                 for i
+                 in zip(x.tolist(), list(x_to_add))]
 
-        x_to_encode = [np.hstack([np.random.choice(list(self._label_dict.keys()), i[1] - self.order), i[0]])
-                       for i
-                       in zip(x.tolist(), list(x_to_add))]
-
-        x = [self.sep.join(list(map(self._label_dict.get, i))) for i in x_to_encode]
+        x = [self.sep.join(list(map(self._label_dict.get, i))) for i in x]
 
         return np.array(x).reshape(-1, 1), np.array(y)
 
@@ -133,20 +126,9 @@ class ChainGenerator(_ChainBase):
             lambdas = np.random.rand(self.order)
             self.lambdas = lambdas / lambdas.sum()
         if self.transition_matrices is None:
-            transition_matrices = np.random.rand(self.order, self.n_dimensions, self.n_dimensions)
+            transition_matrices = np.random.rand(self.order, self._n_dimensions, self._n_dimensions)
             self.transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(self.order,
-                                                                                                self.n_dimensions, 1)
-
-    def _create_markov(self):
-
-        array_coords = product(range(self.n_dimensions), repeat=self.order)
-
-        transition_matrix_list = []
-        for idx in array_coords:
-            t_matrix_part = np.array([self.transition_matrices[i, idx[i], :] for i in range(self.order)]).T
-            transition_matrix_list.append(np.dot(t_matrix_part,
-                                                 self.lambdas))
-        self.transition_matrix = np.array(transition_matrix_list)
+                                                                                                self._n_dimensions, 1)
 
 
 data_values3_order2_full = dict()
