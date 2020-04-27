@@ -25,14 +25,14 @@ class _ChainBase(BaseEstimator):
         self.bic = None
         self._n_parameters = None
         self.samples = None
-        self.n_dimensions = None
+        self._n_dimensions = None
         self.order = order
         self._transition_matrix = None
         self.transition_matrices = None
         self.lambdas = None
 
     def _create_indexes(self):
-        idx_gen = product(range(self.n_dimensions), repeat=self.order + 1)
+        idx_gen = product(range(self._n_dimensions), repeat=self.order + 1)
         self._indexes = [i for i in idx_gen]
 
     @property
@@ -51,7 +51,7 @@ class _ChainBase(BaseEstimator):
             raise ValueError('Lowest label should be equal to zero')
         if max_value + 1 != n_dim:
             raise ValueError('Highest label should be equal to number of unique labels minus one')
-        self.n_dimensions = n_dim
+        self._n_dimensions = n_dim
 
     def _aggregate_chain(self, x, sample_weight=None):
 
@@ -59,8 +59,8 @@ class _ChainBase(BaseEstimator):
             sample_weight = np.ones(x.shape[0], dtype=np.int)
 
         n_columns = x.shape[1]
-        values_dict = {i: 0 for i in range(self.n_dimensions ** (x.shape[1]))}
-        idx = [self.n_dimensions ** i for i in range(n_columns)]
+        values_dict = {i: 0 for i in range(self._n_dimensions ** (x.shape[1]))}
+        idx = [self._n_dimensions ** i for i in range(n_columns)]
 
         idx = np.array(idx[::-1])
         data_indexes = np.dot(x, idx)
@@ -85,7 +85,7 @@ class _ChainBase(BaseEstimator):
         The returned estimates for all states are ordered by the
         label of state.
         :param x: NumPy array of shape (n_samples, order)
-        :return:  NumPy array of shape (n_samples, n_dimensions)
+        :return:  NumPy array of shape (n_samples, _n_dimensions)
         """
 
         if self.order == 0:
@@ -93,7 +93,7 @@ class _ChainBase(BaseEstimator):
 
         idx = []
         for i in range(x.shape[1]):
-            idx.append(self.n_dimensions ** i)
+            idx.append(self._n_dimensions ** i)
         idx = np.array(idx[::-1])
         indexes = np.dot(x, idx)
 
@@ -119,7 +119,7 @@ class _ChainBase(BaseEstimator):
         x = np.hstack([x, y.reshape(-1, 1)])
         self._calculate_dimensions(x)
         transition_matrix = self._aggregate_chain(x, sample_weight)
-        transition_matrix_num = transition_matrix.reshape(-1, self.n_dimensions)
+        transition_matrix_num = transition_matrix.reshape(-1, self._n_dimensions)
         self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
         return transition_matrix_num
 
@@ -135,7 +135,7 @@ class _ChainBase(BaseEstimator):
 
     def _create_markov(self):
 
-        array_coords = product(range(self.n_dimensions), repeat=self.order)
+        array_coords = product(range(self._n_dimensions), repeat=self.order)
 
         transition_matrix_list = []
         for idx in array_coords:
@@ -181,7 +181,7 @@ class MTD(_ChainBase):
     Attributes
     ----------
 
-    n_dimensions: int
+    _n_dimensions: int
         Number of states of the process.
 
     _n_parameters: int
@@ -212,10 +212,10 @@ class MTD(_ChainBase):
 
     np.random.seed(42)
 
-    n_dimensions = 3
+    _n_dimensions = 3
     order = 2
 
-    m = MTD(n_dimensions, order, n_jobs=-1)
+    m = MTD(_n_dimensions, order, n_jobs=-1)
 
     x = np.array([[0, 0],
                   [1, 1],
@@ -284,7 +284,7 @@ class MTD(_ChainBase):
 
         self._create_indexes()
 
-        n_direct = np.zeros((self.order, self.n_dimensions, self.n_dimensions))
+        n_direct = np.zeros((self.order, self._n_dimensions, self._n_dimensions))
         for i, idx in enumerate(self._indexes):
             for j, k in enumerate(idx[:-1]):
                 n_direct[j, k, idx[-1]] += x[i]
@@ -292,7 +292,7 @@ class MTD(_ChainBase):
         candidates = Parallel(n_jobs=self.n_jobs)(delayed(MTD._fit_one)(x,
                                                                         self._indexes,
                                                                         self.order,
-                                                                        self.n_dimensions,
+                                                                        self._n_dimensions,
                                                                         self.min_gain,
                                                                         self.max_iter,
                                                                         self.verbose,
@@ -307,7 +307,7 @@ class MTD(_ChainBase):
             print(f'log-likelihood value: {self.log_likelihood}')
 
         self._create_markov()
-        self._n_parameters = (1 + self.order * (self.n_dimensions - 1)) * (self.n_dimensions - 1)
+        self._n_parameters = (1 + self.order * (self._n_dimensions - 1)) * (self._n_dimensions - 1)
         self._calculate_aic()
         self._calculate_bic()
 
@@ -463,7 +463,7 @@ class MarkovChain(_ChainBase):
     Attributes
     ----------
 
-    n_dimensions: int
+    _n_dimensions: int
         Number of states of the process.
 
     _n_parameters: int
@@ -506,8 +506,8 @@ class MarkovChain(_ChainBase):
             self.samples = y.shape[0]
 
         x = self._check_and_reshape_input(x)
-        self.n_dimensions = np.unique(np.hstack([x, y.reshape(-1, 1)])).shape[0]
-        self._n_parameters = (self.n_dimensions ** self.order) * (self.n_dimensions - 1)
+        self._n_dimensions = np.unique(np.hstack([x, y.reshape(-1, 1)])).shape[0]
+        self._n_parameters = (self._n_dimensions ** self.order) * (self._n_dimensions - 1)
         self._create_indexes()
 
         transition_matrix_num = self._create_transition_matrix(x, y, sample_weight)
@@ -535,7 +535,7 @@ class RandomWalk(_ChainBase):
     Attributes
     ----------
 
-    n_dimensions: int
+    _n_dimensions: int
         Number of states of the process.
 
     _n_parameters: int
@@ -574,8 +574,8 @@ class RandomWalk(_ChainBase):
         else:
             self.samples = y.shape[0]
 
-        self.n_dimensions = np.unique(y).shape[0]
-        self._n_parameters = self.n_dimensions - 1
+        self._n_dimensions = np.unique(y).shape[0]
+        self._n_parameters = self._n_dimensions - 1
         self._create_indexes()
 
         x = np.array([[] for _ in range(len(y))])

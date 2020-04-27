@@ -50,7 +50,7 @@ class ChainGenerator(_ChainBase):
                  transition_matrices=None,
                  random_state=None):
         super().__init__(order=order)
-        self.n_dimensions = len(values)
+        self._n_dimensions = len(values)
         self.values = values
         self.order = order
         self.sep = sep
@@ -126,9 +126,9 @@ class ChainGenerator(_ChainBase):
             lambdas = np.random.rand(self.order)
             self.lambdas = lambdas / lambdas.sum()
         if self.transition_matrices is None:
-            transition_matrices = np.random.rand(self.order, self.n_dimensions, self.n_dimensions)
+            transition_matrices = np.random.rand(self.order, self._n_dimensions, self._n_dimensions)
             self.transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(self.order,
-                                                                                                self.n_dimensions, 1)
+                                                                                                self._n_dimensions, 1)
 
 
 data_values3_order2_full = dict()

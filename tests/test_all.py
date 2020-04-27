@@ -85,7 +85,7 @@ def test_chain_aggregator1():
     y_gen = np.array([0, 1]).reshape(-1, 1)
     x = np.hstack([x_gen, y_gen])
     ca = _ChainBase(2)
-    ca.n_dimensions = 2
+    ca._n_dimensions = 2
     result = ca._aggregate_chain(x)
     assert np.array_equal(result, np.array([1, 0, 0, 1, 0, 0, 0, 0]))
 
@@ -96,7 +96,7 @@ def test_chain_aggregator2():
     x = np.hstack([x_gen, y_gen])
     sample_weight_gen = np.array([100, 99])
     ca = _ChainBase(2)
-    ca.n_dimensions = 3
+    ca._n_dimensions = 3
     result = ca._aggregate_chain(x, sample_weight_gen)
     assert result[28] == 100
     assert result[80] == 99
