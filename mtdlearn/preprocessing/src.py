@@ -152,7 +152,6 @@ class SequenceCutter(TransformerMixin):
     y = np.array(['A', 'B', 'D', 'E', 'A'])
 
     sc = SequenceCutter(2)
-    sc.fit(y)
     x_tr, y_tr = sc.transform(y)
 
     """
