@@ -11,7 +11,7 @@ setup(
     version='0.2.0',
     packages=find_packages(),
     install_requires=[
-        'joblib>=0.14.1',
+        'joblib>=0.11',
         'numpy>=1.18.1',
         'scikit-learn>=0.22.1'],
     extras_require={
