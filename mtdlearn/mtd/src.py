@@ -91,9 +91,8 @@ class _ChainBase(BaseEstimator):
         if self.order == 0:
             x = np.zeros((x.shape[0], 1), dtype=int)
 
-        idx = []
-        for i in range(x.shape[1]):
-            idx.append(self._n_dimensions ** i)
+        idx = [self._n_dimensions ** i for i in range(x.shape[1])]
+
         idx = np.array(idx[::-1])
         indexes = np.dot(x, idx)
 
