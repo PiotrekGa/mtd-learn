@@ -19,7 +19,7 @@ class _ChainBase(BaseEstimator):
         Number of lags of the model.
     """
 
-    def __init__(self, order=None):
+    def __init__(self, order: int = None):
         self.log_likelihood = None
         self.aic = None
         self.bic = None
@@ -36,14 +36,14 @@ class _ChainBase(BaseEstimator):
         self._indexes = [i for i in idx_gen]
 
     @property
-    def transition_matrix(self):
+    def transition_matrix(self) -> np.ndarray:
         return self._transition_matrix
 
     @transition_matrix.setter
-    def transition_matrix(self, new_transition_matrix):
+    def transition_matrix(self, new_transition_matrix: np.ndarray):
         self._transition_matrix = new_transition_matrix
 
-    def _calculate_dimensions(self, array):
+    def _calculate_dimensions(self, array: np.ndarray):
         max_value = array.max()
         min_value = array.min()
         n_dim = np.unique(array).shape[0]
@@ -53,7 +53,7 @@ class _ChainBase(BaseEstimator):
             raise ValueError('Highest label should be equal to number of unique labels minus one')
         self._n_dimensions = n_dim
 
-    def _aggregate_chain(self, x, sample_weight=None):
+    def _aggregate_chain(self, x: np.ndarray, sample_weight: np.ndarray = None) -> np.ndarray:
 
         if sample_weight is None:
             sample_weight = np.ones(x.shape[0], dtype=np.int)
@@ -78,7 +78,7 @@ class _ChainBase(BaseEstimator):
 
         self.bic = -2 * self.log_likelihood + np.log(self.samples) * self._n_parameters
 
-    def predict_proba(self, x):
+    def predict_proba(self, x: np.ndarray) -> np.ndarray:
         """
         Probability estimates.
 
@@ -98,7 +98,7 @@ class _ChainBase(BaseEstimator):
 
         return self.transition_matrix[indexes, :]
 
-    def predict(self, x):
+    def predict(self, x: np.ndarray) -> np.ndarray:
         """
         Predict state.
 
@@ -110,11 +110,11 @@ class _ChainBase(BaseEstimator):
 
         return prob.argmax(axis=1)
 
-    def _calculate_log_likelihood(self, transition_matrix_num):
+    def _calculate_log_likelihood(self, transition_matrix_num: np.ndarray):
         logs = np.nan_to_num(np.log(self.transition_matrix), nan=0.0)
         self.log_likelihood = (transition_matrix_num * logs).sum()
 
-    def _create_transition_matrix(self, x, y, sample_weight):
+    def _create_transition_matrix(self, x: np.ndarray, y: np.ndarray, sample_weight: np.ndarray) -> np.ndarray:
         x = np.hstack([x, y.reshape(-1, 1)])
         self._calculate_dimensions(x)
         transition_matrix = self._aggregate_chain(x, sample_weight)
@@ -122,7 +122,7 @@ class _ChainBase(BaseEstimator):
         self.transition_matrix = transition_matrix_num / transition_matrix_num.sum(1).reshape(-1, 1)
         return transition_matrix_num
 
-    def _check_and_reshape_input(self, x):
+    def _check_and_reshape_input(self, x: np.ndarray) -> np.ndarray:
         if x.shape[1] > self.order:
             print(f'WARNING: The input has too many columns. Expected: {self.order}, got: {x.shape[1]}. '
                   f'The columns were trimmed.')
