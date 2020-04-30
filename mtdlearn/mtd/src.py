@@ -55,7 +55,9 @@ class _ChainBase(BaseEstimator):
             raise ValueError('Highest label should be equal to number of unique labels minus one')
         self._n_dimensions = n_dim
 
-    def _aggregate_chain(self, x: np.ndarray, sample_weight: Optional[np.ndarray] = None) -> np.ndarray:
+    def _aggregate_chain(self,
+                         x: np.ndarray,
+                         sample_weight: Optional[np.ndarray] = None) -> np.ndarray:
 
         if sample_weight is None:
             sample_weight = np.ones(x.shape[0], dtype=np.int)
@@ -116,7 +118,10 @@ class _ChainBase(BaseEstimator):
         logs = np.nan_to_num(np.log(self.transition_matrix), nan=0.0)
         self.log_likelihood = (transition_matrix_num * logs).sum()
 
-    def _create_transition_matrix(self, x: np.ndarray, y: np.ndarray, sample_weight: np.ndarray) -> np.ndarray:
+    def _create_transition_matrix(self,
+                                  x: np.ndarray,
+                                  y: np.ndarray,
+                                  sample_weight: np.ndarray) -> np.ndarray:
         x = np.hstack([x, y.reshape(-1, 1)])
         self._calculate_dimensions(x)
         transition_matrix = self._aggregate_chain(x, sample_weight)
@@ -246,9 +251,15 @@ class MTD(_ChainBase):
 
     """
 
-    def __init__(self, order: int, number_of_initiations: int = 10, max_iter: int = 100, min_gain: float = 0.1,
-                 lambdas_init: Optional[np.ndarray] = None, transition_matrices_init: Optional[np.ndarray] = None,
-                 verbose: np.int = 1, n_jobs: int = -1) -> None:
+    def __init__(self,
+                 order: int,
+                 number_of_initiations: int = 10,
+                 max_iter: int = 100,
+                 min_gain: float = 0.1,
+                 lambdas_init: Optional[np.ndarray] = None,
+                 transition_matrices_init: Optional[np.ndarray] = None,
+                 verbose: np.int = 1,
+                 n_jobs: int = -1) -> None:
 
         super().__init__(order)
         self.number_of_initiations = number_of_initiations
@@ -259,7 +270,10 @@ class MTD(_ChainBase):
         self.verbose = verbose
         self.n_jobs = n_jobs
 
-    def fit(self, x: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None) -> None:
+    def fit(self,
+            x: np.ndarray,
+            y: np.ndarray,
+            sample_weight: Optional[np.ndarray] = None) -> None:
         """
         Fit MTD model.
 
@@ -314,8 +328,15 @@ class MTD(_ChainBase):
         self._calculate_bic()
 
     @staticmethod
-    def _fit_one(x: np.ndarray, indexes: List[Tuple[int]], order: int, n_dimensions: int, min_gain: float,
-                 max_iter: int, verbose: int, n_direct: np.ndarray, lambdas: Optional[np.ndarray] = None,
+    def _fit_one(x: np.ndarray,
+                 indexes: List[Tuple[int]],
+                 order: int,
+                 n_dimensions: int,
+                 min_gain: float,
+                 max_iter: int,
+                 verbose: int,
+                 n_direct: np.ndarray,
+                 lambdas: Optional[np.ndarray] = None,
                  transition_matrices: Optional[np.ndarray] = None) -> Tuple[float, np.ndarray, np.ndarray]:
 
         if lambdas is None:
@@ -490,7 +511,10 @@ class MarkovChain(_ChainBase):
         super().__init__(order)
         self.verbose = verbose
 
-    def fit(self, x: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None) -> None:
+    def fit(self,
+            x: np.ndarray,
+            y: np.ndarray,
+            sample_weight: Optional[np.ndarray] = None) -> None:
         """
         Fit Markov Chain model.
 
@@ -557,12 +581,15 @@ class RandomWalk(_ChainBase):
         Value of the Bayesian Information Criterion (BIC)
     """
 
-    def __init__(self, verbose: int = 1) -> None:
+    def __init__(self,
+                 verbose: int = 1) -> None:
 
         super().__init__(0)
         self.verbose = verbose
 
-    def fit(self, y: np.ndarray, sample_weight: Optional[np.ndarray] = None) -> None:
+    def fit(self,
+            y: np.ndarray,
+            sample_weight: Optional[np.ndarray] = None) -> None:
         """
         Fit Random Walk model.
 
