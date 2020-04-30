@@ -484,12 +484,12 @@ class MarkovChain(_ChainBase):
         Value of the Bayesian Information Criterion (BIC)
     """
 
-    def __init__(self, order, verbose=1):
+    def __init__(self, order: int, verbose: int = 1) -> None:
 
         super().__init__(order)
         self.verbose = verbose
 
-    def fit(self, x, y, sample_weight=None):
+    def fit(self, x: np.ndarray, y: np.ndarray, sample_weight: np.ndarray = None) -> None:
         """
         Fit Markov Chain model.
 
@@ -556,12 +556,12 @@ class RandomWalk(_ChainBase):
         Value of the Bayesian Information Criterion (BIC)
     """
 
-    def __init__(self, verbose=1):
+    def __init__(self, verbose: int = 1) -> None:
 
         super().__init__(0)
         self.verbose = verbose
 
-    def fit(self, y, sample_weight=None):
+    def fit(self, y: np.ndarray, sample_weight: np.ndarray = None) -> None:
         """
         Fit Random Walk model.
 
