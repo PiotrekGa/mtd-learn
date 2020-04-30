@@ -3,6 +3,7 @@ from itertools import product
 from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
 from datetime import datetime
+from typing import List, Tuple
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -19,7 +20,7 @@ class _ChainBase(BaseEstimator):
         Number of lags of the model.
     """
 
-    def __init__(self, order: int = None):
+    def __init__(self, order: int = None) -> None:
         self.log_likelihood = None
         self.aic = None
         self.bic = None
@@ -31,7 +32,7 @@ class _ChainBase(BaseEstimator):
         self.transition_matrices = None
         self.lambdas = None
 
-    def _create_indexes(self):
+    def _create_indexes(self) -> None:
         idx_gen = product(range(self._n_dimensions), repeat=self.order + 1)
         self._indexes = [i for i in idx_gen]
 
@@ -40,10 +41,10 @@ class _ChainBase(BaseEstimator):
         return self._transition_matrix
 
     @transition_matrix.setter
-    def transition_matrix(self, new_transition_matrix: np.ndarray):
+    def transition_matrix(self, new_transition_matrix: np.ndarray) -> None:
         self._transition_matrix = new_transition_matrix
 
-    def _calculate_dimensions(self, array: np.ndarray):
+    def _calculate_dimensions(self, array: np.ndarray) -> None:
         max_value = array.max()
         min_value = array.min()
         n_dim = np.unique(array).shape[0]
@@ -70,11 +71,11 @@ class _ChainBase(BaseEstimator):
 
         return np.array(list(values_dict.values()))
 
-    def _calculate_aic(self):
+    def _calculate_aic(self) -> None:
 
         self.aic = -2 * self.log_likelihood + 2 * self._n_parameters
 
-    def _calculate_bic(self):
+    def _calculate_bic(self) -> None:
 
         self.bic = -2 * self.log_likelihood + np.log(self.samples) * self._n_parameters
 
@@ -110,7 +111,7 @@ class _ChainBase(BaseEstimator):
 
         return prob.argmax(axis=1)
 
-    def _calculate_log_likelihood(self, transition_matrix_num: np.ndarray):
+    def _calculate_log_likelihood(self, transition_matrix_num: np.ndarray) -> None:
         logs = np.nan_to_num(np.log(self.transition_matrix), nan=0.0)
         self.log_likelihood = (transition_matrix_num * logs).sum()
 
@@ -132,7 +133,7 @@ class _ChainBase(BaseEstimator):
                              f'got: {x.shape[1]}.')
         return x
 
-    def _create_markov(self):
+    def _create_markov(self) -> None:
 
         array_coords = product(range(self._n_dimensions), repeat=self.order)
 
@@ -244,8 +245,9 @@ class MTD(_ChainBase):
 
     """
 
-    def __init__(self, order, number_of_initiations=10, max_iter=100, min_gain=0.1, lambdas_init=None,
-                 transition_matrices_init=None, verbose=1, n_jobs=-1):
+    def __init__(self, order: int, number_of_initiations: int = 10, max_iter: int = 100, min_gain: float = 0.1,
+                 lambdas_init: np.ndarray = None, transition_matrices_init: np.ndarray = None, verbose: np.int = 1,
+                 n_jobs: int = -1) -> None:
 
         super().__init__(order)
         self.number_of_initiations = number_of_initiations
@@ -256,7 +258,7 @@ class MTD(_ChainBase):
         self.verbose = verbose
         self.n_jobs = n_jobs
 
-    def fit(self, x, y, sample_weight=None):
+    def fit(self, x: np.ndarray, y: np.ndarray, sample_weight: np.ndarray = None) -> None:
         """
         Fit MTD model.
 
@@ -311,8 +313,9 @@ class MTD(_ChainBase):
         self._calculate_bic()
 
     @staticmethod
-    def _fit_one(x, indexes, order, n_dimensions, min_gain, max_iter, verbose, n_direct, lambdas=None,
-                 transition_matrices=None):
+    def _fit_one(x: np.ndarray, indexes: List, order: int, n_dimensions: int, min_gain: float, max_iter: int,
+                 verbose: int, n_direct: np.ndarray, lambdas: np.ndarray = None,
+                 transition_matrices: np.ndarray = None) -> Tuple[float, np.ndarray, np.ndarray]:
 
         if lambdas is None:
             lambdas = np.random.rand(order)
@@ -364,10 +367,10 @@ class MTD(_ChainBase):
         return log_likelihood, lambdas, transition_matrices
 
     @staticmethod
-    def _calculate_log_likelihood_mtd(indexes,
-                                      n_occurrence,
-                                      transition_matrices,
-                                      lambdas):
+    def _calculate_log_likelihood_mtd(indexes: List,
+                                      n_occurrence: np.ndarray,
+                                      transition_matrices: np.ndarray,
+                                      lambdas: np.ndarray) -> float:
 
         log_likelihood = 0
 
@@ -379,11 +382,11 @@ class MTD(_ChainBase):
         return log_likelihood
 
     @staticmethod
-    def _expectation_step(n_dimensions,
-                          order,
-                          indexes,
-                          transition_matrices,
-                          lambdas):
+    def _expectation_step(n_dimensions: int,
+                          order: int,
+                          indexes: List,
+                          transition_matrices: np.ndarray,
+                          lambdas: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
         p_expectation = np.zeros((n_dimensions ** (order + 1), order))
 
@@ -405,15 +408,15 @@ class MTD(_ChainBase):
         return p_expectation, p_expectation_direct
 
     @staticmethod
-    def _maximization_step(n_dimensions,
-                           order,
-                           indexes,
-                           n_occurrence,
-                           n_direct,
-                           p_expectation,
-                           p_expectation_direct,
-                           transition_matrices,
-                           lambdas):
+    def _maximization_step(n_dimensions: int,
+                           order: int,
+                           indexes: List,
+                           n_occurrence: np.ndarray,
+                           n_direct: np.ndarray,
+                           p_expectation: np.ndarray,
+                           p_expectation_direct: np.ndarray,
+                           transition_matrices: np.ndarray,
+                           lambdas: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
         denominator = 1 / sum(n_occurrence)
         for i, _ in enumerate(lambdas):
@@ -429,7 +432,7 @@ class MTD(_ChainBase):
         return lambdas, transition_matrices
 
     @staticmethod
-    def _select_the_best_candidate(candidates):
+    def _select_the_best_candidate(candidates: List) -> Tuple[float, np.ndarray, np.ndarray]:
 
         log_likelihood = candidates[0][0]
         lambdas = candidates[0][1]
