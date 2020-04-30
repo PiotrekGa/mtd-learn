@@ -53,7 +53,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         self.label_dict = None
         self.label_dict_inverse = None
 
-    def fit(self, x: np.ndarray, y: Optional[np.ndarray] = None) -> None:
+    def fit(self, x: np.ndarray, y: Optional[np.ndarray] = None) -> 'PathEncoder':
         """
         Fit encoder.
 
@@ -86,7 +86,9 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
         return self
 
-    def transform(self, x: np.ndarray, y: Optional[np.ndarray] = None) -> Union[np.ndarray, Tuple[np.ndarray]]:
+    def transform(self,
+                  x: np.ndarray,
+                  y: Optional[np.ndarray] = None) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
         """
         Transform inputs from string paths into integer array.
 
@@ -118,7 +120,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
     def inverse_transform(self,
                           x: np.ndarray,
-                          y: Optional[np.ndarray] = None) -> Union[np.ndarray, Tuple[np.ndarray]]:
+                          y: Optional[np.ndarray] = None) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
         """
         Transform inputs from integer array into string paths.
 
@@ -133,7 +135,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         if self.input_vector:
             x = x.reshape(-1, 1)
 
-        x_rev = [self.sep.join(list(map(self.label_dict_inverse.get, i))) for i in x.tolist()]
+        x_rev = [self.sep.join(list(map(self.label_dict_inverse.get, i))) for i in list(x)]
 
         if y is None:
             return np.array(x_rev).reshape(-1, 1)
@@ -168,13 +170,13 @@ class SequenceCutter(TransformerMixin):
         self.order = order
         self.sep = sep
 
-    def fit(self, x: np.ndarray, y: Optional[np.ndarray] = None) -> None:
+    def fit(self, x: np.ndarray, y: Optional[np.ndarray] = None) -> 'SequenceCutter':
         """
         Fit left for pipeline compatibility
         """
         return self
 
-    def transform(self, x: np.ndarray) -> Tuple[np.ndarray]:
+    def transform(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         Transform input sequence into array with subpaths
 
