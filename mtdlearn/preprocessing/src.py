@@ -39,7 +39,11 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
     """
 
-    def __init__(self, order: int, sep: str = '>', r_just_string: str = 'null', input_vector: bool = False,
+    def __init__(self,
+                 order: int,
+                 sep: str = '>',
+                 r_just_string: str = 'null',
+                 input_vector: bool = False,
                  return_vector: bool = False) -> None:
         self.order = order
         self.sep = sep
@@ -112,7 +116,9 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         else:
             return np.array(x_new), np.vectorize(self.label_dict.get)(y)
 
-    def inverse_transform(self, x: np.ndarray, y: Optional[np.ndarray] = None) -> Union[np.ndarray, Tuple[np.ndarray]]:
+    def inverse_transform(self,
+                          x: np.ndarray,
+                          y: Optional[np.ndarray] = None) -> Union[np.ndarray, Tuple[np.ndarray]]:
         """
         Transform inputs from integer array into string paths.
 
