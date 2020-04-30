@@ -314,8 +314,8 @@ class MTD(_ChainBase):
         self._calculate_bic()
 
     @staticmethod
-    def _fit_one(x: np.ndarray, indexes: List, order: int, n_dimensions: int, min_gain: float, max_iter: int,
-                 verbose: int, n_direct: np.ndarray, lambdas: np.ndarray = None,
+    def _fit_one(x: np.ndarray, indexes: List[Tuple[int]], order: int, n_dimensions: int, min_gain: float,
+                 max_iter: int, verbose: int, n_direct: np.ndarray, lambdas: np.ndarray = None,
                  transition_matrices: np.ndarray = None) -> Tuple[float, np.ndarray, np.ndarray]:
 
         if lambdas is None:
@@ -368,7 +368,7 @@ class MTD(_ChainBase):
         return log_likelihood, lambdas, transition_matrices
 
     @staticmethod
-    def _calculate_log_likelihood_mtd(indexes: List,
+    def _calculate_log_likelihood_mtd(indexes: List[Tuple[int]],
                                       n_occurrence: np.ndarray,
                                       transition_matrices: np.ndarray,
                                       lambdas: np.ndarray) -> float:
@@ -385,7 +385,7 @@ class MTD(_ChainBase):
     @staticmethod
     def _expectation_step(n_dimensions: int,
                           order: int,
-                          indexes: List,
+                          indexes: List[Tuple[int]],
                           transition_matrices: np.ndarray,
                           lambdas: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
@@ -411,7 +411,7 @@ class MTD(_ChainBase):
     @staticmethod
     def _maximization_step(n_dimensions: int,
                            order: int,
-                           indexes: List,
+                           indexes: List[Tuple[int]],
                            n_occurrence: np.ndarray,
                            n_direct: np.ndarray,
                            p_expectation: np.ndarray,
