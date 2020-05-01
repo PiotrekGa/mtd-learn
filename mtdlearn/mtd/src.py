@@ -20,7 +20,7 @@ class _ChainBase(BaseEstimator):
         Number of lags of the model.
     """
 
-    def __init__(self, order: int = None) -> None:
+    def __init__(self, order: int = None, values: List = None) -> None:
         self.log_likelihood = None
         self.aic = None
         self.bic = None
@@ -32,6 +32,7 @@ class _ChainBase(BaseEstimator):
         self.transition_matrices = None
         self.lambdas = None
         self._indexes = None
+        self.values = values
 
     def _create_indexes(self) -> None:
         idx_gen = product(range(self._n_dimensions), repeat=self.order + 1)
@@ -149,6 +150,17 @@ class _ChainBase(BaseEstimator):
             transition_matrix_list.append(np.dot(t_matrix_part,
                                                  self.lambdas))
         self.transition_matrix = np.array(transition_matrix_list)
+
+    def predict_random(self, x: np.ndarray) -> List:
+        """
+        Return state sampled from probability distribution from transition matrix. Used primarily for data generation.
+
+        :param x: NumPy array of shape (n_samples, order)
+        :return:  NumPy array of shape (n_samples,)
+        """
+        prob = self.predict_proba(x)
+        x_new = [np.random.choice(self.values, p=i) for i in prob]
+        return x_new
 
 
 class MTD(_ChainBase):

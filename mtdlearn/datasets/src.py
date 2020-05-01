@@ -51,9 +51,8 @@ class ChainGenerator(_ChainBase):
                  max_len: Optional[int] = None, transition_matrix: Optional[np.ndarray] = None,
                  lambdas: Optional[np.ndarray] = None, transition_matrices: Optional[np.ndarray] = None,
                  random_state: Optional[int] = None) -> None:
-        super().__init__(order=order)
+        super().__init__(order=order, values=values)
         self._n_dimensions = len(values)
-        self.values = values
         self.order = order
         self.sep = sep
         if not ((min_len is None and max_len is None) or (min_len is not None and max_len is not None)):
@@ -82,7 +81,7 @@ class ChainGenerator(_ChainBase):
             self._create_markov()
         self._label_dict = {i: j for i, j in enumerate(values)}
 
-    def generate_data(self, samples: int, random_state: Optional[int] = None) -> Tuple[np.ndarray]:
+    def generate_data(self, samples: int, random_state: Optional[int] = None) -> Tuple[np.ndarray, np.ndarray]:
         """
         Generate data
 
@@ -109,17 +108,6 @@ class ChainGenerator(_ChainBase):
         x = [self.sep.join(list(map(self._label_dict.get, i))) for i in x]
 
         return np.array(x).reshape(-1, 1), np.array(y)
-
-    def predict_random(self, x: np.ndarray) -> np.ndarray:
-        """
-        Return state sampled from probability distribution from transition matrix. Used primarily for data generation.
-
-        :param x: NumPy array of shape (n_samples, order)
-        :return:  NumPy array of shape (n_samples,)
-        """
-        prob = self.predict_proba(x)
-        x_new = [np.random.choice(self.values, p=i) for i in prob]
-        return x_new
 
     def _generate_mtd_model(self) -> None:
         if self.random_state is not None:
