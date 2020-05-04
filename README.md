@@ -12,7 +12,7 @@ pip install .
 GitHub [Issues](https://github.com/PiotrekGa/mtd-learn/issues) for bug reports, feature requests and questions.
 
 ## Contribution
-Any contribution is welcome!
+Any contribution is welcome! Please follow this [branching model](https://nvie.com/posts/a-successful-git-branching-model/).
 
 ## License
 MIT License (see [LICENSE](https://github.com/PiotrekGa/mtd-learn/blob/master/LICENSE)).
