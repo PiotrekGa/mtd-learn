@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.base import TransformerMixin, BaseEstimator
+from typing import Optional, Union, Tuple
 
 
 class PathEncoder(TransformerMixin, BaseEstimator):
@@ -38,7 +39,12 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
     """
 
-    def __init__(self, order, sep='>', r_just_string='null', input_vector=False, return_vector=False):
+    def __init__(self,
+                 order: int,
+                 sep: str = '>',
+                 r_just_string: str = 'null',
+                 input_vector: bool = False,
+                 return_vector: bool = False) -> None:
         self.order = order
         self.sep = sep
         self.r_just_string = r_just_string
@@ -47,7 +53,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         self.label_dict = None
         self.label_dict_inverse = None
 
-    def fit(self, x, y=None):
+    def fit(self, x: np.ndarray, y: Optional[np.ndarray] = None) -> 'PathEncoder':
         """
         Fit encoder.
 
@@ -80,7 +86,9 @@ class PathEncoder(TransformerMixin, BaseEstimator):
 
         return self
 
-    def transform(self, x, y=None):
+    def transform(self,
+                  x: np.ndarray,
+                  y: Optional[np.ndarray] = None) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
         """
         Transform inputs from string paths into integer array.
 
@@ -110,7 +118,9 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         else:
             return np.array(x_new), np.vectorize(self.label_dict.get)(y)
 
-    def inverse_transform(self, x, y=None):
+    def inverse_transform(self,
+                          x: np.ndarray,
+                          y: Optional[np.ndarray] = None) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
         """
         Transform inputs from integer array into string paths.
 
@@ -125,7 +135,7 @@ class PathEncoder(TransformerMixin, BaseEstimator):
         if self.input_vector:
             x = x.reshape(-1, 1)
 
-        x_rev = [self.sep.join(list(map(self.label_dict_inverse.get, i))) for i in x.tolist()]
+        x_rev = [self.sep.join(list(map(self.label_dict_inverse.get, i))) for i in list(x)]
 
         if y is None:
             return np.array(x_rev).reshape(-1, 1)
@@ -156,17 +166,17 @@ class SequenceCutter(TransformerMixin):
 
     """
 
-    def __init__(self, order, sep='>'):
+    def __init__(self, order: int, sep: str = '>') -> None:
         self.order = order
         self.sep = sep
 
-    def fit(self, x, y=None):
+    def fit(self, x: np.ndarray, y: Optional[np.ndarray] = None) -> 'SequenceCutter':
         """
         Fit left for pipeline compatibility
         """
         return self
 
-    def transform(self, x):
+    def transform(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         Transform input sequence into array with subpaths
 
