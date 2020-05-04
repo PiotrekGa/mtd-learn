@@ -427,7 +427,7 @@ class MTD(_ChainBase):
         for i, idx in enumerate(indexes):
             p_expectation[i, :] = [lam * transition_matrices[i, idx[i], idx[-1]]
                                    for i, lam
-                                   in enumerate(lambdas)]
+                                   in enumerate(lambdas)]  # fixme nested loop
 
         p_expectation = p_expectation / p_expectation.sum(axis=1).reshape(-1, 1)
         p_expectation = np.nan_to_num(p_expectation, nan=1. / order)
@@ -436,7 +436,7 @@ class MTD(_ChainBase):
 
         for i, idx in enumerate(indexes):
             for j, k in enumerate(idx[:-1]):
-                p_expectation_direct[j, k, idx[-1]] += p_expectation[i, j]
+                p_expectation_direct[j, k, idx[-1]] += p_expectation[i, j]  # fixme nested loop
 
         p_expectation_direct = p_expectation_direct / p_expectation_direct.sum(axis=0)
         return p_expectation, p_expectation_direct
@@ -454,11 +454,11 @@ class MTD(_ChainBase):
 
         denominator = 1 / sum(n_occurrence)
         for i, _ in enumerate(lambdas):
-            sum_part = sum([n_occurrence[j] * p_expectation[j, i] for j, _ in enumerate(p_expectation)])
+            sum_part = sum([n_occurrence[j] * p_expectation[j, i] for j, _ in enumerate(p_expectation)])  # fixme nested loop
             lambdas[i] = denominator * sum_part
 
         for i, idx in enumerate(indexes):
-            for j, k in enumerate(idx[:-1]):
+            for j, k in enumerate(idx[:-1]):  # fixme nested loop
                 transition_matrices[j, k, idx[-1]] = n_direct[j, k, idx[-1]] * p_expectation_direct[j, k, idx[-1]]
 
         transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(order, n_dimensions, 1)
