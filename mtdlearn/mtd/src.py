@@ -33,6 +33,7 @@ class _ChainBase(BaseEstimator):
         self.lambdas = None
         self._indexes = None
         self.values = values
+        self.expanded_matrix = None
 
     def _create_indexes(self) -> None:
         idx_gen = product(range(self._n_dimensions), repeat=self.order + 1)
@@ -161,6 +162,18 @@ class _ChainBase(BaseEstimator):
         prob = self.predict_proba(x)
         x_new = [np.random.choice(self.values, p=i) for i in prob]
         return x_new
+
+    def create_expanded_matrix(self) -> None:
+        idx_gen = product(range(self._n_dimensions), repeat=self.order)
+        idx = [i for i in idx_gen]
+
+        expanded = np.zeros((len(idx), len(idx)))
+        for i, row in enumerate(idx):
+            for j, col in enumerate(idx):
+                if row[-(self.order - 1):] == col[:(self.order - 1)]:
+                    expanded[i, j] = self.transition_matrix[i, j % self._n_dimensions]
+
+        self.expanded_matrix = expanded
 
 
 class MTD(_ChainBase):
