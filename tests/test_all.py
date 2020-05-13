@@ -346,3 +346,12 @@ def test_matrix_expand():
                                                         [6., 7., 8., 0., 0., 0., 0., 0., 0.],
                                                         [0., 0., 0., 7., 8., 9., 0., 0., 0.],
                                                         [0., 0., 0., 0., 0., 0., 8., 9., 10.]]))
+
+
+def test_matrix_expand_first_order():
+    tm = np.array([[i + j for i in range(3)] for j in range(3)])
+    cb = _ChainBase(1)
+    cb.transition_matrix = tm
+    cb._n_dimensions = 3
+    cb.create_expanded_matrix()
+    assert np.array_equal(cb.expanded_matrix, tm)
