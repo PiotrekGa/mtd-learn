@@ -440,12 +440,12 @@ class MTD(_ChainBase):
                           transition_matrices: np.ndarray,
                           lambdas: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
-        p_expectation = np.zeros((n_dimensions ** (order + 1), order))
+        p_expectation = []
+        for i in range(n_dimensions):
+            parts = product(*transition_matrices[:, :, i].tolist())
+            p_expectation.append(np.array([i for i in parts]))
 
-        for i, idx in enumerate(indexes):
-            p_expectation[i, :] = [lam * transition_matrices[i, idx[i], idx[-1]]
-                                   for i, lam
-                                   in enumerate(lambdas)]  # fixme nested loop
+        p_expectation = np.hstack(p_expectation).reshape(-1, order) * lambdas
 
         p_expectation = p_expectation / p_expectation.sum(axis=1).reshape(-1, 1)
         p_expectation = np.nan_to_num(p_expectation, nan=1. / order)
