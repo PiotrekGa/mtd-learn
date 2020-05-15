@@ -164,6 +164,12 @@ class _ChainBase(BaseEstimator):
         return x_new
 
     def create_expanded_matrix(self) -> None:
+        """
+        Transforms transition matrix into first order transition matrix.
+        See 1.1 in The Mixture Transition Distribution Model for High-Order Markov Chains and Non-Gaussian Time Series.
+
+        :return: self
+        """
 
         if self.order > 1:
             idx_gen = product(range(self._n_dimensions), repeat=self.order)
