@@ -164,21 +164,25 @@ class _ChainBase(BaseEstimator):
         return x_new
 
     def create_expanded_matrix(self) -> None:
+        """
+        Transforms transition matrix into first order transition matrix.
+        See 1.1 in The Mixture Transition Distribution Model for High-Order Markov Chains and Non-Gaussian Time Series.
+
+        :return: self
+        """
 
         if self.order > 1:
             idx_gen = product(range(self._n_dimensions), repeat=self.order)
             idx = [i for i in idx_gen]
 
-            expanded = np.zeros((len(idx), len(idx)))
+            self.expanded_matrix = np.zeros((len(idx), len(idx)))
             for i, row in enumerate(idx):
                 for j, col in enumerate(idx):
                     if row[-(self.order - 1):] == col[:(self.order - 1)]:
-                        expanded[i, j] = self.transition_matrix[i, j % self._n_dimensions]
+                        self.expanded_matrix[i, j] = self.transition_matrix[i, j % self._n_dimensions]
 
         else:
-            expanded = self.transition_matrix.copy()
-
-        self.expanded_matrix = expanded
+            self.expanded_matrix = self.transition_matrix.copy()
 
 
 class MTD(_ChainBase):
