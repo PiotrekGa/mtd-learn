@@ -128,8 +128,7 @@ def test_manual_exp_max():
                                                                   n_passes,
                                                                   n_passes_direct,
                                                                   expectation_matrix,
-                                                                  expectation_matrix_direct,
-                                                                  transition_matrices)
+                                                                  expectation_matrix_direct)
 
     log_likelihood_end = mtd._calculate_log_likelihood_mtd(indexes, n_passes, transition_matrices_out, lambdas_out)
 

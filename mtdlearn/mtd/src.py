@@ -399,8 +399,7 @@ class MTD(_ChainBase):
                                                                   x,
                                                                   n_direct,
                                                                   p_expectation,
-                                                                  p_expectation_direct,
-                                                                  transition_matrices)
+                                                                  p_expectation_direct)
             log_likelihood = MTD._calculate_log_likelihood_mtd(indexes,
                                                                x,
                                                                transition_matrices,
@@ -469,17 +468,13 @@ class MTD(_ChainBase):
                            n_occurrence: np.ndarray,
                            n_direct: np.ndarray,
                            p_expectation: np.ndarray,
-                           p_expectation_direct: np.ndarray,
-                           transition_matrices: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+                           p_expectation_direct: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
         denominator = 1 / sum(n_occurrence)
         sum_part = (p_expectation * n_occurrence.reshape(-1, 1)).sum(0)
         lambdas = denominator * sum_part
 
-        for i, idx in enumerate(indexes):
-            for j, k in enumerate(idx[:-1]):  # fixme nested loop
-                transition_matrices[j, k, idx[-1]] = n_direct[j, k, idx[-1]] * p_expectation_direct[j, k, idx[-1]]
-
+        transition_matrices = n_direct * p_expectation_direct
         transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(order, n_dimensions, 1)
 
         return lambdas, transition_matrices
