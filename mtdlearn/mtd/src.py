@@ -451,7 +451,7 @@ class MTD(_ChainBase):
         p_expectation = p_expectation / p_expectation.sum(axis=1).reshape(-1, 1)
         p_expectation = np.nan_to_num(p_expectation, nan=1. / order)
 
-        # this nested loop is actually pretty fast
+        # fixme nested loop
         p_expectation_direct = np.zeros((order, n_dimensions, n_dimensions))
         for i, idx in enumerate(indexes):
             for j, k in enumerate(idx[:-1]):
