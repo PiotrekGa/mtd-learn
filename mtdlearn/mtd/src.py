@@ -395,7 +395,6 @@ class MTD(_ChainBase):
                                                                         lambdas)
             lambdas, transition_matrices = MTD._maximization_step(n_dimensions,
                                                                   order,
-                                                                  indexes,
                                                                   x,
                                                                   n_direct,
                                                                   p_expectation,
@@ -464,7 +463,6 @@ class MTD(_ChainBase):
     @staticmethod
     def _maximization_step(n_dimensions: int,
                            order: int,
-                           indexes: List[Tuple[int]],
                            n_occurrence: np.ndarray,
                            n_direct: np.ndarray,
                            p_expectation: np.ndarray,

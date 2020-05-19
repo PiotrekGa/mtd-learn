@@ -124,7 +124,6 @@ def test_manual_exp_max():
     expectation_matrix, expectation_matrix_direct = mtd._expectation_step(2, 2, indexes, transition_matrices, lambdas)
 
     lambdas_out, transition_matrices_out = mtd._maximization_step(2, 2,
-                                                                  indexes,
                                                                   n_passes,
                                                                   n_passes_direct,
                                                                   expectation_matrix,
