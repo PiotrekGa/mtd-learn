@@ -334,13 +334,10 @@ class MTD(_ChainBase):
 
         self._create_indexes()
 
-        n_direct = []
-        for i in range(self.order):
-            block = x.reshape(-1,
+        n_direct = [x.reshape(-1,
                               self._n_dimensions,
                               self._n_dimensions ** (self.order - i - 1),
-                              self._n_dimensions).sum(0).sum(1)
-            n_direct.append(block)
+                              self._n_dimensions).sum(0).sum(1) for i in range(self.order)]
         n_direct = np.array(n_direct)
 
         candidates = Parallel(n_jobs=self.n_jobs)(delayed(MTD._fit_one)(x,
