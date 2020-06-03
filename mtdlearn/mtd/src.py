@@ -33,6 +33,7 @@ class _ChainBase(BaseEstimator):
         self.lambdas = None
         self._indexes = None
         self.values = values
+        self.expanded_matrix = None
 
     def _create_indexes(self) -> None:
         idx_gen = product(range(self._n_dimensions), repeat=self.order + 1)
@@ -161,6 +162,27 @@ class _ChainBase(BaseEstimator):
         prob = self.predict_proba(x)
         x_new = [np.random.choice(self.values, p=i) for i in prob]
         return x_new
+
+    def create_expanded_matrix(self) -> None:
+        """
+        Transforms transition matrix into first order transition matrix.
+        See 1.1 in The Mixture Transition Distribution Model for High-Order Markov Chains and Non-Gaussian Time Series.
+
+        :return: self
+        """
+
+        if self.order > 1:
+            idx_gen = product(range(self._n_dimensions), repeat=self.order)
+            idx = [i for i in idx_gen]
+
+            self.expanded_matrix = np.zeros((len(idx), len(idx)))
+            for i, row in enumerate(idx):
+                for j, col in enumerate(idx):
+                    if row[-(self.order - 1):] == col[:(self.order - 1)]:
+                        self.expanded_matrix[i, j] = self.transition_matrix[i, j % self._n_dimensions]
+
+        else:
+            self.expanded_matrix = self.transition_matrix.copy()
 
 
 class MTD(_ChainBase):
@@ -312,10 +334,11 @@ class MTD(_ChainBase):
 
         self._create_indexes()
 
-        n_direct = np.zeros((self.order, self._n_dimensions, self._n_dimensions))
-        for i, idx in enumerate(self._indexes):
-            for j, k in enumerate(idx[:-1]):
-                n_direct[j, k, idx[-1]] += x[i]
+        n_direct = [x.reshape(-1,
+                              self._n_dimensions,
+                              self._n_dimensions ** (self.order - i - 1),
+                              self._n_dimensions).sum(0).sum(1) for i in range(self.order)]
+        n_direct = np.array(n_direct)
 
         candidates = Parallel(n_jobs=self.n_jobs)(delayed(MTD._fit_one)(x,
                                                                         self._indexes,
@@ -373,13 +396,10 @@ class MTD(_ChainBase):
                                                                         lambdas)
             lambdas, transition_matrices = MTD._maximization_step(n_dimensions,
                                                                   order,
-                                                                  indexes,
                                                                   x,
                                                                   n_direct,
                                                                   p_expectation,
-                                                                  p_expectation_direct,
-                                                                  transition_matrices,
-                                                                  lambdas)
+                                                                  p_expectation_direct)
             log_likelihood = MTD._calculate_log_likelihood_mtd(indexes,
                                                                x,
                                                                transition_matrices,
@@ -422,45 +442,39 @@ class MTD(_ChainBase):
                           transition_matrices: np.ndarray,
                           lambdas: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
-        p_expectation = np.zeros((n_dimensions ** (order + 1), order))
+        p_expectation = []
+        for i in range(n_dimensions):
+            parts = product(*transition_matrices[:, :, i].tolist())
+            p_expectation.append(np.array([i for i in parts]))
 
-        for i, idx in enumerate(indexes):
-            p_expectation[i, :] = [lam * transition_matrices[i, idx[i], idx[-1]]
-                                   for i, lam
-                                   in enumerate(lambdas)]
+        p_expectation = np.hstack(p_expectation).reshape(-1, order) * lambdas
 
         p_expectation = p_expectation / p_expectation.sum(axis=1).reshape(-1, 1)
         p_expectation = np.nan_to_num(p_expectation, nan=1. / order)
 
-        p_expectation_direct = np.zeros((order, n_dimensions, n_dimensions))
+        p_expectation_direct = [p_expectation[:, i].reshape(-1,
+                                                            n_dimensions,
+                                                            n_dimensions ** (order - i - 1),
+                                                            n_dimensions).sum(0).sum(1) for i in range(order)]
 
-        for i, idx in enumerate(indexes):
-            for j, k in enumerate(idx[:-1]):
-                p_expectation_direct[j, k, idx[-1]] += p_expectation[i, j]
-
+        p_expectation_direct = np.array(p_expectation_direct)
         p_expectation_direct = p_expectation_direct / p_expectation_direct.sum(axis=0)
+
         return p_expectation, p_expectation_direct
 
     @staticmethod
     def _maximization_step(n_dimensions: int,
                            order: int,
-                           indexes: List[Tuple[int]],
                            n_occurrence: np.ndarray,
                            n_direct: np.ndarray,
                            p_expectation: np.ndarray,
-                           p_expectation_direct: np.ndarray,
-                           transition_matrices: np.ndarray,
-                           lambdas: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+                           p_expectation_direct: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
         denominator = 1 / sum(n_occurrence)
-        for i, _ in enumerate(lambdas):
-            sum_part = sum([n_occurrence[j] * p_expectation[j, i] for j, _ in enumerate(p_expectation)])
-            lambdas[i] = denominator * sum_part
+        sum_part = (p_expectation * n_occurrence.reshape(-1, 1)).sum(0)
+        lambdas = denominator * sum_part
 
-        for i, idx in enumerate(indexes):
-            for j, k in enumerate(idx[:-1]):
-                transition_matrices[j, k, idx[-1]] = n_direct[j, k, idx[-1]] * p_expectation_direct[j, k, idx[-1]]
-
+        transition_matrices = n_direct * p_expectation_direct
         transition_matrices = transition_matrices / transition_matrices.sum(2).reshape(order, n_dimensions, 1)
 
         return lambdas, transition_matrices
