@@ -3,9 +3,7 @@
 ## Installation
 
 ```
-git clone git@github.com:PiotrekGa/mtd-learn.git
-cd mtd-learn
-pip install .
+pip install mtdlearn
 ```
 
 ## Communication
