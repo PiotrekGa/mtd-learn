@@ -8,7 +8,7 @@ setup(
     author='Piotr Gabryś',
     author_email='piotrek.gabrys@gmail.com',
     description='Package for training Mixture Transition Distribution (MTD) models',
-    version='0.2.1',
+    version='0.2.2',
     packages=find_packages(),
     install_requires=[
         'joblib>=0.11',
