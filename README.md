@@ -2,11 +2,42 @@
 
 ## MTD models
 
+### Definition
+
 ![mtd_def](readme_images/mtd_def_small.png)
+
+Where _lambdas_ are lag parameters and Q<sub>g</sub> = [q<sub>i<sub>g</sub></sub><sub>i<sub>0</sub></sub><sup>(g)</sup>]
+is a _m_ x _m_ transition matrix representing relationship between _g_ lag and the present state.
+
+To parameters have to meet following contraints to produce probabilities:
 
 ![mtd_constr](readme_images/mtd_contraints_small.png)
 
 ![mtd_img](readme_images/mtd.png)
+
+### Number of independent parameters
+
+Comparison of parameters number between Markov Chain and MTD model.
+
+| States   |      Order    | Markov Chain | MTD<sup>[1]</sup>   |
+|----------|:-------------:|-------------:|--------------------:|
+| 2        | 1             |     2        | 2                   |
+| 2        | 2             |     4        | 3                   |
+| 2        | 3             |     8        | 4                   |
+| 2        | 4             |    16        | 5                   |
+| 3        | 1             |     6        | 6                   |
+| 3        | 2             |    18        | 10                  |
+| 3        | 3             |    54        | 14                  |
+| 3        | 4             |   162        | 18                  |
+| 5        | 1             |    20        | 20                  |
+| 5        | 2             |   100        | 36                  |
+| 5        | 3             |   500        | 52                  |
+| 5        | 4             |  2500        | 68                  |
+| 10       | 1             |    90        | 90                  |
+| 10       | 2             |   900        | 171                 |
+| 10       | 3             |  9000        | 252                 |
+| 10       | 4             | 90000        | 333                 |
+
 
 ## Installation
 
