@@ -2,7 +2,10 @@
 
 ## MTD models
 
-![mtd](readme_images/mtd.png)
+![mtd_def](readme_images/mtd_def.png)
+![mtd_constr](readme_images/mtd_contraints.png)
+
+![mtd_img](readme_images/mtd.png)
 
 ## Installation
 
