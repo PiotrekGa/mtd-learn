@@ -1,5 +1,9 @@
 # mtd-learn: Package for training Mixture Transition Distribution (MTD) models
 
+## MTD models
+
+![mtd](readme_images/mtd.png)
+
 ## Installation
 
 ```
