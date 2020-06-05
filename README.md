@@ -4,6 +4,11 @@
 
 ### Definition
 
+The Mixture Transition Distribution (MTD) model was proposed in 1985 by Raftery<sup>[1]</sup>. It aimed to approximate
+higher order Markov Chains, but can be used as a standalone model.
+
+Definition: 
+
 ![mtd_def](readme_images/mtd_def_small.png)
 
 Where _lambdas_ are lag parameters and Q<sub>g</sub> = [q<sub>i<sub>g</sub></sub><sub>i<sub>0</sub></sub><sup>(g)</sup>]
@@ -12,6 +17,8 @@ is a _m_ x _m_ transition matrix representing relationship between _g_ lag and t
 To parameters have to meet following contraints to produce probabilities:
 
 ![mtd_constr](readme_images/mtd_contraints_small.png)
+
+The model can be easier understood as weighted probabilities (by _lambdas_) of Q<sub>g</sub> matrices:
 
 ![mtd_img](readme_images/mtd.png)
 
@@ -47,7 +54,7 @@ pip install mtdlearn
 
 ## Usage examples
 
-Foe usage examples please refer to [examples](https://github.com/PiotrekGa/mtd-learn/tree/master/examples) section.
+For usage examples please refer to [examples](https://github.com/PiotrekGa/mtd-learn/tree/master/examples) section.
 
 ## Communication
 GitHub [Issues](https://github.com/PiotrekGa/mtd-learn/issues) for bug reports, feature requests and questions.
