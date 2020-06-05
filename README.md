@@ -6,6 +6,10 @@
 pip install mtdlearn
 ```
 
+## Usage examples
+
+Foe usage examples please refer to [examples](https://github.com/PiotrekGa/mtd-learn/tree/master/examples) section.
+
 ## Communication
 GitHub [Issues](https://github.com/PiotrekGa/mtd-learn/issues) for bug reports, feature requests and questions.
 
