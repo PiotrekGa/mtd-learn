@@ -1,13 +1,17 @@
 # mtd-learn: Package for training Mixture Transition Distribution (MTD) models
 
-## MTD models
+## Installation
 
-### Definition
+```
+pip install mtdlearn
+```
+
+## MTD model
 
 The Mixture Transition Distribution (MTD) model was proposed in 1985 by Raftery<sup>[1]</sup>. It aimed to approximate
 higher order Markov Chains, but can be used as a standalone model.
 
-Definition: 
+### Definition
 
 ![mtd_def](readme_images/mtd_def_small.png)
 
@@ -46,12 +50,6 @@ Comparison of parameters number between Markov Chain and MTD model.
 | 10       | 3             |  9000        | 252                 |
 | 10       | 4             | 90000        | 333                 |
 
-
-## Installation
-
-```
-pip install mtdlearn
-```
 
 ## Usage examples
 
