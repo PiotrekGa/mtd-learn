@@ -18,7 +18,8 @@ To parameters have to meet following contraints to produce probabilities:
 
 ![mtd_constr](readme_images/mtd_contraints_small.png)
 
-The model can be easier understood as weighted probabilities (by _lambdas_) of Q<sub>g</sub> matrices:
+The model can be easier understood as weighted probabilities (by _lambdas_) of Q<sub>g</sub> matrices. The example below
+shows how to calculate a probability of transition B->C->A->B from an order 3 MTD model:
 
 ![mtd_img](readme_images/mtd.png)
 
