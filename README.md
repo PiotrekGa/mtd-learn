@@ -1,4 +1,4 @@
-# mtd-learn: Package for training Mixture Transition Distribution (MTD) models
+# mtd-learn: Package for training Generalized Mixture Transition Distribution (MTDg) models
 
 ## Installation
 
@@ -6,10 +6,10 @@
 pip install mtdlearn
 ```
 
-## MTD model
+## MTDg model
 
-The Mixture Transition Distribution (MTD) model was proposed in 1985 by Raftery<sup>[1]</sup>. It aimed to approximate
-higher order Markov Chains, but can be used as a standalone model.
+The Generalized Mixture Transition Distribution (MTDg) model was proposed in 1985 by Raftery<sup>[1]</sup>. It aimed 
+to approximate higher order Markov Chains, but can be used as a standalone model.
 
 ### Definition
 
@@ -18,7 +18,7 @@ higher order Markov Chains, but can be used as a standalone model.
 Where _lambdas_ are lag parameters and Q<sub>g</sub> = [q<sub>i<sub>g</sub></sub><sub>i<sub>0</sub></sub><sup>(g)</sup>]
 is a _m_ x _m_ transition matrix representing relationship between _g_ lag and the present state.
 
-To parameters have to meet following contraints to produce probabilities:
+To parameters have to meet following constraints to produce probabilities:
 
 ![mtd_constr](readme_images/mtd_contraints_small.png)
 
@@ -29,9 +29,10 @@ shows how to calculate a probability of transition B->C->A->B from an order 3 MT
 
 ### Number of independent parameters
 
-Comparison of parameters number between Markov Chain and MTD model.
+The number independent parameters of the MTDg model equals _(ml - m + 1)(l - 1)_ and for Markov Chain 
+_m<sup>l</sup>(m-1)_. You can find a comparison of the number of parameters below.
 
-| States   |      Order    | Markov Chain | MTD<sup>[1]</sup>   |
+| States   |      Order    | Markov Chain | MTDg<sup>[1]</sup>  |
 |----------|:-------------:|-------------:|--------------------:|
 | 2        | 1             |     2        | 2                   |
 | 2        | 2             |     4        | 3                   |
@@ -65,6 +66,6 @@ Any contribution is welcome! Please follow this [branching model](https://nvie.c
 MIT License (see [LICENSE](https://github.com/PiotrekGa/mtd-learn/blob/master/LICENSE)).
 
 ## References
-1. Introduction to MTD model [The Mixture Transition Distribution Model for High-Order Markov Chains and Non-Gaussian Time Series](https://projecteuclid.org/euclid.ss/1042727943) by André Berchtold and Adrian Raftery
+1. Introduction to MTDg model [The Mixture Transition Distribution Model for High-Order Markov Chains and Non-Gaussian Time Series](https://projecteuclid.org/euclid.ss/1042727943) by André Berchtold and Adrian Raftery
 2. Paper with estimation algorithm implemented in the package [An EM algorithm for estimation in the Mixture Transition Distribution model
 ](https://arxiv.org/abs/0803.0525) by Sophie Lèbre and Pierre-Yves Bourguinon.
