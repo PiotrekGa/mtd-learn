@@ -345,10 +345,10 @@ Let's analyze change patterns in the exchange rate between US Dollars and Euro b
 can find the dataset [here](https://github.com/PiotrekGa/mtd-learn/blob/master/examples/euro_usd.csv).
 Since the MTDg model work on discrete states the changes were binned into four groups:
 
-1. 0_BIG_DROP - more that 0.5% drop
+1. 0_BIG_DROP - more than 0.5% drop
 2. 1_DROP - less than 0.5% drop
-3. 2_RISE - less that 0.5% rise
-4. 3_BIG_RISE - more that 0.5% rise
+3. 2_RISE - less than 0.5% rise
+4. 3_BIG_RISE - more than 0.5% rise
 
 Let's start with imports:
 
