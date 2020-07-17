@@ -177,7 +177,7 @@ _X<sub>t-l</sub> = i<sub>l</sub>,...,X<sub>t-1</sub> = i<sub>1</sub>,X<sub>t</su
 The MTDg model is a sequence of random variables _(X<sub>n</sub>)_ such that:
 
 <p align="center">
-  <img src="https://piotrekga.github.io/images/CodeCogsEqn16.png">
+  <img src="https://piotrekga.github.io/images/CodeCogsEqn17.png">
 </p>
 
 where _i<sub>t</sub>...i<sub>0</sub> ∈ N_, 𝜆  = (𝜆 <sub>l</sub>,...,𝜆 <sub>1</sub>)<sup>T</sup>_ is a weight vector and
@@ -187,7 +187,7 @@ between _g_ lag and the current state.
 Following conditions has to be met for the model to produce probabilities:
 
 <p align="center">
-  <img src="https://piotrekga.github.io/images/CodeCogsEqn17.png">
+  <img src="https://piotrekga.github.io/images/CodeCogsEqn16.png">
 </p>
 
 
