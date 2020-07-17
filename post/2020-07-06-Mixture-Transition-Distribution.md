@@ -1,6 +1,4 @@
 ---
-published: true
----
 # 2020-07-06 Mixture Transition Distribution models
 _Model explanation and usage example_
 
