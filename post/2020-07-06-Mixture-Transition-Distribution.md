@@ -181,7 +181,7 @@ The MTDg model is a sequence of random variables _(X<sub>n</sub>)_ such that:
 </p>
 
 where _i<sub>t</sub>...i<sub>0</sub> ∈ N_, 𝜆  = (𝜆 <sub>l</sub>,...,𝜆 <sub>1</sub>)<sup>T</sup>_ is a weight vector and
-_Q<sub>g</sub> = [q<sup>(g)</sup><sub>i<sub>g</sub>i<sub>0</sub></sub>]_ is a _m ⨯ m_ matrix representing association
+_Q<sub>g</sub> = [q<sup>(g)</sup><sub>i<sub>g</sub>i<sub>0</sub></sub>]_ is an _m ⨯ m_ matrix representing the association
 between _g_ lag and the current state.
 
 Following conditions has to be met for the model to produce probabilities:
