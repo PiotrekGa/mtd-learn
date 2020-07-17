@@ -53,8 +53,28 @@ _m<sup>l</sup>(m-1)_. You can find a comparison of the number of parameters belo
 
 
 ## Usage examples
+```
+from mtdlearn.mtd import MTD
+from mtdlearn.preprocessing import PathEncoder
+from mtdlearn.datasets import ChainGenerator
 
-For usage examples please refer to [examples](https://github.com/PiotrekGa/mtd-learn/tree/master/examples) section.
+## Generate data
+
+cg = ChainGenerator(('A', 'B', 'C'), 3, min_len=4, max_len=5)
+x, y = cg.generate_data(1000)
+
+## Encode paths
+
+pe = PathEncoder(3)
+pe.fit(x, y)
+x_tr3, y_tr3 = pe.transform(x, y)
+
+## Fitting model
+
+model = MTD(order=3)
+model.fit(x_tr3, y_tr3)
+```
+For more usage examples please refer to [examples](https://github.com/PiotrekGa/mtd-learn/tree/master/examples) section.
 
 ## Communication
 GitHub [Issues](https://github.com/PiotrekGa/mtd-learn/issues) for bug reports, feature requests and questions.
