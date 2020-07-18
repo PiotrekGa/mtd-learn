@@ -16,7 +16,7 @@ maintained by Andre Berchtold.
 
 The Mixture Transition Distribution (MTD) model was proposed by Raftery in 1985<sup>[1]</sup>. Its initial intent 
 was to approximate high order Markov Chains (MC), but it can serve as an independent model too. The main advantage of 
-the MTD model is that its number of independent parameters of the MTD model grows linearly with the order in contrast to
+the MTD model is that its number of independent parameters grows linearly with the order in contrast to
 the exponential growth of Markov Chains models.
 
 
