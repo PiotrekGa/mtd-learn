@@ -62,7 +62,7 @@ class _ChainBase(BaseEstimator):
                          sample_weight: Optional[np.ndarray] = None) -> np.ndarray:
 
         if sample_weight is None:
-            sample_weight = np.ones(x.shape[0], dtype=np.int)
+            sample_weight = np.ones(x.shape[0], dtype=np.int64)
 
         n_columns = x.shape[1]
         values_dict = {i: 0 for i in range(self._n_dimensions ** (x.shape[1]))}
@@ -292,7 +292,7 @@ class MTD(_ChainBase):
                  min_gain: float = 0.1,
                  lambdas_init: Optional[np.ndarray] = None,
                  transition_matrices_init: Optional[np.ndarray] = None,
-                 verbose: np.int = 1,
+                 verbose: np.int64 = 1,
                  n_jobs: int = -1) -> None:
 
         super().__init__(order)
